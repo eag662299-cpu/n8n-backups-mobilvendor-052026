@@ -1,0 +1,275 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Webhook MCP": {
+      "main": [
+        [
+          {
+            "node": "Code: Process MCP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Process MCP Request": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-12T02:17:35.649Z",
+  "id": "Rg05AIQFdKp9ILSLb8SWy",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "MCP Server Mock",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mcp-server",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "6fb4a2ad-db11-41d7-b986-741a67485b62",
+      "name": "Webhook MCP",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -464,
+        -272
+      ],
+      "webhookId": "mcp-server-webhook-001",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// ── Auth Check ──────────────────────────────────────────────────\nconst MCP_API_KEY = 'test-key-123'; // Cambia en producción\nconst authHeader  = $input.first().headers?.authorization || '';\nconst token       = authHeader.replace('Bearer ', '').trim();\n\nif (token !== MCP_API_KEY) {\n  return [{ json: { _auth_error: true, status: 401, error: 'Unauthorized' } }];\n}\n\nconst body    = $input.first().json;\nconst action  = body.action  || '';\nconst context = body.context || {};\nconst sql     = body.sql     || '';\n\n// ═══════════════════════════════════════════════════════════════\n// TENANT ROUTER: resuelve qué \"base de datos\" usar según contexto\n// ═══════════════════════════════════════════════════════════════\nfunction resolveTenant(ctx) {\n  const key = `${(ctx.contextName || '').toLowerCase()}_${(ctx.country || 'EC').toUpperCase()}`;\n\n  const tenants = {\n    // Agrega aquí tus tenants reales\n    // 'distribuidora_abc_EC': { name: 'ABC Ecuador', schema: 'mobilvendor_abc_ec' },\n  };\n\n  return tenants[key] || {\n    name:   ctx.contextName || 'Demo',\n    schema: 'mobilvendor_demo',\n    country: ctx.country || 'EC'\n  };\n}\n\nconst tenant = resolveTenant(context);\n\n// ═══════════════════════════════════════════════════════════════\n// ACTION: schema → retorna estructura de tablas disponibles\n// ═══════════════════════════════════════════════════════════════\nif (action === 'schema') {\n\n  // Schema MOCK para pruebas\n  // En producción, aquí consultarías INFORMATION_SCHEMA de la DB real\n  const mockSchema = `\npagos_proveedores(id INT, id_proveedor INT, monto DECIMAL, fecha_pago DATE, estado VARCHAR, referencia VARCHAR, concepto VARCHAR)\nproveedores(id INT, nombre_proveedor VARCHAR, ruc VARCHAR, telefono VARCHAR, email VARCHAR, categoria VARCHAR)\nfacturas(id INT, numero_factura VARCHAR, id_cliente INT, subtotal DECIMAL, iva DECIMAL, total DECIMAL, fecha_emision DATE, estado VARCHAR)\nclientes(id INT, nombre VARCHAR, ruc_cedula VARCHAR, email VARCHAR, telefono VARCHAR, ciudad VARCHAR, pais VARCHAR)\npedidos(id INT, id_cliente INT, id_vendedor INT, fecha_pedido DATE, estado VARCHAR, total DECIMAL, observaciones VARCHAR)\ndetalle_pedidos(id INT, id_pedido INT, id_producto INT, cantidad INT, precio_unitario DECIMAL, descuento DECIMAL)\nproductos(id INT, codigo VARCHAR, nombre VARCHAR, categoria VARCHAR, precio DECIMAL, stock INT, unidad VARCHAR)\nvendedores(id INT, nombre VARCHAR, zona VARCHAR, meta_mensual DECIMAL, ventas_mes DECIMAL)\n`.trim();\n\n  return [{\n    json: {\n      success: true,\n      action:  'schema',\n      tenant:  tenant.name,\n      schema:  mockSchema,\n      dialect: 'MySQL'\n    }\n  }];\n}\n\n// ═══════════════════════════════════════════════════════════════\n// ACTION: query → valida SQL y ejecuta contra datos MOCK\n// ═══════════════════════════════════════════════════════════════\nif (action === 'query') {\n\n  // Validación de seguridad: SOLO SELECT\n  const sqlUpper = sql.trim().toUpperCase();\n  const forbidden = ['INSERT', 'UPDATE', 'DELETE', 'DROP', 'ALTER', \n                     'TRUNCATE', 'CREATE', 'EXEC', 'GRANT', 'REVOKE'];\n\n  if (!sqlUpper.startsWith('SELECT')) {\n    return [{ json: {\n      success: false,\n      error:   'Solo se permiten consultas SELECT de lectura',\n      tenant:  tenant.name\n    }}];\n  }\n\n  for (const kw of forbidden) {\n    if (sqlUpper.includes(kw)) {\n      return [{ json: {\n        success: false,\n        error:   `Operación no permitida: ${kw}`,\n        tenant:  tenant.name\n      }}];\n    }\n  }\n\n  // ── DATOS MOCK por tabla detectada en el SQL ──────────────────\n  const mockData = {\n    pagos_proveedores: [\n      { proveedor: 'Distribuidora XYZ S.A.', ruc: '0990123456001', monto: 2450.00, fecha_pago: '2026-03-10', estado: 'Pagado', referencia: 'TRF-001234', concepto: 'Compra mercadería marzo' },\n      { proveedor: 'Importaciones ABC Cía.', ruc: '1790234567001', monto: 1890.50, fecha_pago: '2026-03-08', estado: 'Pagado', referencia: 'TRF-001220', concepto: 'Insumos de oficina' },\n      { proveedor: 'Logística del Sur',      ruc: '0910345678001', monto: 650.00,  fecha_pago: '2026-03-05', estado: 'Pagado', referencia: 'TRF-001198', concepto: 'Servicio de transporte' },\n      { proveedor: 'Tech Solutions EC',      ruc: '1701456789001', monto: 3200.00, fecha_pago: '2026-03-03', estado: 'Pendiente', referencia: 'TRF-001180', concepto: 'Licencias software' },\n      { proveedor: 'Proveedor Local SRL',    ruc: '0920567890001', monto: 780.25,  fecha_pago: '2026-02-28', estado: 'Pagado', referencia: 'TRF-001165', concepto: 'Material de empaque' }\n    ],\n    facturas: [\n      { numero_factura: 'F001-0045231', cliente: 'Cliente A S.A.',  total: 1250.00, fecha_emision: '2026-03-11', estado: 'Emitida' },\n      { numero_factura: 'F001-0045230', cliente: 'Cliente B Cía.',  total: 890.75,  fecha_emision: '2026-03-10', estado: 'Cobrada' },\n      { numero_factura: 'F001-0045229', cliente: 'Cliente C Ltda.', total: 3400.00, fecha_emision: '2026-03-09', estado: 'Pendiente' },\n      { numero_factura: 'F001-0045228', cliente: 'Cliente D S.A.',  total: 567.50,  fecha_emision: '2026-03-08', estado: 'Emitida' },\n    ],\n    pedidos: [\n      { id: 1001, cliente: 'Cliente A', fecha_pedido: '2026-03-11', estado: 'Entregado', total: 1250.00 },\n      { id: 1002, cliente: 'Cliente B', fecha_pedido: '2026-03-10', estado: 'En proceso', total: 890.75 },\n      { id: 1003, cliente: 'Cliente C', fecha_pedido: '2026-03-09', estado: 'Pendiente',  total: 340.00 },\n    ],\n    productos: [\n      { codigo: 'PROD-001', nombre: 'Producto Premium A', categoria: 'Electrónica', precio: 299.99, stock: 45 },\n      { codigo: 'PROD-002', nombre: 'Producto Básico B',  categoria: 'Hogar',       precio: 49.99,  stock: 120 },\n      { codigo: 'PROD-003', nombre: 'Producto Pro C',     categoria: 'Electrónica', precio: 599.99, stock: 8 },\n    ],\n    vendedores: [\n      { nombre: 'Vendedor 1', zona: 'Norte', meta_mensual: 10000, ventas_mes: 12450.75 },\n      { nombre: 'Vendedor 2', zona: 'Sur',   meta_mensual: 8000,  ventas_mes: 7820.00  },\n      { nombre: 'Vendedor 3', zona: 'Centro',meta_mensual: 12000, ventas_mes: 14300.50 },\n    ]\n  };\n\n  // Detectar qué tabla principal menciona el SQL\n  let rows = [];\n  if      (sqlUpper.includes('PAGOS_PROVEEDORES') || sqlUpper.includes('PROVEEDOR')) {\n    rows = mockData.pagos_proveedores;\n  } else if (sqlUpper.includes('FACTURAS') || sqlUpper.includes('FACTURA')) {\n    rows = mockData.facturas;\n  } else if (sqlUpper.includes('PEDIDOS') || sqlUpper.includes('PEDIDO')) {\n    rows = mockData.pedidos;\n  } else if (sqlUpper.includes('PRODUCTOS') || sqlUpper.includes('PRODUCTO') || sqlUpper.includes('INVENTARIO')) {\n    rows = mockData.productos;\n  } else if (sqlUpper.includes('VENDEDORES') || sqlUpper.includes('VENDEDOR')) {\n    rows = mockData.vendedores;\n  } else {\n    // Retornar tabla genérica si no se detecta\n    rows = [{ mensaje: 'Consulta ejecutada. No se detectaron datos específicos para este query en modo de prueba.' }];\n  }\n\n  return [{\n    json: {\n      success:    true,\n      action:     'query',\n      tenant:     tenant.name,\n      country:    context.country || 'EC',\n      sql,\n      rows,\n      executedIn: `${Math.floor(Math.random() * 80) + 20}ms`\n    }\n  }];\n}\n\n// Action no reconocida\nreturn [{\n  json: { success: false, error: `Acción no reconocida: '${action}'. Usa 'schema' o 'query'.` }\n}];\n"
+      },
+      "id": "522d6284-6aa9-4472-b7cf-5f82206c245a",
+      "name": "Code: Process MCP Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        -272
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": "={{ $json._auth_error ? 401 : 200 }}"
+        }
+      },
+      "id": "22e76969-3fa0-493a-a1ea-eb1bd8040abc",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -32,
+        -272
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Llama una sola vez a build_query usando siempre:\nuser=\"Pablo\"\nrole=\"viewer\"\nquestion=\"[pregunta exacta del usuario]\"\n\nDevuelve únicamente el SQL resultante, sin explicaciones ni markdown."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -288,
+        -640
+      ],
+      "id": "1ba25261-66ea-42f7-9bb6-fdea630d9e50",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -592,
+        -640
+      ],
+      "id": "7d4a884b-43a5-45cd-977e-2d78267ca47c",
+      "name": "When chat message received",
+      "webhookId": "ba45f98c-a349-4344-bbb7-aa4a356da857"
+    },
+    {
+      "parameters": {
+        "endpointUrl": "https://intervenular-retrogradingly-val.ngrok-free.dev/mcp",
+        "include": "selected",
+        "includeTools": [
+          "build_query",
+          "get_role_permissions"
+        ],
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        32,
+        -432
+      ],
+      "id": "970a6088-4a60-40e2-9a33-8c83f0b19efc",
+      "name": "MCP Client"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5.2-codex",
+          "mode": "list",
+          "cachedResultName": "gpt-5.2-codex"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -432,
+        -432
+      ],
+      "id": "ccd3e816-07f1-445a-92ae-714c057e3aea",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "E7b7vwKLzPo4JwAR",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -240,
+        -432
+      ],
+      "id": "e8787c67-0ffc-4d4d-8806-152c0bb3ac95",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://lisette-uncoveted-predeliberately.ngrok-free.dev",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        -144,
+        -432
+      ],
+      "id": "35ad3538-a4dd-4f1a-93d1-9cd5143094f6",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-12T02:17:35.657Z",
+      "createdAt": "2026-03-12T02:17:35.657Z",
+      "role": "workflow:owner",
+      "workflowId": "Rg05AIQFdKp9ILSLb8SWy",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [
+    {
+      "updatedAt": "2026-02-28T02:19:03.274Z",
+      "createdAt": "2026-02-28T02:19:03.274Z",
+      "id": "PHQ9MXLrcu8VZYHq",
+      "name": "MCP"
+    },
+    {
+      "updatedAt": "2026-03-12T02:17:53.912Z",
+      "createdAt": "2026-03-12T02:17:53.912Z",
+      "id": "gLMcNm2uT76jXHjz",
+      "name": "Testing"
+    }
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2026-03-24T11:16:49.902Z",
+  "versionId": "30b39997-7348-4f35-af36-077d953e12d5"
+}
