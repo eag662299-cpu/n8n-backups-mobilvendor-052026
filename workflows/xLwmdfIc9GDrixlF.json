@@ -1,0 +1,1189 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-05-02T03:31:26.000Z",
+    "createdAt": "2026-05-02T03:31:05.214Z",
+    "versionId": "aeac7deb-178e-4694-8930-225a3f6530c1",
+    "workflowId": "xLwmdfIc9GDrixlF",
+    "nodes": [
+      {
+        "parameters": {
+          "jsCode": "const payload = $input.first().json;\nconst otp = Math.floor(100000 + Math.random() * 900000).toString();\nconst sessionId = `AUTH-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;\nconst consentMessage = `AUTORIZACIÓN DE SALIDA\\nColegio: ${payload.colegio_nombre}\\nEstudiante: ${payload.estudiante}\\nCurso: ${payload.grado_paralelo}\\nFecha/Hora: ${payload.fecha_salida}\\nResponsable de retiro: ${payload.responsable_retiro}\\nMotivo: ${payload.motivo || ''}\\nRepresentante: ${payload.tutor_nombre}\\nCédula: ${payload.tutor_cedula || ''}\\nTeléfono: ${payload.tutor_telefono}\\n\\nConfirmo expresamente mi consentimiento para usar medios electrónicos y mensajes de datos en esta autorización escolar.\\n\\nPara aprobar responde exactamente: SI ACEPTO ${otp} ${sessionId}`;\nreturn [{json:{...payload, otp, sessionId, consentMessage, status:'PENDIENTE_FIRMA', createdAt:new Date().toISOString(), expiresAt:new Date(Date.now()+15*60*1000).toISOString()}}];"
+        },
+        "id": "2e2d6641-bdf5-401a-b89e-e037b2696f6c",
+        "name": "Generar OTP y Texto Legal",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1200,
+          320
+        ]
+      },
+      {
+        "parameters": {
+          "from": "+14155238886",
+          "to": "+593998435150",
+          "toWhatsapp": true,
+          "message": "hola",
+          "options": {}
+        },
+        "id": "4d61482d-8482-48c9-8200-d54b472fc32c",
+        "name": "Enviar WhatsApp al Tutor",
+        "type": "n8n-nodes-base.twilio",
+        "typeVersion": 1,
+        "position": [
+          1488,
+          320
+        ],
+        "credentials": {
+          "twilioApi": {
+            "id": "ZSTeBWtUG0iE471w",
+            "name": "Twilio EA"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"ok\": true,\n  \"sessionId\": $json.sessionId,\n  \"status\": $json.status\n}",
+          "options": {}
+        },
+        "id": "16354b4a-b491-4006-aa9c-ab8011c68bbb",
+        "name": "Responder al Colegio",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1,
+        "position": [
+          1968,
+          320
+        ]
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "colegio-solicita-autorizacion",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "cab0a6d8-3b92-48cd-989e-3f61a458594c",
+        "name": "Webhook Colegio1",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          912,
+          320
+        ],
+        "webhookId": "cbcdb95f-e526-4290-a2ff-f67a1bcf9fff"
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": ""
+          },
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": ""
+          }
+        },
+        "id": "a99f97ab-daa2-4296-a62b-b2d26b0788f1",
+        "name": "Guardar Solicitud1",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4,
+        "position": [
+          1744,
+          320
+        ],
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "whatsapp-inbound-autorizacion",
+          "responseMode": "lastNode",
+          "options": {}
+        },
+        "id": "04f81877-e9db-4d48-be13-29dbd8725a8f",
+        "name": "Webhook Inbound Twilio",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          -384,
+          688
+        ],
+        "webhookId": "ab7a7475-20c8-4ab8-8933-e66788097cef",
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "jsCode": "const body = $input.first().json;\nconst text = (body.Body || '').trim();\nconst from = (body.From || '').replace('whatsapp:','');\nconst session = text.match(/AUTH-[A-Za-z0-9-]+/);\nconst otp = text.match(/(\\d{6})/);\nreturn [{json:{rawMessage:text, from, sessionId: session ? session[0] : '', otp: otp ? otp[1] : '', accepted:/SI ACEPTO/i.test(text), inboundAt:new Date().toISOString(), twilioSid: body.MessageSid || ''}}];"
+        },
+        "id": "e41fea63-ec6a-42dd-95e1-e67d1f92ae36",
+        "name": "Extraer Session y OTP",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -112,
+          688
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "lookup",
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": ""
+          }
+        },
+        "id": "c86ee63b-7d62-4889-889a-87eb61f5ddc8",
+        "name": "Buscar Autorizacion",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4,
+        "position": [
+          160,
+          688
+        ],
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "jsCode": "const crypto = require('crypto');\nconst row = $input.first().json;\nif (!row.accepted) throw new Error('No existe consentimiento expreso');\nif ((row.from || '').replace(/\\D/g,'') !== (row.tutor_telefono || '').replace(/\\D/g,'')) throw new Error('Número no coincide');\nif ((row.otp || '') !== String(row.otp)) throw new Error('OTP inválido');\nif (new Date(row.expiresAt) < new Date()) throw new Error('OTP expirado');\nconst evidence = {\n sessionId: row.sessionId,\n tutor: row.tutor_nombre,\n tutorCedula: row.tutor_cedula || '',\n tutorTelefono: row.tutor_telefono,\n colegio: row.colegio_nombre,\n estudiante: row.estudiante,\n grado: row.grado_paralelo,\n responsableRetiro: row.responsable_retiro,\n fechaSalida: row.fecha_salida,\n consentimientoTexto: row.consentMessage,\n respuestaTutor: row.rawMessage,\n fechaAceptacion: row.inboundAt,\n canal: 'WhatsApp',\n proveedor: 'Twilio',\n twilioSid: row.twilioSid\n};\nconst evidenceJson = JSON.stringify(evidence, null, 2);\nconst evidenceHash = crypto.createHash('sha256').update(evidenceJson).digest('hex');\nreturn [{json:{...row, status:'AUTORIZADO', acceptedAt:row.inboundAt, evidenceJson, evidenceHash}}];"
+        },
+        "id": "a7186f20-65b5-4ec6-9a82-9f3101277051",
+        "name": "Validar Firma Simple",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          432,
+          688
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": ""
+          },
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": ""
+          }
+        },
+        "id": "d0e402e9-ea4f-467d-b356-feaef1c79290",
+        "name": "Guardar Evidencia",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4,
+        "position": [
+          704,
+          688
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "UH4CavyWfnclTTef",
+            "name": "MKT"
+          }
+        },
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "name": "={{ $json.sessionId + '-evidencia.json' }}",
+          "driveId": {
+            "__rl": true,
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "folderId": "={{ $env['GOOGLE_DRIVE_FOLDER_ID'] }}",
+          "options": {}
+        },
+        "id": "07982ec8-02df-44ce-8843-428cf6448a4e",
+        "name": "Guardar JSON en Drive",
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          944,
+          688
+        ],
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "resource": "message",
+          "options": {}
+        },
+        "id": "aa44ac0b-46c7-4046-a358-f45a6670a2ff",
+        "name": "Notificar Tutor",
+        "type": "n8n-nodes-base.twilio",
+        "typeVersion": 1,
+        "position": [
+          1200,
+          608
+        ],
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "resource": "message",
+          "options": {}
+        },
+        "id": "3b0ff001-8de9-41f6-bf9b-1966fa109251",
+        "name": "Notificar Colegio",
+        "type": "n8n-nodes-base.twilio",
+        "typeVersion": 1,
+        "position": [
+          1200,
+          784
+        ],
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"ok\": true,\n  \"status\": $json.status,\n  \"evidenceHash\": $json.evidenceHash\n}",
+          "options": {}
+        },
+        "id": "e77e5847-7786-4e28-b463-8675f5f3232b",
+        "name": "Responder Inbound",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1,
+        "position": [
+          1472,
+          688
+        ]
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "minutes"
+              }
+            ]
+          }
+        },
+        "id": "036cd7d9-49bb-402f-896b-f4a7ce0c1149",
+        "name": "Cada 5 Minutos",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1,
+        "position": [
+          624,
+          1168
+        ],
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "mode": "list",
+            "value": ""
+          },
+          "sheetName": {
+            "__rl": true,
+            "mode": "list",
+            "value": ""
+          }
+        },
+        "id": "3758035e-8268-464c-ac71-9fe400a60960",
+        "name": "Leer Autorizaciones",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4,
+        "position": [
+          880,
+          1168
+        ],
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "jsCode": "const now = new Date();\nconst rows = $input.all().map(i => i.json);\nconst out = [];\nfor (const row of rows) {\n  if (row.status !== 'PENDIENTE_FIRMA') continue;\n  const created = new Date(row.createdAt);\n  const expires = new Date(row.expiresAt);\n  const diffMin = (now - created) / 60000;\n  if (now > expires) {\n    out.push({ json: { ...row, action: 'expire' } });\n  } else if (diffMin >= 10 && diffMin < 15) {\n    out.push({ json: { ...row, action: 'remind' } });\n  }\n}\nreturn out;"
+        },
+        "id": "d3424a97-2c53-402f-a80a-79bf15689290",
+        "name": "Detectar Recordatorio o Expiracion",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1168,
+          1168
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "string": [
+              {
+                "value1": "={{ $json.action }}",
+                "operation": "equal",
+                "value2": "remind"
+              }
+            ],
+            "combinator": "and",
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            }
+          },
+          "options": {}
+        },
+        "id": "d8c9af09-0420-4113-a4e8-d5fbb7c543f3",
+        "name": "Es Recordatorio?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          1424,
+          1168
+        ]
+      },
+      {
+        "parameters": {
+          "resource": "message",
+          "options": {}
+        },
+        "id": "3187df6a-1431-49f8-af32-a85c3b1a78cd",
+        "name": "Enviar Recordatorio",
+        "type": "n8n-nodes-base.twilio",
+        "typeVersion": 1,
+        "position": [
+          1680,
+          1088
+        ],
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "resource": "message",
+          "options": {}
+        },
+        "id": "bbed66c9-d3b5-4c87-90c7-82191e50152f",
+        "name": "Notificar Expiracion al Colegio",
+        "type": "n8n-nodes-base.twilio",
+        "typeVersion": 1,
+        "position": [
+          1680,
+          1280
+        ],
+        "disabled": true
+      }
+    ],
+    "connections": {
+      "Generar OTP y Texto Legal": {
+        "main": [
+          [
+            {
+              "node": "Enviar WhatsApp al Tutor",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Enviar WhatsApp al Tutor": {
+        "main": [
+          [
+            {
+              "node": "Guardar Solicitud1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook Colegio1": {
+        "main": [
+          [
+            {
+              "node": "Generar OTP y Texto Legal",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Guardar Solicitud1": {
+        "main": [
+          [
+            {
+              "node": "Responder al Colegio",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook Inbound Twilio": {
+        "main": [
+          [
+            {
+              "node": "Extraer Session y OTP",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extraer Session y OTP": {
+        "main": [
+          [
+            {
+              "node": "Buscar Autorizacion",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Buscar Autorizacion": {
+        "main": [
+          [
+            {
+              "node": "Validar Firma Simple",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validar Firma Simple": {
+        "main": [
+          [
+            {
+              "node": "Guardar Evidencia",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Guardar Evidencia": {
+        "main": [
+          [
+            {
+              "node": "Guardar JSON en Drive",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Guardar JSON en Drive": {
+        "main": [
+          [
+            {
+              "node": "Notificar Tutor",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Notificar Colegio",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Responder Inbound",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Cada 5 Minutos": {
+        "main": [
+          [
+            {
+              "node": "Leer Autorizaciones",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Leer Autorizaciones": {
+        "main": [
+          [
+            {
+              "node": "Detectar Recordatorio o Expiracion",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Detectar Recordatorio o Expiracion": {
+        "main": [
+          [
+            {
+              "node": "Es Recordatorio?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Es Recordatorio?": {
+        "main": [
+          [
+            {
+              "node": "Enviar Recordatorio",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Notificar Expiracion al Colegio",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "ZEI MOBILVENDOR",
+    "name": "Version 3",
+    "description": "",
+    "autosaved": true
+  },
+  "activeVersionId": "aeac7deb-178e-4694-8930-225a3f6530c1",
+  "connections": {
+    "Generar OTP y Texto Legal": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp al Tutor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar WhatsApp al Tutor": {
+      "main": [
+        [
+          {
+            "node": "Guardar Solicitud1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Colegio1": {
+      "main": [
+        [
+          {
+            "node": "Generar OTP y Texto Legal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Solicitud1": {
+      "main": [
+        [
+          {
+            "node": "Responder al Colegio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Colegio": {
+      "main": [
+        [
+          {
+            "node": "Generar OTP y Texto Legal1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Solicitud": {
+      "main": [
+        [
+          {
+            "node": "Responder al Colegio1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generar OTP y Texto Legal1": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp al Tutor1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar WhatsApp al Tutor1": {
+      "main": [
+        [
+          {
+            "node": "Guardar Solicitud",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Inbound Twilio": {
+      "main": [
+        [
+          {
+            "node": "Extraer Session y OTP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer Session y OTP": {
+      "main": [
+        [
+          {
+            "node": "Buscar Autorizacion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Autorizacion": {
+      "main": [
+        [
+          {
+            "node": "Validar Firma Simple",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar Firma Simple": {
+      "main": [
+        [
+          {
+            "node": "Guardar Evidencia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Evidencia": {
+      "main": [
+        [
+          {
+            "node": "Guardar JSON en Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar JSON en Drive": {
+      "main": [
+        [
+          {
+            "node": "Notificar Tutor",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Notificar Colegio",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Responder Inbound",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-05-01T01:19:55.303Z",
+  "id": "xLwmdfIc9GDrixlF",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Tutor Confirma Autorizacion WhatsApp",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const payload = $input.first().json;\nconst otp = Math.floor(100000 + Math.random() * 900000).toString();\nconst sessionId = `AUTH-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;\nconst consentMessage = `AUTORIZACIÓN DE SALIDA\\nColegio: ${payload.colegio_nombre}\\nEstudiante: ${payload.estudiante}\\nCurso: ${payload.grado_paralelo}\\nFecha/Hora: ${payload.fecha_salida}\\nResponsable de retiro: ${payload.responsable_retiro}\\nMotivo: ${payload.motivo || ''}\\nRepresentante: ${payload.tutor_nombre}\\nCédula: ${payload.tutor_cedula || ''}\\nTeléfono: ${payload.tutor_telefono}\\n\\nConfirmo expresamente mi consentimiento para usar medios electrónicos y mensajes de datos en esta autorización escolar.\\n\\nPara aprobar responde exactamente: SI ACEPTO ${otp} ${sessionId}`;\nreturn [{json:{...payload, otp, sessionId, consentMessage, status:'PENDIENTE_FIRMA', createdAt:new Date().toISOString(), expiresAt:new Date(Date.now()+15*60*1000).toISOString()}}];"
+      },
+      "id": "2e2d6641-bdf5-401a-b89e-e037b2696f6c",
+      "name": "Generar OTP y Texto Legal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "toWhatsapp": true,
+        "options": {}
+      },
+      "id": "4d61482d-8482-48c9-8200-d54b472fc32c",
+      "name": "Enviar WhatsApp al Tutor",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1488,
+        320
+      ],
+      "credentials": {
+        "twilioApi": {
+          "id": "ZSTeBWtUG0iE471w",
+          "name": "Twilio EA"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"ok\": true,\n  \"sessionId\": $json.sessionId,\n  \"status\": $json.status\n}",
+        "options": {}
+      },
+      "id": "16354b4a-b491-4006-aa9c-ab8011c68bbb",
+      "name": "Responder al Colegio",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1968,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "colegio-solicita-autorizacion",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "cab0a6d8-3b92-48cd-989e-3f61a458594c",
+      "name": "Webhook Colegio1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        912,
+        320
+      ],
+      "webhookId": "cbcdb95f-e526-4290-a2ff-f67a1bcf9fff",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "id": "a99f97ab-daa2-4296-a62b-b2d26b0788f1",
+      "name": "Guardar Solicitud1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1744,
+        320
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "colegio-solicita-autorizacion",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "702368bb-f26e-48b2-a6fe-39e41b689c97",
+      "name": "Webhook Colegio",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        416,
+        832
+      ],
+      "webhookId": "aade064c-fa12-4a95-a337-89bb75b5435a"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "id": "057909a2-ad5f-4974-9a60-9ecc378912ae",
+      "name": "Guardar Solicitud",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1248,
+        832
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const payload = $input.first().json;\nconst otp = Math.floor(100000 + Math.random() * 900000).toString();\nconst sessionId = `AUTH-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;\nconst consentMessage = `AUTORIZACIÓN DE SALIDA\\nColegio: ${payload.colegio_nombre}\\nEstudiante: ${payload.estudiante}\\nCurso: ${payload.grado_paralelo}\\nFecha/Hora: ${payload.fecha_salida}\\nResponsable de retiro: ${payload.responsable_retiro}\\nMotivo: ${payload.motivo || ''}\\nRepresentante: ${payload.tutor_nombre}\\nCédula: ${payload.tutor_cedula || ''}\\nTeléfono: ${payload.tutor_telefono}\\n\\nConfirmo expresamente mi consentimiento para usar medios electrónicos y mensajes de datos en esta autorización escolar.\\n\\nPara aprobar responde exactamente: SI ACEPTO ${otp} ${sessionId}`;\nreturn [{json:{...payload, otp, sessionId, consentMessage, status:'PENDIENTE_FIRMA', createdAt:new Date().toISOString(), expiresAt:new Date(Date.now()+15*60*1000).toISOString()}}];"
+      },
+      "id": "8464d8cd-3f84-4c21-b9ed-b1cee56192b5",
+      "name": "Generar OTP y Texto Legal1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        704,
+        832
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "options": {}
+      },
+      "id": "3dc24517-2f85-4dd0-924b-3ff4158978c3",
+      "name": "Enviar WhatsApp al Tutor1",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        992,
+        832
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"ok\": true,\n  \"sessionId\": $json.sessionId,\n  \"status\": $json.status\n}",
+        "options": {}
+      },
+      "id": "9946fff1-6267-4140-b065-e1f40c977e91",
+      "name": "Responder al Colegio1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        832
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "whatsapp-inbound-autorizacion",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "1d0f9a48-2358-4e97-a25c-26fd7f7e3ab9",
+      "name": "Webhook Inbound Twilio",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        416,
+        1152
+      ],
+      "webhookId": "1f8db033-e2e3-4d54-af0e-91fb73e3a391"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json;\nconst text = (body.Body || '').trim();\nconst from = (body.From || '').replace('whatsapp:','');\nconst session = text.match(/AUTH-[A-Za-z0-9-]+/);\nconst otp = text.match(/(\\d{6})/);\nreturn [{json:{rawMessage:text, from, sessionId: session ? session[0] : '', otp: otp ? otp[1] : '', accepted:/SI ACEPTO/i.test(text), inboundAt:new Date().toISOString(), twilioSid: body.MessageSid || ''}}];"
+      },
+      "id": "efb27f99-852d-48e7-8aef-daddd6e1a4b6",
+      "name": "Extraer Session y OTP",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        1152
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "lookup",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "id": "4a9c566e-e11a-4f92-9b92-bed60cfb8fef",
+      "name": "Buscar Autorizacion",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        944,
+        1152
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\nconst row = $input.first().json;\nif (!row.accepted) throw new Error('No existe consentimiento expreso');\nif ((row.from || '').replace(/\\D/g,'') !== (row.tutor_telefono || '').replace(/\\D/g,'')) throw new Error('Número no coincide');\nif ((row.otp || '') !== String(row.otp)) throw new Error('OTP inválido');\nif (new Date(row.expiresAt) < new Date()) throw new Error('OTP expirado');\nconst evidence = {\n sessionId: row.sessionId,\n tutor: row.tutor_nombre,\n tutorCedula: row.tutor_cedula || '',\n tutorTelefono: row.tutor_telefono,\n colegio: row.colegio_nombre,\n estudiante: row.estudiante,\n grado: row.grado_paralelo,\n responsableRetiro: row.responsable_retiro,\n fechaSalida: row.fecha_salida,\n consentimientoTexto: row.consentMessage,\n respuestaTutor: row.rawMessage,\n fechaAceptacion: row.inboundAt,\n canal: 'WhatsApp',\n proveedor: 'Twilio',\n twilioSid: row.twilioSid\n};\nconst evidenceJson = JSON.stringify(evidence, null, 2);\nconst evidenceHash = crypto.createHash('sha256').update(evidenceJson).digest('hex');\nreturn [{json:{...row, status:'AUTORIZADO', acceptedAt:row.inboundAt, evidenceJson, evidenceHash}}];"
+      },
+      "id": "40de1560-2b1c-4298-b113-7b208bb9770b",
+      "name": "Validar Firma Simple",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1232,
+        1152
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "id": "231c804a-766b-4fc7-9f76-a75b4c439a56",
+      "name": "Guardar Evidencia",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1504,
+        1152
+      ]
+    },
+    {
+      "parameters": {
+        "name": "={{ $json.sessionId + '-evidencia.json' }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": "={{ $env['GOOGLE_DRIVE_FOLDER_ID'] }}",
+        "options": {}
+      },
+      "id": "d92fa32e-6aa5-4952-b519-9e714a2a8fb8",
+      "name": "Guardar JSON en Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1744,
+        1152
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "options": {}
+      },
+      "id": "547814a6-df0a-43e3-8747-83f6f64fdd51",
+      "name": "Notificar Tutor",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        1072
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "options": {}
+      },
+      "id": "15f47b49-0534-4372-8196-c35d48518177",
+      "name": "Notificar Colegio",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        1248
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"ok\": true,\n  \"status\": $json.status,\n  \"evidenceHash\": $json.evidenceHash\n}",
+        "options": {}
+      },
+      "id": "f592aacf-74a1-4a4e-888e-47551429f58f",
+      "name": "Responder Inbound",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        2272,
+        1152
+      ]
+    }
+  ],
+  "pinData": {
+    "Webhook Colegio1": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mobilvendor.com",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "content-length": "425",
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "es,en;q=0.9,es-ES;q=0.8",
+            "content-type": "application/json",
+            "origin": "null",
+            "priority": "u=1, i",
+            "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "cross-site",
+            "x-bamsdk-sub-details": "true",
+            "x-bamsdk-unified-account-home": "true",
+            "x-bamsdk-unified-change-payment": "true",
+            "x-bamtech-override-supported-location": "03873ad6-494b-439e-9ac7-114265f73f76",
+            "x-forwarded-for": "10.0.0.2",
+            "x-forwarded-host": "n8n.mobilvendor.com",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "d66efeba465b",
+            "x-geo-allow": "wL2Yw0YCYFP4r6H17WqE",
+            "x-rbp-wfu": "21ea40fe-bdb5-4426-b134-66f98acb2b68",
+            "x-real-ip": "10.0.0.2"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "colegio_nombre": "Colegio Alemán de Cuenca",
+            "colegio_telefono_notificacion": "+593998435150",
+            "estudiante": "Micaela Rubio",
+            "grado_paralelo": "1ro Bachillerato A",
+            "fecha_salida": "2026-05-05",
+            "hora_salida": "14:30",
+            "tutor_nombre": "Andres Rubio",
+            "tutor_cedula": "052053696",
+            "tutor_telefono": "+593998435150",
+            "responsable_retiro": "Andres Rubio",
+            "cedula_responsable": "052053696",
+            "motivo": "Cita médica urgente",
+            "origen": "html-tester"
+          },
+          "webhookUrl": "https://n8n.mobilvendor.com/webhook/colegio-solicita-autorizacion",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Generar OTP y Texto Legal": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mobilvendor.com",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+            "content-length": "425",
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "es,en;q=0.9,es-ES;q=0.8",
+            "content-type": "application/json",
+            "origin": "null",
+            "priority": "u=1, i",
+            "sec-ch-ua": "\"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "cross-site",
+            "x-bamsdk-sub-details": "true",
+            "x-bamsdk-unified-account-home": "true",
+            "x-bamsdk-unified-change-payment": "true",
+            "x-bamtech-override-supported-location": "03873ad6-494b-439e-9ac7-114265f73f76",
+            "x-forwarded-for": "10.0.0.2",
+            "x-forwarded-host": "n8n.mobilvendor.com",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "d66efeba465b",
+            "x-geo-allow": "wL2Yw0YCYFP4r6H17WqE",
+            "x-rbp-wfu": "21ea40fe-bdb5-4426-b134-66f98acb2b68",
+            "x-real-ip": "10.0.0.2"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "colegio_nombre": "Colegio Alemán de Cuenca",
+            "colegio_telefono_notificacion": "+593998435150",
+            "estudiante": "Micaela Rubio",
+            "grado_paralelo": "1ro Bachillerato A",
+            "fecha_salida": "2026-05-05",
+            "hora_salida": "14:30",
+            "tutor_nombre": "Andres Rubio",
+            "tutor_cedula": "052053696",
+            "tutor_telefono": "+593998435150",
+            "responsable_retiro": "Andres Rubio",
+            "cedula_responsable": "052053696",
+            "motivo": "Cita médica urgente",
+            "origen": "html-tester"
+          },
+          "webhookUrl": "https://n8n.mobilvendor.com/webhook/colegio-solicita-autorizacion",
+          "executionMode": "production",
+          "otp": "702080",
+          "sessionId": "AUTH-1777692699260-1fwheq",
+          "consentMessage": "AUTORIZACIÓN DE SALIDA\nColegio: undefined\nEstudiante: undefined\nCurso: undefined\nFecha/Hora: undefined\nResponsable de retiro: undefined\nMotivo: \nRepresentante: undefined\nCédula: \nTeléfono: undefined\n\nConfirmo expresamente mi consentimiento para usar medios electrónicos y mensajes de datos en esta autorización escolar.\n\nPara aprobar responde exactamente: SI ACEPTO 702080 AUTH-1777692699260-1fwheq",
+          "status": "PENDIENTE_FIRMA",
+          "createdAt": "2026-05-02T03:31:39.260Z",
+          "expiresAt": "2026-05-02T03:46:39.260Z"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-05-01T01:19:55.314Z",
+      "createdAt": "2026-05-01T01:19:55.314Z",
+      "role": "workflow:owner",
+      "workflowId": "xLwmdfIc9GDrixlF",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-05-03T22:29:43.953Z",
+  "versionId": "6598f906-0164-46f3-9722-3e1217c8d5bf"
+}
