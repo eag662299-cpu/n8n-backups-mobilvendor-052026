@@ -1,0 +1,87 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-02-13T19:45:27.093Z",
+  "id": "yE0-3dL0cYiP9MEQArWvu",
+  "isArchived": false,
+  "meta": null,
+  "name": "My workflow 28",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e1e6fbc0-63ea-452f-92ae-e4d0a3f919a2",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://mobilvendor-ai.com/api/v1/document-store/upsert/ddbcfeaa-7c71-4220-90d4-f2d09eed642f",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer <your_api_key_here>"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "={\n        \"docId\": \"0ab22d9b-295a-43b7-8f2d-4a1630c26455\",\n        \"metadata\": \"{}\",\n        \"replaceExisting\": true,\n        \"createNewDocStore\": false,\n        \"loaderName\": \"Custom Loader Name\",\n        \"loader\": {\n            \"config\": {\n                \"text\": \"This is a new text\"\n            }\n        },\n        \"splitter\": {\n            \"config\": {\n                \"chunkSize\": 20000\n            }\n        }\n        // Override existing configuration\n        // \"embedding\": {},\n        // \"vectorStore\": {},\n        // \"recordManager\": {}\n        // \"docStore\": {}\n      }"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "296defab-7387-4189-8105-15f095925bfd",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-02-13T19:45:27.103Z",
+      "createdAt": "2026-02-13T19:45:27.103Z",
+      "role": "workflow:owner",
+      "workflowId": "yE0-3dL0cYiP9MEQArWvu",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-02-13T19:45:39.136Z",
+  "versionId": "26457788-0843-4d42-a071-eee1ff6c7cd7"
+}
