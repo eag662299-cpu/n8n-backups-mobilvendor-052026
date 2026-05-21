@@ -1,0 +1,739 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Combine HTML Code": {
+      "main": [
+        [
+          {
+            "node": "Extract Phone Number",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contact Page 2": {
+      "main": [
+        [
+          {
+            "node": "Combine HTML Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contact Page 1": {
+      "main": [
+        [
+          {
+            "node": "Contact Page 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Contact Page 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Phone Number": {
+      "main": [
+        [
+          {
+            "node": "Extract Emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Google Maps": {
+      "main": [
+        [
+          {
+            "node": "Extract URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract URLs": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Specific URLs": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add to Sheet": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Scrape Specific URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Emails": {
+      "main": [
+        [
+          {
+            "node": "Add to Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Get Form Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Form Data": {
+      "main": [
+        [
+          {
+            "node": "Scrape Google Maps",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:46.036Z",
+  "id": "tu6IJYtbq0Nd85to",
+  "isArchived": false,
+  "meta": null,
+  "name": "lead  correo telefono",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// Input: { html, website, keyword, location }\n// Output: { html, website, keyword, location, phone }\n\nconst html = String($json.html || '');\nconst flat = html.replace(/\\s+/g, ' ');\n\n// ---------- helpers ----------\nconst onlyDigits = s => (s || '').replace(/\\D/g, '');\nconst hasSep = s => /[()\\s\\-\\.]/.test(s || ''); // any separator\nconst balancedParens = s => {\n  const opens = (s.match(/\\(/g) || []).length;\n  const closes = (s.match(/\\)/g) || []).length;\n  return opens === closes;\n};\nconst lowVariety = s => {\n  const d = onlyDigits(s);\n  const uniq = new Set(d.split(''));\n  return d.length >= 9 && uniq.size <= 2; // e.g., 999999999, 111111111, 90909090\n};\nconst looksLikeImageSize = s => /\\d{2,4}x\\d{2,4}/i.test(s); // 300x200\nconst hasDecimal = s => /\\d\\.\\d/.test(s);                    // 144.9703\nconst tooLongBareRun = s => {\n  const d = onlyDigits(s);\n  return d.length > 13 || (!s.startsWith('+') && d.length >= 12 && !hasSep(s));\n};\nfunction normalize(s) {\n  return (s || '').replace(/\\s+/g, ' ').trim();\n}\nfunction valid(s, isGeneral = false) {\n  if (!s) return false;\n  if (hasDecimal(s)) return false;\n  if (looksLikeImageSize(s)) return false;\n  if (!balancedParens(s)) return false;\n  if (lowVariety(s)) return false;\n  if (tooLongBareRun(s)) return false;\n\n  const d = onlyDigits(s);\n  if (d.length < 8 || d.length > 15) return false; // global-ish bounds\n\n  // For general matches, require at least one separator unless it starts with +\n  if (isGeneral && !s.startsWith('+') && !hasSep(s)) return false;\n\n  // Reject obvious placeholders\n  if (/999[\\s\\-]?999[\\s\\-]?9999|000+/.test(d)) return false;\n\n  return true;\n}\n\n// ---------- 1) tel: links (best) ----------\nconst telMatches = [...flat.matchAll(/href=[\"']tel:([+()\\d\\-\\s\\.]+)/gi)]\n  .map(m => normalize(m[1]));\n\n// ---------- 2) numbers near \"phone/tel/call\" ----------\nconst labeled = [];\nconst labelRe = /(?:phone|tel|telephone|call)[:\\s]*(?:<\\/?[^>]*>|\\s){0,16}([+()\\d\\-\\s\\.]{7,30})/gi;\nlet lm;\nwhile ((lm = labelRe.exec(flat)) !== null) labeled.push(normalize(lm[1]));\n\n// ---------- 3) general fallback ----------\nconst generalRaw = flat.match(/(?:\\+?\\d{1,4}[\\s\\-\\.]?)?(?:\\(?\\d{2,4}\\)?[\\s\\-\\.]?)\\d{3,4}[\\s\\-\\.]?\\d{3,4}(?:[\\s\\-\\.]?\\d{1,4})?/g) || [];\nconst general = generalRaw.map(normalize).filter(s => valid(s, true));\n\n// ---------- de-dup (priority: tel > labeled > general) ----------\nconst seen = new Set();\nconst ordered = [];\nfor (const arr of [telMatches, labeled, general]) {\n  for (const s of arr) {\n    if (!valid(s, arr === general)) continue;\n    const key = onlyDigits(s);\n    if (seen.has(key)) continue;\n    seen.add(key);\n    ordered.push(s);\n  }\n}\n\nlet phone = ordered[0] || 'No phone listed';\n\n// Force Sheets to treat phone as text (avoid \"+1-800...\" becoming math)\nif (phone !== 'No phone listed' && phone.startsWith('+')) {\n  phone = `'` + phone;\n}\n\nreturn [{ json: { ...$json, phone } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        576
+      ],
+      "id": "a12c0fd5-988a-49e9-8b8a-ccb7b10db813",
+      "name": "Extract Phone Number",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## Step 5 — Write & Continue\n\nAppend or update one row per website in Google Sheets with: Email(s) (aggregated), Website, Keyword, Location, Phone.\nMatching column is Website; Value Input Mode is RAW to avoid formula parsing.\nShort pause, then continue the loop.",
+        "height": 384,
+        "width": 416,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1424,
+        384
+      ],
+      "id": "303740f3-708b-40ca-9eaa-5a2a0950ff9a",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Step 4 — Combine & Extract Emails\n\nMerge all fetched HTML, extract valid emails, and detect phone.\nRole inboxes like info@/contact@ are allowed; assets, trackers, placeholders, and image-size false positives are filtered out.\nIf no email is found, the email cell carries a clear note; phone is always filled (or “No phone listed”).",
+        "height": 384,
+        "width": 576,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        800,
+        384
+      ],
+      "id": "0155f0a8-ae7a-46b7-ae08-609d6b7fe796",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Step 3 — Fetch Pages (per website)\n\nFor each site, fetch the homepage, pause briefly, then try /contact and /contact-us to maximize email hit-rate while staying free.\nThese fetch nodes are set to Continue On Fail and Always Output Data so the run never breaks on a missing page.",
+        "height": 384,
+        "width": 832
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        384
+      ],
+      "id": "3b0c4e36-ecef-4af5-b462-0044b4681d68",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Step 2 — Parse & Prep Websites\n\nFetch Google Maps results HTML, extract candidate websites, drop junk (google/gstatic/schema), de-dupe, then limit to your requested count for a fast demo.\nOutputs a clean list of websites into the loop.",
+        "height": 368,
+        "width": 1120,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        768,
+        0
+      ],
+      "id": "8b3f40cf-96f5-40ca-a294-0d4dd4ae0c96",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Step 1 — Inputs (Form)\n\nCollect run variables from the form: Keyword, Location, Max Leads.\nMaps them to consistent fields in Edit Fields.\nKeeps the template free: no API keys required, only Google Sheets.",
+        "height": 320,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8ebb9918-630c-4c4c-97fa-71e560784131",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "jsCode": "function toStr(x){ \n  if (x && typeof x.data === 'string') return x.data;\n  if (x && typeof x.body === 'string') return x.body;\n  return String(x ?? '');\n}\nconst home = toStr($node[\"Scrape Specific URLs\"].json);\nconst c1   = toStr($node[\"Contact Page 1\"].json);\nconst c2   = toStr($node[\"Contact Page 2\"].json);\n\nconst website  = $item(0).$node[\"Loop Over Items\"].json.website || \"\";\nconst keyword  = $node[\"Get Form Data\"].json?.Keyword  ?? \"\";\nconst location = $node[\"Get Form Data\"].json?.Location ?? \"\";\n\nreturn [{ json: { html: home + \"\\n\" + c1 + \"\\n\" + c2, website, keyword, location } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        832,
+        576
+      ],
+      "id": "e8bd1cc6-e369-4fae-ad17-1ded8c768a56",
+      "name": "Combine HTML Code"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Loop Over Items').item.json.website }}/contact-us",
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        560,
+        576
+      ],
+      "id": "935ed470-cd5e-4782-b642-2767cc378c84",
+      "name": "Contact Page 2",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Loop Over Items').item.json.website }}/contact",
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        368,
+        576
+      ],
+      "id": "46cc2b5d-de20-494d-9440-5148a9b668fe",
+      "name": "Contact Page 1",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        192,
+        576
+      ],
+      "id": "f3968fa6-5903-499e-a819-95fedc07e124",
+      "name": "Wait1",
+      "webhookId": "e2d9b41a-e4ff-4e45-bc72-d23f3f21151b"
+    },
+    {
+      "parameters": {
+        "amount": 3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1648,
+        576
+      ],
+      "id": "d8d6f2ea-f517-4e9b-92d1-f43361ccf8b0",
+      "name": "Wait",
+      "webhookId": "f549954f-9e88-451e-b159-7ff47e733a25"
+    },
+    {
+      "parameters": {
+        "url": "=https://www.google.com/maps/search/{{ $json.Location }}+{{ $json.Keyword }}",
+        "options": {
+          "allowUnauthorizedCerts": true,
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        560,
+        144
+      ],
+      "id": "7badc313-f7bb-4676-b7e2-c0c75444b562",
+      "name": "Scrape Google Maps"
+    },
+    {
+      "parameters": {
+        "jsCode": "  const input = $input.first().json.data\nconst regex = /https?:\\/\\/[^\\/\\s\";>]+/g\nconst websites = input.match(regex)\nreturn websites.map(website => ({json:{website}}))"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        864,
+        144
+      ],
+      "id": "5af365b8-5f48-4558-a306-4e4c7e48401f",
+      "name": "Extract URLs"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "dd2d4629-974c-4916-872d-c27573e42820",
+              "leftValue": "={{ $json.website }}",
+              "rightValue": "schema",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            },
+            {
+              "id": "5e8fb4cb-9dff-4712-bc7c-19f2e6038daa",
+              "leftValue": "={{ $json.website }}",
+              "rightValue": "google",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            },
+            {
+              "id": "b9824ac1-7467-4bfc-a861-8954da2f4cf3",
+              "leftValue": "={{ $json.website }}",
+              "rightValue": "gg",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            },
+            {
+              "id": "b83657ae-83e8-47d1-be38-dc48359ea532",
+              "leftValue": "={{ $json.website }}",
+              "rightValue": "gstatic",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        1104,
+        144
+      ],
+      "id": "bcff6e7e-d4c0-47d9-9f5f-d3cfb4566ae8",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        1328,
+        144
+      ],
+      "id": "dd951f38-1003-485f-a8f0-a65660381920",
+      "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "maxItems": "={{ $('Get Form Data').item.json['Max Items'] }}"
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1552,
+        144
+      ],
+      "id": "c1da2a21-18fe-4879-9603-25e643c3eae2",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.website }}",
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -32,
+        576
+      ],
+      "id": "58053308-8cd1-4556-8eb3-1055386d5263",
+      "name": "Scrape Specific URLs",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1izych0kOYrKzKiCG-hiR4qq-MWZdn8uTCRZ5eUFu_Sk",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1801696744,
+          "mode": "list",
+          "cachedResultName": "Lead Results",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1QFOenYDrjJVkG4cFhgUoMLKIwx3SnF6qFj_fsZ_98t4/edit#gid=1801696744"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $json.email }}",
+            "Website": "={{ $json.website }}",
+            "Keyword": "={{ $json.keyword }}",
+            "Location": "={{ $json.location }}",
+            "Phone": "={{ $json.phone }}"
+          },
+          "matchingColumns": [
+            "Website"
+          ],
+          "schema": [
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Website",
+              "displayName": "Website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Keyword",
+              "displayName": "Keyword",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "useAppend": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1488,
+        576
+      ],
+      "id": "52f27c93-3f9a-4666-9032-c1119996639f",
+      "name": "Add to Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fm3jifX2nPTobuSZ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1792,
+        144
+      ],
+      "id": "ddcdd7d9-af84-4ab3-8115-9b5c2f2f7d50",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input: { html, website, keyword, location, phone }\n// Output: exactly ONE row per website (emails aggregated)\n\n// --- read + normalize ---\nlet html = String($json.html ?? $json ?? \"\");\n\n// decode simple obfuscations and entities\nhtml = html\n  // zero-width chars\n  .replace(/[\\u200B-\\u200D\\u2060\\uFEFF]/g, \"\")\n  // [at]/(at)/ \" at \"\n  .replace(/\\s*\\[at\\]\\s*|\\s*\\(at\\)\\s*|\\s+at\\s+/gi, \"@\")\n  // [dot]/(dot)/ \" dot \"\n  .replace(/\\s*\\[dot\\]\\s*|\\s*\\(dot\\)\\s*|\\s+dot\\s+/gi, \".\")\n  // HTML entities for @ and .\n  .replace(/&#x40;|&#64;|&commat;/gi, \"@\")\n  .replace(/&#46;|&period;/gi, \".\")\n  // spacing around @ and .\n  .replace(/\\s+@\\s+/g, \"@\")\n  .replace(/\\s+\\.\\s+/g, \".\");\n\n// --- collect candidates ---\nconst mailtos = (html.match(/mailto:([a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,24})/gi) || [])\n  .map(m => m.replace(/^mailto:/i, \"\"));\nconst plain = (html.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,24}/gi) || []);\nlet emails = Array.from(new Set([...mailtos, ...plain].map(e => e.toLowerCase().trim())))\n  .map(e => e.replace(/[),;:'\"]+$/g, \"\")); // trim trailing punctuation\n\n// --- validators/filters (roles allowed) ---\nconst strict = /^[a-z0-9](?:[a-z0-9._%+-]{0,62}[a-z0-9])@(?:[a-z0-9-]+\\.)+[a-z]{2,24}$/i;\nconst assetTLD = new Set([\n  \"png\",\"jpg\",\"jpeg\",\"gif\",\"svg\",\"webp\",\"ico\",\"bmp\",\"apng\",\"avif\",\n  \"pdf\",\"css\",\"js\",\"map\",\"woff\",\"woff2\",\"ttf\",\"otf\",\"mp4\",\"webm\",\"mov\",\"mkv\",\"heic\",\"heif\"\n]);\nconst denyTrackerDomains = /(ingest\\.sentry\\.io|\\.sentry\\.io|cloudflare\\.com|cloudfront\\.net|googlemail\\.com|w3\\.org)$/i;\nconst denyPlaceholderDomains = /(domain\\.com|example\\.(com|org|net)|yourdomain\\.com|email\\.com|test\\.com|localhost|invalid)$/i;\nconst denyPlaceholderPairs   = /^(user|username|name|yourname|firstname|lastname|test|demo)@(domain\\.com|example\\.com|yourdomain\\.com|test\\.com|email\\.com)$/i;\n// tokens like @2x or -300x200 in the domain\nconst sizeTokenInDomain = /(@\\d+(?:\\.\\d+)?x)|(?:^|[.\\-])\\d+(?:\\.\\d+)?x\\d+(?:\\.\\d+)?(?:[.\\-]|$)/i;\n// reject “hashy” locals like 5f12ad6e7261...\nconst isHashyLocal = (local) => /^[a-f0-9]{20,}$/.test(local);\n\n// filter sequence\nemails = emails\n  .filter(e => strict.test(e))\n  .filter(e => {\n    const dom = (e.split(\"@\")[1] || \"\");\n    const tld = (dom.split(\".\").pop() || \"\").toLowerCase();\n    return !assetTLD.has(tld);\n  })\n  .filter(e => !denyTrackerDomains.test((e.split(\"@\")[1] || \"\")))\n  .filter(e => {\n    const [local, dom] = e.split(\"@\");\n    return !denyPlaceholderDomains.test(dom || \"\") && !denyPlaceholderPairs.test(e) && !isHashyLocal(local || \"\");\n  })\n  .filter(e => !sizeTokenInDomain.test(e.split(\"@\")[1] || \"\"));\n\n// --- attach meta ---\nconst website  = $json.website  || ($item(0).$node[\"Loop Over Items\"].json.website || \"\");\nconst keyword  = $json.keyword  || ($node[\"Get Form Data\"].json?.Keyword  ?? \"\");\nconst location = $json.location || ($node[\"Get Form Data\"].json?.Location ?? \"\");\nconst phoneRaw = $json.phone || '';\nconst phone    = phoneRaw || 'No phone listed';\n\n// --- aggregate to ONE row per website ---\nconst uniq = Array.from(new Set(emails));\nlet emailCell = \"\";\n\nif (uniq.length > 0) {\n  emailCell = uniq.join(\", \");\n} else if (phoneRaw && phoneRaw !== 'No phone listed') {\n  // leading apostrophe forces literal text in Sheets (prevents formula parsing)\n  emailCell = `'Phone only: ${phoneRaw} — please double-check on the website before calling, or use the contact form`;\n} else {\n  emailCell = `'No email — use the website contact form`;\n}\n\nreturn [{\n  json: {\n    email: emailCell,\n    website,\n    keyword,\n    location,\n    phone\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1232,
+        576
+      ],
+      "id": "9f07dee4-ff13-4b36-bdb5-9d2334f1db34",
+      "name": "Extract Emails",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "formTitle": "Lead Generation AI Agent – Free Google Maps Scraper",
+        "formDescription": "Enter your lead search details below and click Submit to start scraping.\nThe AI Agent will find businesses from Google Maps, visit their websites, and collect publicly available emails automatically.\nAll results are saved in your connected Google Sheet — no paid APIs or sign-ups needed.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Business Type / Keyword",
+              "placeholder": "Dentist",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Location",
+              "placeholder": "Melbourne",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Max Items",
+              "fieldType": "number",
+              "placeholder": "20",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        112,
+        144
+      ],
+      "id": "4bbafcda-64bf-4e4b-bf04-9f5125ef3218",
+      "name": "On form submission",
+      "webhookId": "6e5b95e6-8652-40d4-98f1-9605e5c8ded6"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eca1ce5d-e181-4feb-a1e5-7041fa66ea81",
+              "name": "Keyword",
+              "value": "={{ $json['Business Type / Keyword'] }}",
+              "type": "string"
+            },
+            {
+              "id": "48cfcd1d-8aef-4463-b62d-0b3dbdad6e28",
+              "name": "Location",
+              "value": "={{ $json.Location }}",
+              "type": "string"
+            },
+            {
+              "id": "34af16e5-d022-4d23-9d39-889e1f79c9c0",
+              "name": "Max Items",
+              "value": "={{ $json['Max Items'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        336,
+        144
+      ],
+      "id": "10a3733b-b4a7-4394-a31c-b9fddaa42e2a",
+      "name": "Get Form Data"
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:46.428Z",
+      "createdAt": "2026-01-13T02:49:46.428Z",
+      "role": "workflow:owner",
+      "workflowId": "tu6IJYtbq0Nd85to",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T02:49:46.036Z",
+  "versionId": "f6df4ef2-54e8-43f8-aaf8-1c4e43509ca7"
+}
