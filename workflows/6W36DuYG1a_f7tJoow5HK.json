@@ -1,0 +1,409 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Webhook - MCP Entry": {
+      "main": [
+        [
+          {
+            "node": "Set - Contexto Usuario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set - Contexto Usuario": {
+      "main": [
+        [
+          {
+            "node": "Code - Validar Rol y Permisos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Validar Rol y Permisos": {
+      "main": [
+        [
+          {
+            "node": "IF - Tiene Acceso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Tiene Acceso": {
+      "main": [
+        [
+          {
+            "node": "AI Agent - Generar SQL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond - Denegado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent - Generar SQL": {
+      "main": [
+        [
+          {
+            "node": "Code - Validar y Limpiar SQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Claude - SQL Generator": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent - Generar SQL",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Validar y Limpiar SQL": {
+      "main": [
+        [
+          {
+            "node": "MariaDB - Ejecutar Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MariaDB - Ejecutar Query": {
+      "main": [
+        [
+          {
+            "node": "Respond - Éxito",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-02-28T01:46:03.863Z",
+  "id": "6W36DuYG1a_f7tJoow5HK",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "MCP SQL Client - Móvil Vendor",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mcp-sql-query",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "1ddbc1db-ca4d-40cd-ab73-c6e44be93b67",
+      "name": "Webhook - MCP Entry",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        1312
+      ],
+      "webhookId": "dd77f792-c36e-4ef9-b7a5-0b713800dfc5"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b39c30e5-58f4-4de8-a859-17a487ff24b6",
+              "name": "usuario",
+              "value": "={{ $json.body.usuario }}",
+              "type": "string"
+            },
+            {
+              "id": "50480f00-a5b4-4a05-aaa9-9e20963f4bfc",
+              "name": "rol",
+              "value": "={{ $json.body.rol }}",
+              "type": "string"
+            },
+            {
+              "id": "f769a9c1-dccb-4839-8e88-ef51d3e791d8",
+              "name": "servidor",
+              "value": "={{ $json.body.servidor }}",
+              "type": "string"
+            },
+            {
+              "id": "cd6fbb15-905b-4fd9-8d8b-53b7924acf64",
+              "name": "pregunta",
+              "value": "={{ $json.body.pregunta }}",
+              "type": "string"
+            },
+            {
+              "id": "ff0f1c22-7dc8-41a9-9030-202509b6abc6",
+              "name": "timestamp",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "da0c462e-2bc8-490a-babf-ee8c47bef658",
+      "name": "Set - Contexto Usuario",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1248,
+        1312
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Tabla de permisos por rol\nconst permisos = {\n  \"admin\": [\"*\"],\n  \"gerente_ventas\": [\"ventas\", \"clientes\", \"productos\"],\n  \"gerente_compras\": [\"compras\", \"proveedores\", \"productos\"],\n  \"operador\": [\"productos\"],\n  \"consultor\": [\"ventas\", \"clientes\"]\n};\n\nconst rol = $input.first().json.rol;\nconst servidor = $input.first().json.servidor;\n\n// Verificar si el rol tiene acceso al servidor\nconst accesos = permisos[rol] || [];\nconst tieneAcceso = accesos.includes(\"*\") || accesos.some(a => servidor.toLowerCase().includes(a));\n\nreturn [{\n  json: {\n    ...$input.first().json,\n    tiene_acceso: tieneAcceso,\n    accesos_permitidos: accesos,\n    motivo_denegacion: tieneAcceso ? null : `Rol '${rol}' no tiene acceso al servidor '${servidor}'`\n  }\n}];"
+      },
+      "id": "f35e99ab-8957-44d5-9d3d-eb1d05b29275",
+      "name": "Code - Validar Rol y Permisos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1472,
+        1312
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "51757a0a-1fde-4cc1-bc50-61d52daf079c",
+              "leftValue": "={{ $json.tiene_acceso }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c98ec683-1d57-4874-8761-0a0dd561a1ea",
+      "name": "IF - Tiene Acceso",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1696,
+        1312
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "options": {}
+      },
+      "id": "9a955878-b043-4781-8cf0-f7ba37cb5cb2",
+      "name": "AI Agent - Generar SQL",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        1904,
+        1216
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-4-5",
+          "mode": "list",
+          "cachedResultName": "claude-sonnet-4-5"
+        },
+        "options": {
+          "temperature": 0
+        }
+      },
+      "id": "2088737d-e912-4291-a330-95cf25c7d539",
+      "name": "Anthropic Claude - SQL Generator",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        1904,
+        1440
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const sql = $input.first().json.output || \"\";\nconst sqlClean = sql.trim().replace(/```sql/gi, '').replace(/```/g, '').trim();\n\n// Validación de seguridad del SQL generado\nconst patronesPeligrosos = ['INSERT', 'UPDATE', 'DELETE', 'DROP', 'CREATE', 'ALTER', 'TRUNCATE', 'EXEC', 'EXECUTE', '--', ';--', 'xp_'];\nconst sqlUpper = sqlClean.toUpperCase();\nconst esPeligroso = patronesPeligrosos.some(p => sqlUpper.includes(p));\nconst esSelect = sqlUpper.trim().startsWith('SELECT');\nconst tieneLimit = sqlUpper.includes('LIMIT');\n\n// Agregar LIMIT si no tiene\nlet sqlFinal = sqlClean;\nif (!tieneLimit && esSelect) {\n  sqlFinal = sqlClean + ' LIMIT 500';\n}\n\nreturn [{\n  json: {\n    ...$('Set - Contexto Usuario').first().json,\n    sql_generado: sqlFinal,\n    sql_valido: esSelect && !esPeligroso,\n    motivo_invalido: !esSelect ? 'El SQL no comienza con SELECT' : esPeligroso ? 'SQL contiene operaciones peligrosas' : null\n  }\n}];"
+      },
+      "id": "be7b2a4a-1476-49a5-b25b-80b090ea325f",
+      "name": "Code - Validar y Limpiar SQL",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2208,
+        1216
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "={{ $json.sql_generado }}",
+        "options": {}
+      },
+      "id": "7353927c-5999-4180-a0e8-b13c51ca677c",
+      "name": "MariaDB - Ejecutar Query",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        2400,
+        1216
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"status\": \"success\",\n  \"usuario\": \"{{ $('Set - Contexto Usuario').first().json.usuario }}\",\n  \"rol\": \"{{ $('Set - Contexto Usuario').first().json.rol }}\",\n  \"servidor\": \"{{ $('Set - Contexto Usuario').first().json.servidor }}\",\n  \"pregunta\": \"{{ $('Set - Contexto Usuario').first().json.pregunta }}\",\n  \"sql_ejecutado\": \"{{ $('Code - Validar y Limpiar SQL').first().json.sql_generado }}\",\n  \"total_filas\": {{ $json.length || 0 }},\n  \"resultado\": {{ JSON.stringify($json) }}\n}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "ec2a3376-f235-496e-8301-955255c190b2",
+      "name": "Respond - Éxito",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        2576,
+        1216
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"status\": \"denied\",\n  \"usuario\": \"{{ $json.usuario }}\",\n  \"rol\": \"{{ $json.rol }}\",\n  \"servidor\": \"{{ $json.servidor }}\",\n  \"resultado\": null,\n  \"mensaje\": \"{{ $json.motivo_denegacion || 'Acceso denegado: no tienes permisos para esta operación.' }}\"\n}",
+        "options": {
+          "responseCode": 403,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "e9d88134-81b7-4a12-b0c4-b0ae2d60aa83",
+      "name": "Respond - Denegado",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1904,
+        1632
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1792,
+        512
+      ],
+      "id": "1d43216a-ccf0-47f5-aadf-f36119f68b7d",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        2032,
+        816
+      ],
+      "id": "b48ca4f2-b4d6-4ab6-97ae-7518b65c9e98",
+      "name": "MCP Client"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-02-28T01:46:03.875Z",
+      "createdAt": "2026-02-28T01:46:03.875Z",
+      "role": "workflow:owner",
+      "workflowId": "6W36DuYG1a_f7tJoow5HK",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [
+    {
+      "updatedAt": "2026-02-28T02:19:03.279Z",
+      "createdAt": "2026-02-28T02:19:03.279Z",
+      "id": "Aw3R4ZFZHKn5FuZj",
+      "name": "SQL"
+    },
+    {
+      "updatedAt": "2026-02-28T02:19:03.284Z",
+      "createdAt": "2026-02-28T02:19:03.284Z",
+      "id": "Jlrr8cWGIgVYOXUN",
+      "name": "Móvil Vendor"
+    },
+    {
+      "updatedAt": "2026-02-28T02:19:03.274Z",
+      "createdAt": "2026-02-28T02:19:03.274Z",
+      "id": "PHQ9MXLrcu8VZYHq",
+      "name": "MCP"
+    }
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2026-03-02T13:44:48.689Z",
+  "versionId": "693b8563-96da-4dda-bac6-3b9f47b7c7c2"
+}
