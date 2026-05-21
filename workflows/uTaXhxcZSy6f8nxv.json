@@ -1,0 +1,1230 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-03-28T22:19:34.000Z",
+    "createdAt": "2026-03-28T22:19:23.120Z",
+    "versionId": "5f4a2615-69b7-4f95-8035-89208f99ec61",
+    "workflowId": "uTaXhxcZSy6f8nxv",
+    "nodes": [
+      {
+        "parameters": {
+          "jsCode": "// Entrada: lista de carpetas\nconst folders = $input.all().map(i => i.json);\nif (!folders.length) {\n  return [{ json: { error: \"❌ No hay carpetas para procesar\" } }];\n}\n\n// Devuelve un item para cada carpeta, incluyendo su endpoint de consulta\nreturn folders.map(folder => ({\n  json: {\n    id: folder.id,\n    name: folder.name,\n    url: `https://graph.microsoft.com/v1.0/drives/b!hdBF9ZToCEywbf2VWek5HwI3e2ufJmtOijEE_7__8_2AJjaObVPEQ4HWyHOHmaCe/items/${folder.id}/children?$select=id,name,webUrl,parentReference,lastModifiedDateTime&$top=50`\n  }\n}));"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1216,
+          240
+        ],
+        "id": "80a39fcd-f496-46d0-91fe-356b7bbc3c86",
+        "name": "3. Preparar URLs"
+      },
+      {
+        "parameters": {
+          "batchSize": 8,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          1504,
+          240
+        ],
+        "id": "e1b16cb6-4eeb-4a38-9e98-42f598739f2c",
+        "name": "Split In Batches"
+      },
+      {
+        "parameters": {
+          "url": "={{ $json.url }}",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "oAuth2Api",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1776,
+          256
+        ],
+        "id": "3ea48a4c-0667-40d4-8d28-8b7b5c92f960",
+        "name": "Obtener Archivos",
+        "credentials": {
+          "oAuth2Api": {
+            "id": "Ss8wohQpmAIhjs5u",
+            "name": "NEW_Credential"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// Extrae el archivo más reciente de cada respuesta\nconst items = $input.all();\nconst results = [];\n\nfor (const item of items) {\n  const files = item.json.value || [];\n  if (files.length > 0) {\n    // Ordenar por fecha y tomar el más reciente\n    const latest = files.reduce((a, b) => {\n      return new Date(a.lastModifiedDateTime) > new Date(b.lastModifiedDateTime) ? a : b;\n    });\n    \n    results.push({\n      json: {\n        name: latest.name,\n        id: latest.id,\n        lastModifiedDateTime: latest.lastModifiedDateTime,\n        webUrl: latest.webUrl,\n        parentPath: latest.parentReference?.path || \"\",\n        siteId: latest.parentReference?.siteId || \"\",\n        driveId: latest.parentReference?.driveId || \"\"\n      }\n    });\n  }\n}\n\nreturn results;"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2080,
+          256
+        ],
+        "id": "ce11d718-8fcb-47a4-8f80-71a891b08bf6",
+        "name": "Extraer Más Recientes"
+      },
+      {
+        "parameters": {
+          "jsCode": "// === Combina todos los archivos y encuentra el más reciente globalmente ===\nconst all = $input.all().map(i => i.json).filter(f => f.lastModifiedDateTime);\n\nif (!all.length) {\n  return [{ json: { message: \"No se recibieron archivos para comparar\" } }];\n}\n\n// Ordena por fecha descendente\nall.sort((a, b) => new Date(b.lastModifiedDateTime) - new Date(a.lastModifiedDateTime));\n\n// Toma el más reciente\nconst latest = all[0];\n\n// Extrae el nombre de la carpeta contenedora\nconst parentName =\n  latest.parentReference?.name ||\n  latest.parentFolder ||\n  (latest.parentPath?.split(\"/\")?.pop() ?? null) ||\n  null;\n\nconsole.log(`✅ Archivo más reciente encontrado: ${latest.name}`);\nconsole.log(`📁 Carpeta contenedora: ${parentName}`);\nconsole.log(`📁 Total de carpetas comparadas: ${all.length}`);\n\nreturn [{\n  json: {\n    id: latest.id,\n    name: latest.name,\n    lastModifiedDateTime: latest.lastModifiedDateTime,\n    webUrl: latest.webUrl,\n    parentFolder: parentName,\n    parentPath: latest.parentPath || latest.parentReference?.path || null,\n    driveId: latest.driveId || latest.parentReference?.driveId || null,\n    totalCompared: all.length\n  }\n}];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2400,
+          256
+        ],
+        "id": "de80674b-bf0d-4554-bf78-11ddf3477704",
+        "name": "Seleccionar El Más Reciente"
+      },
+      {
+        "parameters": {
+          "site": {
+            "__rl": true,
+            "value": "mobilvendorcom.sharepoint.com,f545d085-e894-4c08-b06d-fd9559e9391f,6b7b3702-269f-4e6b-8a31-04ffbffff3fd",
+            "mode": "list",
+            "cachedResultName": "zei-mobilvendor"
+          },
+          "folder": {
+            "__rl": true,
+            "value": "={{ $json.driveId }}",
+            "mode": "id"
+          },
+          "file": {
+            "__rl": true,
+            "value": "={{ $json.id }}",
+            "mode": "id"
+          },
+          "requestOptions": {}
+        },
+        "type": "n8n-nodes-base.microsoftSharePoint",
+        "typeVersion": 1,
+        "position": [
+          2688,
+          256
+        ],
+        "id": "36866de3-2f02-4582-8057-335d0e082aab",
+        "name": "Descargar Archivo",
+        "credentials": {
+          "microsoftSharePointOAuth2Api": {
+            "id": "684NJE2rfRO5msO3",
+            "name": "Microsoft SharePoint account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "upload",
+          "bucketName": "mobilvendorzei",
+          "fileName": "=knowledge/support/{{ $('Seleccionar El Más Reciente').item.json.parentFolder }}/{{ $('Seleccionar El Más Reciente').item.json.name }}",
+          "additionalFields": {}
+        },
+        "type": "n8n-nodes-base.awsS3",
+        "typeVersion": 2,
+        "position": [
+          2960,
+          256
+        ],
+        "id": "2f3f5f77-03bc-4b31-ab6e-bfd091397112",
+        "name": "Subir a S3",
+        "credentials": {
+          "aws": {
+            "id": "bLtPvlYR5BPkSCw9",
+            "name": "S3 support"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "sharepoint-bc-zei-soporte-fw",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          192,
+          240
+        ],
+        "id": "c8f3a78c-48d3-4b0e-b37e-c40f02ec839d",
+        "name": "Webhook1",
+        "webhookId": "f7806dad-e4d7-4750-95d9-6a1b51b5ef92"
+      },
+      {
+        "parameters": {
+          "url": "https://graph.microsoft.com/v1.0/sites/mobilvendorcom.sharepoint.com,f545d085-e894-4c08-b06d-fd9559e9391f,6b7b3702-269f-4e6b-8a31-04ffbffff3fd/drive/items/01SHM76UEO6UWXC36VUBE232FJ3BTGVQ4R/children?$select=id,name,folder&$filter=folder ne null",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "oAuth2Api",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          512,
+          240
+        ],
+        "id": "5328db5b-6a0d-4a3c-8adc-b4f9bfdd2e25",
+        "name": "1. Listar subcarpetas1",
+        "credentials": {
+          "oAuth2Api": {
+            "id": "Ss8wohQpmAIhjs5u",
+            "name": "NEW_Credential"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const folders = $input.item.json.value || [];\n\nif (!folders.length) {\n  throw new Error(\"❌ No se encontraron subcarpetas en SOPORTE ESTRUCTURADO\");\n}\n\nconsole.log(`✅ Se encontraron ${folders.length} subcarpetas para escanear`);\n\nreturn folders.map(folder => ({\n  json: {\n    id: folder.id,\n    name: folder.name\n  }\n}));"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          896,
+          240
+        ],
+        "id": "f8be5b79-6fd1-4033-8918-56838add5cd7",
+        "name": "2. Extraer carpetas2"
+      },
+      {
+        "parameters": {
+          "url": "https://mobilvendor-ai.com/api/v1/document-store/store",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer BEuSR5XAgcUToj5rjGV1LnCZstS7GxuEfRK72eStn7M"
+              },
+              {
+                "name": "Accept",
+                "value": "*/*"
+              }
+            ]
+          },
+          "options": {
+            "redirect": {
+              "redirect": {}
+            }
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          3296,
+          256
+        ],
+        "id": "b3ab8e8c-2080-43f1-aa25-730765fbe193",
+        "name": "Flowise_Document_Store"
+      },
+      {
+        "parameters": {
+          "content": "## 🎯 INICIO DEL FLUJO\n\n**Trigger**: Webhook desde SharePoint\n\nCuando se actualiza cualquier archivo en la carpeta \"SOPORTE ESTRUCTURADO\", SharePoint envía una notificación a este webhook.\n\n**Payload recibido**:\n- subscriptionId\n- resource path\n- changeType: \"updated\"",
+          "height": 504,
+          "width": 380,
+          "color": 4
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -64,
+          -96
+        ],
+        "id": "982040fa-5efd-44f2-abac-f21f370b4993",
+        "name": "📌 Nota: Trigger Webhook"
+      },
+      {
+        "parameters": {
+          "content": "## 📂 FASE 1: EXPLORACIÓN\n\n**Objetivo**: Listar todas las subcarpetas dentro de \"SOPORTE ESTRUCTURADO\"\n\n**Carpetas objetivo**:\n- PRC (Procedimientos)\n- CON (Contratos)\n- DB (Base de Datos)\n- etc.\n\nCada carpeta contiene archivos que son actualizados periódicamente.",
+          "height": 504,
+          "width": 1020,
+          "color": 5
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          352,
+          -96
+        ],
+        "id": "4dc27a5a-1e5e-466f-86f7-337893dc428e",
+        "name": "📌 Nota: Fase Exploración"
+      },
+      {
+        "parameters": {
+          "content": "## 🔍 FASE 2: BÚSQUEDA DEL ARCHIVO MÁS RECIENTE\n\n**Proceso**:\n1. Para cada subcarpeta, obtener TODOS sus archivos\n2. Filtrar el archivo más reciente por fecha de modificación\n3. Comparar entre todas las carpetas\n4. Seleccionar EL archivo más reciente de TODAS las carpetas\n\n**Dato clave extraído**: \n- parentFolder (nombre de la carpeta contenedora)",
+          "height": 524,
+          "width": 848,
+          "color": 6
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          1728,
+          -96
+        ],
+        "id": "900e82b8-d5c6-4ff8-8726-caccabb794c7",
+        "name": "📌 Nota: Búsqueda Archivo"
+      },
+      {
+        "parameters": {
+          "content": "## ☁️ FASE 3: BACKUP A S3\n\n**Proceso**:\n1. Descargar archivo desde SharePoint\n2. Subir a S3 con estructura:\n   `knowledge/support/{parentFolder}/{filename}`\n\n**Ejemplo**:\n- Archivo: `BC_ZEI_PRC.txt`\n- Carpeta: `PRC`\n- Path S3: `knowledge/support/PRC/BC_ZEI_PRC.txt`",
+          "height": 520,
+          "width": 572,
+          "color": 3
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          2608,
+          -96
+        ],
+        "id": "a4af82f0-3dce-4a62-804a-3986637a61bf",
+        "name": "📌 Nota: Backup S3"
+      },
+      {
+        "parameters": {
+          "content": "## 🤖 FASE 4: INTEGRACIÓN CON FLOWISE\n\n**Objetivo**: Actualizar el Document Store de Flowise con el nuevo archivo\n\n**Pasos**:\n1. Obtener lista de Document Stores\n2. Buscar el loader que coincida con `parentFolder`\n3. Hacer upsert del archivo a ese loader específico\n\n**Mapping**:\n- Carpeta `PRC` → Loader `prc`\n- Carpeta `CON` → Loader `con`\n- Carpeta `DB` → Loader `db`",
+          "height": 528,
+          "width": 932,
+          "color": 7
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          3232,
+          -96
+        ],
+        "id": "1804c969-db54-4753-b432-92f3980886ee",
+        "name": "📌 Nota: Flowise Integration"
+      },
+      {
+        "parameters": {
+          "content": "## ⚡ NODO CLAVE: Split In Batches\n\nProcesa las carpetas en lotes de 8 para evitar saturar la API de Microsoft Graph.\n\n**Sin este nodo**: Posibles errores de rate limiting",
+          "height": 200,
+          "width": 320,
+          "color": 2
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          1392,
+          -32
+        ],
+        "id": "a5623ebc-fda2-4bfa-81af-093f2118977b",
+        "name": "📌 Nota: Batches"
+      },
+      {
+        "parameters": {
+          "content": "## 🎯 FLUJO DE DATOS\n\n```\nWebhook → Listar Carpetas → Preparar URLs\n  ↓\nSplit Batches → Obtener Archivos\n  ↓\nExtraer Más Reciente de cada carpeta\n  ↓\nSeleccionar EL más reciente global\n  ↓\nDescargar → S3 Upload\n  ↓\nFlowise: Get Stores → Match Loader → Upsert\n```",
+          "height": 496,
+          "width": 456
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -544,
+          -96
+        ],
+        "id": "396da5e7-65eb-49a9-9be9-6dfc9ddc1e9a",
+        "name": "📌 Nota: Flujo General"
+      },
+      {
+        "parameters": {
+          "content": "## 🔧 CONFIGURACIÓN IMPORTANTE\n\n**Credenciales necesarias**:\n- ✅ Microsoft SharePoint OAuth2\n- ✅ AWS S3 Access Keys\n- ✅ Flowise API Bearer Token\n\n**IDs importantes**:\n- Site ID: `mobilvendorcom.sharepoint.com,f545d085-...`\n- Drive ID: `b!hdBF9ZToCEywbf2V...`\n- Folder ID: `01SHM76UEO6UWXC36VUBE232FJ3BTGVQ4R`\n\n**Bucket S3**: `mobilvendorzei`",
+          "height": 356,
+          "width": 460,
+          "color": 2
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -544,
+          432
+        ],
+        "id": "5a073440-786e-4d1c-8d93-0b6b9442c210",
+        "name": "📌 Nota: Configuración"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://mobilvendor-ai.com/api/v1/document-store/vectorstore/insert",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer BEuSR5XAgcUToj5rjGV1LnCZstS7GxuEfRK72eStn7M "
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\n  \"storeId\": \"3a92cc47-3ffc-40f8-ac68-e4fbf79510ce\",\n  \"isStrictSave\": true,\n  \"embeddingName\": \"openAIEmbeddings\",\n  \"embeddingConfig\": {\n    \"modelName\": \"text-embedding-3-small\",\n    \"stripNewLines\": \"\",\n    \"batchSize\": \"\",\n    \"timeout\": \"\",\n    \"basepath\": \"\",\n    \"dimensions\": \"\",\n    \"credential\": \"a29e76b1-8878-4228-95cc-9736f9d7111e\"\n  },\n  \"vectorStoreName\": \"pinecone\",\n  \"vectorStoreConfig\": {\n    \"document\": \"\",\n    \"embeddings\": \"\",\n    \"recordManager\": \"\",\n    \"pineconeIndex\": \"support\",\n    \"pineconeNamespace\": \"support_flowise_v2\",\n    \"fileUpload\": \"\",\n    \"pineconeTextKey\": \"\",\n    \"pineconeMetadataFilter\": \"\",\n    \"topK\": \"4\",\n    \"searchType\": \"mmr\",\n    \"fetchK\": \"\",\n    \"lambda\": \"0.5\",\n    \"credential\": \"89167146-ef65-4f77-8f9e-10e014b7349b\"\n  },\n  \"recordManagerName\": \"SQLiteRecordManager\",\n  \"recordManagerConfig\": {\n    \"additionalConfig\": \"\",\n    \"tableName\": \"rm_support\",\n    \"namespace\": \"RM-mobilvendor-soporte\",\n    \"cleanup\": \"full\",\n    \"sourceIdKey\": \"source\"\n  }\n}",
+          "options": {
+            "redirect": {
+              "redirect": {}
+            }
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          4032,
+          256
+        ],
+        "id": "5fde0894-0f2b-4842-a76d-a5c510a1f35c",
+        "name": "Flowise insert vector",
+        "executeOnce": true
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{ $json.flowiseUrl }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer BEuSR5XAgcUToj5rjGV1LnCZstS7GxuEfRK72eStn7M"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"docId\": {{ $json.docId ? '\"' + $json.payload.docId + '\"' : 'null' }},\n  \"replaceExisting\": {{ $json.isNewLoader ? 'false' : 'true' }}\n}\n",
+          "options": {
+            "redirect": {
+              "redirect": {}
+            }
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          3792,
+          256
+        ],
+        "id": "08ecff82-344c-4ea6-99fd-cb73fc839f70",
+        "name": "Flowise_Upsert"
+      },
+      {
+        "parameters": {
+          "jsCode": "// === FILTRAR LOADER POR PARENTFOLDER O CREAR UNO NUEVO ===\nconst fileData = $('Seleccionar El Más Reciente').item.json;\nconst parentFolder = (fileData.parentFolder || '').toString().trim();\nconst flowiseResponse = $input.item.json;\n\n// Validar y extraer el array de stores\nlet documentStores = [];\n\nif (Array.isArray(flowiseResponse)) {\n  documentStores = flowiseResponse;\n} else if (flowiseResponse.data && Array.isArray(flowiseResponse.data)) {\n  documentStores = flowiseResponse.data;\n} else if (flowiseResponse.stores && Array.isArray(flowiseResponse.stores)) {\n  documentStores = flowiseResponse.stores;\n} else {\n  documentStores = [flowiseResponse];\n}\n\nconst s3Path = `knowledge/support/${parentFolder}/${fileData.name}`;\nconst flowiseBaseUrl = \"https://mobilvendor-ai.com/api/v1/document-store/upsert\";\nconst normalizedParent = parentFolder.toLowerCase().trim();\n\n// Buscar el Document Store que tiene un loader con nombre igual al parentFolder\nlet targetStore = null;\nlet targetLoader = null;\n\nfor (const store of documentStores) {\n  if (store.loaders && Array.isArray(store.loaders)) {\n    const matchingLoader = store.loaders.find(loader => {\n      const loaderName = loader.loadername || loader.loaderName || loader.name || '';\n      return loaderName.toLowerCase().trim() === normalizedParent;\n    });\n    \n    if (matchingLoader) {\n      targetStore = store;\n      targetLoader = matchingLoader;\n      break;\n    }\n  }\n}\n\n// Si NO se encontró, usar storeId fijo y crear nuevo loader\nif (!targetStore || !targetLoader) {\n  return [{\n    json: {\n      storeId: \"3a92cc47-3ffc-40f8-ac68-e4fbf79510ce\",\n      storeName: \"kb_support_s3\",\n      docId: null,\n      loaderName: normalizedParent,\n      parentFolder,\n      fileName: fileData.name,\n      lastModified: fileData.lastModifiedDateTime,\n      s3Path: s3Path,\n      webUrl: fileData.webUrl,\n      flowiseUrl: `${flowiseBaseUrl}/3a92cc47-3ffc-40f8-ac68-e4fbf79510ce`,\n      isNewLoader: true,\n      payload: {\n        loaderName: normalizedParent,\n        metadata: JSON.stringify({\n          fileName: fileData.name,\n          parentFolder: parentFolder,\n          lastModified: fileData.lastModifiedDateTime,\n          s3Path: s3Path,\n          webUrl: fileData.webUrl,\n          source: \"SharePoint-S3-Backup\",\n          uploadedAt: new Date().toISOString()\n        }),\n        replaceExisting: false,\n        loader: {\n          name: \"s3Directory\",\n          config: {\n            bucketName: \"mobilvendorzei\",\n            region: \"us-east-1\",\n            prefix: `knowledge/support/${parentFolder}/K`,\n            pdfUsage: \"perPage\",\n            FLOWISE_CREDENTIAL_ID: \"428fecca-bb72-4d17-9894-0fe218c91985\"\n          }\n        },\n        splitter: {\n          config: {\n            chunkSize: 20000,\n            chunkOverlap: 400\n          }\n        }\n      }\n    }\n  }];\n}\n\n// Si SÍ se encontró, usar SOLO config BASE fija (ignorar loaderConfig original)\nreturn [{\n  json: {\n    storeId: targetStore.id,\n    storeName: targetStore.name,\n    docId: targetLoader.id,\n    loaderName: targetLoader.loadername || targetLoader.loaderName || targetLoader.name,\n    parentFolder: parentFolder,\n    fileName: fileData.name,\n    lastModified: fileData.lastModifiedDateTime,\n    s3Path: s3Path,\n    webUrl: fileData.webUrl,\n    flowiseUrl: `${flowiseBaseUrl}/${targetStore.id}`,\n    isNewLoader: false,\n    payload: {\n      docId: targetLoader.id,\n      loaderName: targetLoader.loadername || targetLoader.loaderName || targetLoader.name,\n      metadata: JSON.stringify({\n        fileName: fileData.name,\n        parentFolder: parentFolder,\n        lastModified: fileData.lastModifiedDateTime,\n        s3Path: s3Path,\n        webUrl: fileData.webUrl,\n        source: \"SharePoint-S3-Backup\",\n        uploadedAt: new Date().toISOString()\n      }),\n      replaceExisting: true,\n      loader: {\n        name: targetLoader.loaderId,\n        config: {\n          bucketName: \"mobilvendorzei\",\n          region: \"us-east-1\",\n          prefix: `knowledge/support/${parentFolder}/K`,\n          pdfUsage: \"perPage\",\n          FLOWISE_CREDENTIAL_ID: \"428fecca-bb72-4d17-9894-0fe218c91985\"\n        }\n      },\n      splitter: {\n        config: {\n          chunkSize: 20000,\n          chunkOverlap: 400\n        }\n      }\n    }\n  }\n}];\n\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3536,
+          256
+        ],
+        "id": "4266966f-211d-4a77-ba23-66f27250dec1",
+        "name": "filtro_folder_info1"
+      }
+    ],
+    "connections": {
+      "3. Preparar URLs": {
+        "main": [
+          [
+            {
+              "node": "Split In Batches",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split In Batches": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Split In Batches",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Obtener Archivos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Obtener Archivos": {
+        "main": [
+          [
+            {
+              "node": "Extraer Más Recientes",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extraer Más Recientes": {
+        "main": [
+          [
+            {
+              "node": "Seleccionar El Más Reciente",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Seleccionar El Más Reciente": {
+        "main": [
+          [
+            {
+              "node": "Descargar Archivo",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Descargar Archivo": {
+        "main": [
+          [
+            {
+              "node": "Subir a S3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook1": {
+        "main": [
+          [
+            {
+              "node": "1. Listar subcarpetas1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "1. Listar subcarpetas1": {
+        "main": [
+          [
+            {
+              "node": "2. Extraer carpetas2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "2. Extraer carpetas2": {
+        "main": [
+          [
+            {
+              "node": "3. Preparar URLs",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Subir a S3": {
+        "main": [
+          [
+            {
+              "node": "Flowise_Document_Store",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Flowise_Document_Store": {
+        "main": [
+          [
+            {
+              "node": "filtro_folder_info1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Flowise_Upsert": {
+        "main": [
+          [
+            {
+              "node": "Flowise insert vector",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "filtro_folder_info1": {
+        "main": [
+          [
+            {
+              "node": "Flowise_Upsert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "ZEI MOBILVENDOR",
+    "name": "Version 4.3",
+    "description": "",
+    "autosaved": true
+  },
+  "activeVersionId": "5f4a2615-69b7-4f95-8035-89208f99ec61",
+  "connections": {
+    "3. Preparar URLs": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split In Batches": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Obtener Archivos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener Archivos": {
+      "main": [
+        [
+          {
+            "node": "Extraer Más Recientes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer Más Recientes": {
+      "main": [
+        [
+          {
+            "node": "Seleccionar El Más Reciente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seleccionar El Más Reciente": {
+      "main": [
+        [
+          {
+            "node": "Descargar Archivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Descargar Archivo": {
+      "main": [
+        [
+          {
+            "node": "Subir a S3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "1. Listar subcarpetas1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1. Listar subcarpetas1": {
+      "main": [
+        [
+          {
+            "node": "2. Extraer carpetas2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. Extraer carpetas2": {
+      "main": [
+        [
+          {
+            "node": "3. Preparar URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Subir a S3": {
+      "main": [
+        [
+          {
+            "node": "Flowise_Document_Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Flowise_Document_Store": {
+      "main": [
+        [
+          {
+            "node": "filtro_folder_info1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Flowise_Upsert": {
+      "main": [
+        [
+          {
+            "node": "Flowise insert vector",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "filtro_folder_info1": {
+      "main": [
+        [
+          {
+            "node": "Flowise_Upsert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:46.894Z",
+  "id": "uTaXhxcZSy6f8nxv",
+  "isArchived": false,
+  "meta": null,
+  "name": "Backup BC_ZEI sharepoint-S3 Upsert Flowise",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// Entrada: lista de carpetas\nconst folders = $input.all().map(i => i.json);\nif (!folders.length) {\n  return [{ json: { error: \"❌ No hay carpetas para procesar\" } }];\n}\n\n// Devuelve un item para cada carpeta, incluyendo su endpoint de consulta\nreturn folders.map(folder => ({\n  json: {\n    id: folder.id,\n    name: folder.name,\n    url: `https://graph.microsoft.com/v1.0/drives/b!hdBF9ZToCEywbf2VWek5HwI3e2ufJmtOijEE_7__8_2AJjaObVPEQ4HWyHOHmaCe/items/${folder.id}/children?$select=id,name,webUrl,parentReference,lastModifiedDateTime&$top=50`\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1216,
+        240
+      ],
+      "id": "80a39fcd-f496-46d0-91fe-356b7bbc3c86",
+      "name": "3. Preparar URLs"
+    },
+    {
+      "parameters": {
+        "batchSize": 8,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1504,
+        240
+      ],
+      "id": "e1b16cb6-4eeb-4a38-9e98-42f598739f2c",
+      "name": "Split In Batches"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1776,
+        256
+      ],
+      "id": "3ea48a4c-0667-40d4-8d28-8b7b5c92f960",
+      "name": "Obtener Archivos",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "Ss8wohQpmAIhjs5u",
+          "name": "NEW_Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extrae el archivo más reciente de cada respuesta\nconst items = $input.all();\nconst results = [];\n\nfor (const item of items) {\n  const files = item.json.value || [];\n  if (files.length > 0) {\n    // Ordenar por fecha y tomar el más reciente\n    const latest = files.reduce((a, b) => {\n      return new Date(a.lastModifiedDateTime) > new Date(b.lastModifiedDateTime) ? a : b;\n    });\n    \n    results.push({\n      json: {\n        name: latest.name,\n        id: latest.id,\n        lastModifiedDateTime: latest.lastModifiedDateTime,\n        webUrl: latest.webUrl,\n        parentPath: latest.parentReference?.path || \"\",\n        siteId: latest.parentReference?.siteId || \"\",\n        driveId: latest.parentReference?.driveId || \"\"\n      }\n    });\n  }\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2080,
+        256
+      ],
+      "id": "ce11d718-8fcb-47a4-8f80-71a891b08bf6",
+      "name": "Extraer Más Recientes"
+    },
+    {
+      "parameters": {
+        "jsCode": "// === Combina todos los archivos y encuentra el más reciente globalmente ===\nconst all = $input.all().map(i => i.json).filter(f => f.lastModifiedDateTime);\n\nif (!all.length) {\n  return [{ json: { message: \"No se recibieron archivos para comparar\" } }];\n}\n\n// Ordena por fecha descendente\nall.sort((a, b) => new Date(b.lastModifiedDateTime) - new Date(a.lastModifiedDateTime));\n\n// Toma el más reciente\nconst latest = all[0];\n\n// Extrae el nombre de la carpeta contenedora\nconst parentName =\n  latest.parentReference?.name ||\n  latest.parentFolder ||\n  (latest.parentPath?.split(\"/\")?.pop() ?? null) ||\n  null;\n\nconsole.log(`✅ Archivo más reciente encontrado: ${latest.name}`);\nconsole.log(`📁 Carpeta contenedora: ${parentName}`);\nconsole.log(`📁 Total de carpetas comparadas: ${all.length}`);\n\nreturn [{\n  json: {\n    id: latest.id,\n    name: latest.name,\n    lastModifiedDateTime: latest.lastModifiedDateTime,\n    webUrl: latest.webUrl,\n    parentFolder: parentName,\n    parentPath: latest.parentPath || latest.parentReference?.path || null,\n    driveId: latest.driveId || latest.parentReference?.driveId || null,\n    totalCompared: all.length\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        256
+      ],
+      "id": "de80674b-bf0d-4554-bf78-11ddf3477704",
+      "name": "Seleccionar El Más Reciente"
+    },
+    {
+      "parameters": {
+        "site": {
+          "__rl": true,
+          "value": "mobilvendorcom.sharepoint.com,f545d085-e894-4c08-b06d-fd9559e9391f,6b7b3702-269f-4e6b-8a31-04ffbffff3fd",
+          "mode": "list",
+          "cachedResultName": "zei-mobilvendor"
+        },
+        "folder": {
+          "__rl": true,
+          "value": "={{ $json.driveId }}",
+          "mode": "id"
+        },
+        "file": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.microsoftSharePoint",
+      "typeVersion": 1,
+      "position": [
+        2688,
+        256
+      ],
+      "id": "36866de3-2f02-4582-8057-335d0e082aab",
+      "name": "Descargar Archivo",
+      "credentials": {
+        "microsoftSharePointOAuth2Api": {
+          "id": "684NJE2rfRO5msO3",
+          "name": "Microsoft SharePoint account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "bucketName": "mobilvendorzei",
+        "fileName": "=knowledge/support/{{ $('Seleccionar El Más Reciente').item.json.parentFolder }}/{{ $('Seleccionar El Más Reciente').item.json.name }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.awsS3",
+      "typeVersion": 2,
+      "position": [
+        2960,
+        256
+      ],
+      "id": "2f3f5f77-03bc-4b31-ab6e-bfd091397112",
+      "name": "Subir a S3",
+      "credentials": {
+        "aws": {
+          "id": "bLtPvlYR5BPkSCw9",
+          "name": "S3 support"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "sharepoint-bc-zei-soporte-fw",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        192,
+        240
+      ],
+      "id": "c8f3a78c-48d3-4b0e-b37e-c40f02ec839d",
+      "name": "Webhook1",
+      "webhookId": "f7806dad-e4d7-4750-95d9-6a1b51b5ef92"
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/sites/mobilvendorcom.sharepoint.com,f545d085-e894-4c08-b06d-fd9559e9391f,6b7b3702-269f-4e6b-8a31-04ffbffff3fd/drive/items/01SHM76UEO6UWXC36VUBE232FJ3BTGVQ4R/children?$select=id,name,folder&$filter=folder ne null",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        512,
+        240
+      ],
+      "id": "5328db5b-6a0d-4a3c-8adc-b4f9bfdd2e25",
+      "name": "1. Listar subcarpetas1",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "Ss8wohQpmAIhjs5u",
+          "name": "NEW_Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const folders = $input.item.json.value || [];\n\nif (!folders.length) {\n  throw new Error(\"❌ No se encontraron subcarpetas en SOPORTE ESTRUCTURADO\");\n}\n\nconsole.log(`✅ Se encontraron ${folders.length} subcarpetas para escanear`);\n\nreturn folders.map(folder => ({\n  json: {\n    id: folder.id,\n    name: folder.name\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        240
+      ],
+      "id": "f8be5b79-6fd1-4033-8918-56838add5cd7",
+      "name": "2. Extraer carpetas2"
+    },
+    {
+      "parameters": {
+        "url": "https://mobilvendor-ai.com/api/v1/document-store/store",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer BEuSR5XAgcUToj5rjGV1LnCZstS7GxuEfRK72eStn7M"
+            },
+            {
+              "name": "Accept",
+              "value": "*/*"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3296,
+        256
+      ],
+      "id": "b3ab8e8c-2080-43f1-aa25-730765fbe193",
+      "name": "Flowise_Document_Store"
+    },
+    {
+      "parameters": {
+        "content": "## 🎯 INICIO DEL FLUJO\n\n**Trigger**: Webhook desde SharePoint\n\nCuando se actualiza cualquier archivo en la carpeta \"SOPORTE ESTRUCTURADO\", SharePoint envía una notificación a este webhook.\n\n**Payload recibido**:\n- subscriptionId\n- resource path\n- changeType: \"updated\"",
+        "height": 504,
+        "width": 380,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        -96
+      ],
+      "id": "982040fa-5efd-44f2-abac-f21f370b4993",
+      "name": "📌 Nota: Trigger Webhook"
+    },
+    {
+      "parameters": {
+        "content": "## 📂 FASE 1: EXPLORACIÓN\n\n**Objetivo**: Listar todas las subcarpetas dentro de \"SOPORTE ESTRUCTURADO\"\n\n**Carpetas objetivo**:\n- PRC (Procedimientos)\n- CON (Contratos)\n- DB (Base de Datos)\n- etc.\n\nCada carpeta contiene archivos que son actualizados periódicamente.",
+        "height": 504,
+        "width": 1020,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        352,
+        -96
+      ],
+      "id": "4dc27a5a-1e5e-466f-86f7-337893dc428e",
+      "name": "📌 Nota: Fase Exploración"
+    },
+    {
+      "parameters": {
+        "content": "## 🔍 FASE 2: BÚSQUEDA DEL ARCHIVO MÁS RECIENTE\n\n**Proceso**:\n1. Para cada subcarpeta, obtener TODOS sus archivos\n2. Filtrar el archivo más reciente por fecha de modificación\n3. Comparar entre todas las carpetas\n4. Seleccionar EL archivo más reciente de TODAS las carpetas\n\n**Dato clave extraído**: \n- parentFolder (nombre de la carpeta contenedora)",
+        "height": 524,
+        "width": 848,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1728,
+        -96
+      ],
+      "id": "900e82b8-d5c6-4ff8-8726-caccabb794c7",
+      "name": "📌 Nota: Búsqueda Archivo"
+    },
+    {
+      "parameters": {
+        "content": "## ☁️ FASE 3: BACKUP A S3\n\n**Proceso**:\n1. Descargar archivo desde SharePoint\n2. Subir a S3 con estructura:\n   `knowledge/support/{parentFolder}/{filename}`\n\n**Ejemplo**:\n- Archivo: `BC_ZEI_PRC.txt`\n- Carpeta: `PRC`\n- Path S3: `knowledge/support/PRC/BC_ZEI_PRC.txt`",
+        "height": 520,
+        "width": 572,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2608,
+        -96
+      ],
+      "id": "a4af82f0-3dce-4a62-804a-3986637a61bf",
+      "name": "📌 Nota: Backup S3"
+    },
+    {
+      "parameters": {
+        "content": "## 🤖 FASE 4: INTEGRACIÓN CON FLOWISE\n\n**Objetivo**: Actualizar el Document Store de Flowise con el nuevo archivo\n\n**Pasos**:\n1. Obtener lista de Document Stores\n2. Buscar el loader que coincida con `parentFolder`\n3. Hacer upsert del archivo a ese loader específico\n\n**Mapping**:\n- Carpeta `PRC` → Loader `prc`\n- Carpeta `CON` → Loader `con`\n- Carpeta `DB` → Loader `db`",
+        "height": 528,
+        "width": 932,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3232,
+        -96
+      ],
+      "id": "1804c969-db54-4753-b432-92f3980886ee",
+      "name": "📌 Nota: Flowise Integration"
+    },
+    {
+      "parameters": {
+        "content": "## ⚡ NODO CLAVE: Split In Batches\n\nProcesa las carpetas en lotes de 8 para evitar saturar la API de Microsoft Graph.\n\n**Sin este nodo**: Posibles errores de rate limiting",
+        "height": 200,
+        "width": 320,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        -32
+      ],
+      "id": "a5623ebc-fda2-4bfa-81af-093f2118977b",
+      "name": "📌 Nota: Batches"
+    },
+    {
+      "parameters": {
+        "content": "## 🎯 FLUJO DE DATOS\n\n```\nWebhook → Listar Carpetas → Preparar URLs\n  ↓\nSplit Batches → Obtener Archivos\n  ↓\nExtraer Más Reciente de cada carpeta\n  ↓\nSeleccionar EL más reciente global\n  ↓\nDescargar → S3 Upload\n  ↓\nFlowise: Get Stores → Match Loader → Upsert\n```",
+        "height": 496,
+        "width": 456
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -544,
+        -96
+      ],
+      "id": "396da5e7-65eb-49a9-9be9-6dfc9ddc1e9a",
+      "name": "📌 Nota: Flujo General"
+    },
+    {
+      "parameters": {
+        "content": "## 🔧 CONFIGURACIÓN IMPORTANTE\n\n**Credenciales necesarias**:\n- ✅ Microsoft SharePoint OAuth2\n- ✅ AWS S3 Access Keys\n- ✅ Flowise API Bearer Token\n\n**IDs importantes**:\n- Site ID: `mobilvendorcom.sharepoint.com,f545d085-...`\n- Drive ID: `b!hdBF9ZToCEywbf2V...`\n- Folder ID: `01SHM76UEO6UWXC36VUBE232FJ3BTGVQ4R`\n\n**Bucket S3**: `mobilvendorzei`",
+        "height": 356,
+        "width": 460,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -544,
+        432
+      ],
+      "id": "5a073440-786e-4d1c-8d93-0b6b9442c210",
+      "name": "📌 Nota: Configuración"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://mobilvendor-ai.com/api/v1/document-store/vectorstore/insert",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer BEuSR5XAgcUToj5rjGV1LnCZstS7GxuEfRK72eStn7M "
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"storeId\": \"3a92cc47-3ffc-40f8-ac68-e4fbf79510ce\",\n  \"isStrictSave\": true,\n  \"embeddingName\": \"openAIEmbeddings\",\n  \"embeddingConfig\": {\n    \"modelName\": \"text-embedding-3-small\",\n    \"stripNewLines\": \"\",\n    \"batchSize\": \"\",\n    \"timeout\": \"\",\n    \"basepath\": \"\",\n    \"dimensions\": \"\",\n    \"credential\": \"a29e76b1-8878-4228-95cc-9736f9d7111e\"\n  },\n  \"vectorStoreName\": \"pinecone\",\n  \"vectorStoreConfig\": {\n    \"document\": \"\",\n    \"embeddings\": \"\",\n    \"recordManager\": \"\",\n    \"pineconeIndex\": \"support\",\n    \"pineconeNamespace\": \"support_flowise_v2\",\n    \"fileUpload\": \"\",\n    \"pineconeTextKey\": \"\",\n    \"pineconeMetadataFilter\": \"\",\n    \"topK\": \"4\",\n    \"searchType\": \"mmr\",\n    \"fetchK\": \"\",\n    \"lambda\": \"0.5\",\n    \"credential\": \"89167146-ef65-4f77-8f9e-10e014b7349b\"\n  },\n  \"recordManagerName\": \"SQLiteRecordManager\",\n  \"recordManagerConfig\": {\n    \"additionalConfig\": \"\",\n    \"tableName\": \"rm_support\",\n    \"namespace\": \"RM-mobilvendor-soporte\",\n    \"cleanup\": \"full\",\n    \"sourceIdKey\": \"source\"\n  }\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4032,
+        256
+      ],
+      "id": "5fde0894-0f2b-4842-a76d-a5c510a1f35c",
+      "name": "Flowise insert vector",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.flowiseUrl }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer BEuSR5XAgcUToj5rjGV1LnCZstS7GxuEfRK72eStn7M"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"docId\": {{ $json.docId ? '\"' + $json.payload.docId + '\"' : 'null' }},\n  \"replaceExisting\": {{ $json.isNewLoader ? 'false' : 'true' }}\n}\n",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3792,
+        256
+      ],
+      "id": "08ecff82-344c-4ea6-99fd-cb73fc839f70",
+      "name": "Flowise_Upsert"
+    },
+    {
+      "parameters": {
+        "jsCode": "// === FILTRAR LOADER POR PARENTFOLDER O CREAR UNO NUEVO ===\nconst fileData = $('Seleccionar El Más Reciente').item.json;\nconst parentFolder = (fileData.parentFolder || '').toString().trim();\nconst flowiseResponse = $input.item.json;\n\n// Validar y extraer el array de stores\nlet documentStores = [];\n\nif (Array.isArray(flowiseResponse)) {\n  documentStores = flowiseResponse;\n} else if (flowiseResponse.data && Array.isArray(flowiseResponse.data)) {\n  documentStores = flowiseResponse.data;\n} else if (flowiseResponse.stores && Array.isArray(flowiseResponse.stores)) {\n  documentStores = flowiseResponse.stores;\n} else {\n  documentStores = [flowiseResponse];\n}\n\nconst s3Path = `knowledge/support/${parentFolder}/${fileData.name}`;\nconst flowiseBaseUrl = \"https://mobilvendor-ai.com/api/v1/document-store/upsert\";\nconst normalizedParent = parentFolder.toLowerCase().trim();\n\n// Buscar el Document Store que tiene un loader con nombre igual al parentFolder\nlet targetStore = null;\nlet targetLoader = null;\n\nfor (const store of documentStores) {\n  if (store.loaders && Array.isArray(store.loaders)) {\n    const matchingLoader = store.loaders.find(loader => {\n      const loaderName = loader.loadername || loader.loaderName || loader.name || '';\n      return loaderName.toLowerCase().trim() === normalizedParent;\n    });\n    \n    if (matchingLoader) {\n      targetStore = store;\n      targetLoader = matchingLoader;\n      break;\n    }\n  }\n}\n\n// Si NO se encontró, usar storeId fijo y crear nuevo loader\nif (!targetStore || !targetLoader) {\n  return [{\n    json: {\n      storeId: \"3a92cc47-3ffc-40f8-ac68-e4fbf79510ce\",\n      storeName: \"kb_support_s3\",\n      docId: null,\n      loaderName: normalizedParent,\n      parentFolder,\n      fileName: fileData.name,\n      lastModified: fileData.lastModifiedDateTime,\n      s3Path: s3Path,\n      webUrl: fileData.webUrl,\n      flowiseUrl: `${flowiseBaseUrl}/3a92cc47-3ffc-40f8-ac68-e4fbf79510ce`,\n      isNewLoader: true,\n      payload: {\n        loaderName: normalizedParent,\n        metadata: JSON.stringify({\n          fileName: fileData.name,\n          parentFolder: parentFolder,\n          lastModified: fileData.lastModifiedDateTime,\n          s3Path: s3Path,\n          webUrl: fileData.webUrl,\n          source: \"SharePoint-S3-Backup\",\n          uploadedAt: new Date().toISOString()\n        }),\n        replaceExisting: false,\n        loader: {\n          name: \"s3Directory\",\n          config: {\n            bucketName: \"mobilvendorzei\",\n            region: \"us-east-1\",\n            prefix: `knowledge/support/${parentFolder}/K`,\n            pdfUsage: \"perPage\",\n            FLOWISE_CREDENTIAL_ID: \"428fecca-bb72-4d17-9894-0fe218c91985\"\n          }\n        },\n        splitter: {\n          config: {\n            chunkSize: 20000,\n            chunkOverlap: 400\n          }\n        }\n      }\n    }\n  }];\n}\n\n// Si SÍ se encontró, usar SOLO config BASE fija (ignorar loaderConfig original)\nreturn [{\n  json: {\n    storeId: targetStore.id,\n    storeName: targetStore.name,\n    docId: targetLoader.id,\n    loaderName: targetLoader.loadername || targetLoader.loaderName || targetLoader.name,\n    parentFolder: parentFolder,\n    fileName: fileData.name,\n    lastModified: fileData.lastModifiedDateTime,\n    s3Path: s3Path,\n    webUrl: fileData.webUrl,\n    flowiseUrl: `${flowiseBaseUrl}/${targetStore.id}`,\n    isNewLoader: false,\n    payload: {\n      docId: targetLoader.id,\n      loaderName: targetLoader.loadername || targetLoader.loaderName || targetLoader.name,\n      metadata: JSON.stringify({\n        fileName: fileData.name,\n        parentFolder: parentFolder,\n        lastModified: fileData.lastModifiedDateTime,\n        s3Path: s3Path,\n        webUrl: fileData.webUrl,\n        source: \"SharePoint-S3-Backup\",\n        uploadedAt: new Date().toISOString()\n      }),\n      replaceExisting: true,\n      loader: {\n        name: targetLoader.loaderId,\n        config: {\n          bucketName: \"mobilvendorzei\",\n          region: \"us-east-1\",\n          prefix: `knowledge/support/${parentFolder}/K`,\n          pdfUsage: \"perPage\",\n          FLOWISE_CREDENTIAL_ID: \"428fecca-bb72-4d17-9894-0fe218c91985\"\n        }\n      },\n      splitter: {\n        config: {\n          chunkSize: 20000,\n          chunkOverlap: 400\n        }\n      }\n    }\n  }\n}];\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3536,
+        256
+      ],
+      "id": "4266966f-211d-4a77-ba23-66f27250dec1",
+      "name": "filtro_folder_info1"
+    }
+  ],
+  "pinData": {
+    "Webhook1": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mobilvendor.com",
+            "content-length": "395",
+            "content-type": "application/json; charset=utf-8",
+            "request-id": "416087f5-2aa0-493b-9e7e-6eb848b00a0b",
+            "request-timestamp": "2/10/2026 5:24:47 PM +00:00",
+            "x-forwarded-for": "10.0.0.2",
+            "x-forwarded-host": "n8n.mobilvendor.com",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "387000359b42",
+            "x-real-ip": "10.0.0.2",
+            "accept-encoding": "gzip"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "value": [
+              {
+                "subscriptionId": "b50856fe-bd2c-420d-93dd-ca9b178f294e",
+                "clientState": "sharepoint-zei-soporte",
+                "resource": "/drives/b!hdBF9ZToCEywbf2VWek5HwI3e2ufJmtOijEE_7__8_2AJjaObVPEQ4HWyHOHmaCe/root",
+                "tenantId": "9dc25e81-bd50-412f-a98f-12813ab9574c",
+                "resourceData": {
+                  "@odata.type": "#Microsoft.Graph.DriveItem"
+                },
+                "subscriptionExpirationDateTime": "2026-02-18T23:59:59+00:00",
+                "changeType": "updated"
+              }
+            ]
+          },
+          "webhookUrl": "https://n8n.mobilvendor.com/webhook/sharepoint-bc-zei-soporte-fw",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:47.140Z",
+      "createdAt": "2026-01-13T02:49:47.140Z",
+      "role": "workflow:owner",
+      "workflowId": "uTaXhxcZSy6f8nxv",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-03-28T22:19:23.119Z",
+  "versionId": "5f4a2615-69b7-4f95-8035-89208f99ec61"
+}
