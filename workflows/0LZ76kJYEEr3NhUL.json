@@ -1,0 +1,4592 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-05-21T01:33:31.000Z",
+    "createdAt": "2026-05-20T21:56:32.872Z",
+    "versionId": "7b1ad544-f6e2-448c-92b7-0c9e14a2cc5a",
+    "workflowId": "0LZ76kJYEEr3NhUL",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "get-meetings",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1,
+        "position": [
+          -576,
+          736
+        ],
+        "id": "6fba1159-d080-4626-8afb-af46404641d8",
+        "name": "Webhook",
+        "webhookId": "6b68a844-c6c5-427b-a8e5-eff470a7c650",
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "functionCode": "return items.filter(item => {\n  const attendees = item.json.attendees || [];\n  const userEmail = $node['Webhook'].json.body.email;\n  return attendees.some(att => att.emailAddress.address === userEmail);\n});"
+        },
+        "type": "n8n-nodes-base.function",
+        "typeVersion": 1,
+        "position": [
+          -32,
+          736
+        ],
+        "id": "67b8fbe6-afd6-4979-9d8f-0f80ad1f7833",
+        "name": "Filter Invited Meetings"
+      },
+      {
+        "parameters": {
+          "resource": "event",
+          "filters": {}
+        },
+        "type": "n8n-nodes-base.microsoftOutlook",
+        "typeVersion": 2,
+        "position": [
+          -304,
+          736
+        ],
+        "id": "c3920cbf-c384-46be-82c8-a937f9a212fe",
+        "name": "Get many events1",
+        "webhookId": "2d8bea1a-e545-48aa-8f34-bcf398b79903",
+        "credentials": {
+          "microsoftOutlookOAuth2Api": {
+            "id": "9PzZSt6H7nHqgUkg",
+            "name": "Microsoft Outlook ti.desarrollo"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "respondWith": "allIncomingItems",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          240,
+          736
+        ],
+        "id": "d52e9755-5e50-4fa8-8f9c-36897f05a023",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "batchSize": 5,
+          "options": {}
+        },
+        "id": "25da431f-b96e-4d1e-a324-e26e85905ebc",
+        "name": "Split In Batches",
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          64,
+          976
+        ]
+      },
+      {
+        "parameters": {
+          "amount": 1
+        },
+        "id": "e7ff8b14-1675-4fa5-94c0-cba3d7d7168b",
+        "name": "Wait 1s entre batches",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          176,
+          1184
+        ],
+        "webhookId": "wait-webhook-batches"
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "cronExpression",
+                "expression": "0 8 * * 1-5"
+              }
+            ]
+          }
+        },
+        "id": "46ade0cd-2bef-47d8-854b-d7b72a122a00",
+        "name": "Schedule Trigger2",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -592,
+          976
+        ],
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "url": "https://graph.microsoft.com/v1.0/me/events",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "microsoftOutlookOAuth2Api",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "$filter",
+                "value": "type eq 'seriesMaster'"
+              },
+              {
+                "name": "$select",
+                "value": "id,subject,type,recurrence,start,end,organizer,isOnlineMeeting,onlineMeetingProvider"
+              },
+              {
+                "name": "$orderby",
+                "value": "lastModifiedDateTime desc"
+              },
+              {
+                "name": "$top",
+                "value": "50"
+              }
+            ]
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Prefer",
+                "value": "outlook.timezone=\"SA Pacific Standard Time\""
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "3924af9c-850d-4ef4-aef4-6051eaf63f67",
+        "name": "Get SeriesMasters1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -384,
+          976
+        ],
+        "credentials": {
+          "microsoftOutlookOAuth2Api": {
+            "id": "9PzZSt6H7nHqgUkg",
+            "name": "Microsoft Outlook ti.desarrollo"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "value",
+          "options": {}
+        },
+        "id": "f2d42e80-5b0c-4cc2-8426-b67a2d3d1e32",
+        "name": "Split Masters1",
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          -160,
+          976
+        ]
+      },
+      {
+        "parameters": {
+          "url": "={{ 'https://graph.microsoft.com/v1.0/me/events/' + $json.id + '/instances' }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "microsoftOutlookOAuth2Api",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "startDateTime",
+                "value": "={{ $now.setZone('America/Guayaquil').startOf('day').toISO() }}"
+              },
+              {
+                "name": "endDateTime",
+                "value": "={{ $now.setZone('America/Guayaquil').plus({days: 7}).endOf('day').toISO() }}"
+              },
+              {
+                "name": "$select",
+                "value": "id,subject,type,start,end,organizer,attendees,isOnlineMeeting,onlineMeeting,seriesMasterId,occurrenceId,isCancelled,isOrganizer,bodyPreview"
+              },
+              {
+                "name": "$top",
+                "value": "10"
+              }
+            ]
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Prefer",
+                "value": "outlook.timezone=\"SA Pacific Standard Time\""
+              },
+              {
+                "name": "Retry-After",
+                "value": "1"
+              }
+            ]
+          },
+          "options": {
+            "batching": {
+              "batch": {
+                "batchSize": 1,
+                "batchInterval": 500
+              }
+            }
+          }
+        },
+        "id": "55dc23be-bb52-4e86-a530-3dfec98ede97",
+        "name": "Get Instances1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          288,
+          992
+        ],
+        "credentials": {
+          "microsoftOutlookOAuth2Api": {
+            "id": "9PzZSt6H7nHqgUkg",
+            "name": "Microsoft Outlook ti.desarrollo"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "value",
+          "options": {}
+        },
+        "id": "0dfa4bea-9057-4930-8b28-d373cef30b0f",
+        "name": "Split Instances2",
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          512,
+          976
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "cond_cancelled",
+                "leftValue": "={{ $json.isCancelled }}",
+                "rightValue": false,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "735cdcc4-3a66-4478-8f60-8d3c3ddd71ad",
+        "name": "Filtrar Canceladas1",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          736,
+          976
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "f1",
+                "name": "titulo",
+                "value": "={{ $json.subject }}",
+                "type": "string"
+              },
+              {
+                "id": "f2",
+                "name": "inicio",
+                "value": "={{ $json.start.dateTime }}",
+                "type": "string"
+              },
+              {
+                "id": "f3",
+                "name": "fin",
+                "value": "={{ $json.end.dateTime }}",
+                "type": "string"
+              },
+              {
+                "id": "f4",
+                "name": "zona_horaria",
+                "value": "={{ $json.start.timeZone }}",
+                "type": "string"
+              },
+              {
+                "id": "f5",
+                "name": "organizador",
+                "value": "={{ $json.organizer.emailAddress.name }}",
+                "type": "string"
+              },
+              {
+                "id": "f6",
+                "name": "organizador_email",
+                "value": "={{ $json.organizer.emailAddress.address }}",
+                "type": "string"
+              },
+              {
+                "id": "f7",
+                "name": "soy_organizador",
+                "value": "={{ $json.isOrganizer }}",
+                "type": "boolean"
+              },
+              {
+                "id": "f8",
+                "name": "link_teams",
+                "value": "={{ $json.onlineMeeting?.joinUrl ?? 'No disponible' }}",
+                "type": "string"
+              },
+              {
+                "id": "f9",
+                "name": "es_online",
+                "value": "={{ $json.isOnlineMeeting }}",
+                "type": "boolean"
+              },
+              {
+                "id": "f10",
+                "name": "tipo",
+                "value": "={{ $json.type }}",
+                "type": "string"
+              },
+              {
+                "id": "f11",
+                "name": "seriesMasterId",
+                "value": "={{ $json.seriesMasterId }}",
+                "type": "string"
+              },
+              {
+                "id": "f12",
+                "name": "occurrenceId",
+                "value": "={{ $json.occurrenceId }}",
+                "type": "string"
+              },
+              {
+                "id": "f13",
+                "name": "total_asistentes",
+                "value": "={{ $json.attendees?.length ?? 0 }}",
+                "type": "number"
+              },
+              {
+                "id": "f14",
+                "name": "asistentes",
+                "value": "={{ $json.attendees?.map(a => a.emailAddress.name).join(', ') ?? '' }}",
+                "type": "string"
+              },
+              {
+                "id": "052df0f6-222d-4dbc-8f78-2d90f02dbfa5",
+                "name": "correos_asistentes ",
+                "value": "={{ $json.attendees?.map(a => a.emailAddress.address).join(', ') ?? '' }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "89ec7423-f6e6-48ca-b5c2-bdf1418ddb09",
+        "name": "Mapear Campos1",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          944,
+          912
+        ]
+      },
+      {
+        "parameters": {
+          "url": "https://graph.microsoft.com/v1.0/me/events",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "microsoftOutlookOAuth2Api",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "$filter",
+                "value": "type eq 'seriesMaster'"
+              },
+              {
+                "name": "$select",
+                "value": "id,subject,type,recurrence,start,end,organizer,isOnlineMeeting,onlineMeetingProvider"
+              },
+              {
+                "name": "$orderby",
+                "value": "lastModifiedDateTime desc"
+              },
+              {
+                "name": "$top",
+                "value": "50"
+              }
+            ]
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Prefer",
+                "value": "outlook.timezone=\"SA Pacific Standard Time\""
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "2d7856dc-2f06-4218-9d8e-92df28177c32",
+        "name": "Get SeriesMasters",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -432,
+          1632
+        ],
+        "credentials": {
+          "microsoftOutlookOAuth2Api": {
+            "id": "9PzZSt6H7nHqgUkg",
+            "name": "Microsoft Outlook ti.desarrollo"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "value",
+          "options": {}
+        },
+        "id": "28be0c04-9d16-4be3-9cc3-6238b79f292e",
+        "name": "Split Masters",
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          -208,
+          1632
+        ]
+      },
+      {
+        "parameters": {
+          "url": "={{ 'https://graph.microsoft.com/v1.0/me/events/' + $json.id + '/instances' }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "microsoftOutlookOAuth2Api",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "startDateTime",
+                "value": "={{ $now.setZone('America/Guayaquil').startOf('day').toISO() }}"
+              },
+              {
+                "name": "endDateTime",
+                "value": "={{ $now.setZone('America/Guayaquil').plus({days: 7}).endOf('day').toISO() }}"
+              },
+              {
+                "name": "$select",
+                "value": "id,subject,type,start,end,organizer,attendees,isOnlineMeeting,onlineMeeting,seriesMasterId,occurrenceId,isCancelled,isOrganizer,bodyPreview"
+              },
+              {
+                "name": "$top",
+                "value": "10"
+              }
+            ]
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Prefer",
+                "value": "outlook.timezone=\"SA Pacific Standard Time\""
+              },
+              {
+                "name": "Retry-After",
+                "value": "1"
+              }
+            ]
+          },
+          "options": {
+            "batching": {
+              "batch": {
+                "batchSize": 1,
+                "batchInterval": 500
+              }
+            }
+          }
+        },
+        "id": "a1b7ac2b-e226-4300-943f-026ab5ee13ae",
+        "name": "Get Instances",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          240,
+          1632
+        ],
+        "credentials": {
+          "microsoftOutlookOAuth2Api": {
+            "id": "9PzZSt6H7nHqgUkg",
+            "name": "Microsoft Outlook ti.desarrollo"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "value",
+          "options": {}
+        },
+        "id": "4db6f346-c5bb-4ab5-b90d-55d6833492f1",
+        "name": "Split Instances",
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          464,
+          1632
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "cond_cancelled",
+                "leftValue": "={{ $json.isCancelled }}",
+                "rightValue": false,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "9c043966-9d2f-49c6-ae72-884e73a3fa82",
+        "name": "Filtrar Canceladas",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          688,
+          1632
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "f1",
+                "name": "titulo",
+                "value": "={{ $json.subject }}",
+                "type": "string"
+              },
+              {
+                "id": "f2",
+                "name": "inicio",
+                "value": "={{ $json.start.dateTime }}",
+                "type": "string"
+              },
+              {
+                "id": "f3",
+                "name": "fin",
+                "value": "={{ $json.end.dateTime }}",
+                "type": "string"
+              },
+              {
+                "id": "f4",
+                "name": "zona_horaria",
+                "value": "={{ $json.start.timeZone }}",
+                "type": "string"
+              },
+              {
+                "id": "f5",
+                "name": "organizador",
+                "value": "={{ $json.organizer.emailAddress.name }}",
+                "type": "string"
+              },
+              {
+                "id": "f6",
+                "name": "organizador_email",
+                "value": "={{ $json.organizer.emailAddress.address }}",
+                "type": "string"
+              },
+              {
+                "id": "f7",
+                "name": "soy_organizador",
+                "value": "={{ $json.isOrganizer }}",
+                "type": "boolean"
+              },
+              {
+                "id": "f8",
+                "name": "link_teams",
+                "value": "={{ $json.onlineMeeting?.joinUrl ?? 'No disponible' }}",
+                "type": "string"
+              },
+              {
+                "id": "f9",
+                "name": "es_online",
+                "value": "={{ $json.isOnlineMeeting }}",
+                "type": "boolean"
+              },
+              {
+                "id": "f10",
+                "name": "tipo",
+                "value": "={{ $json.type }}",
+                "type": "string"
+              },
+              {
+                "id": "f11",
+                "name": "seriesMasterId",
+                "value": "={{ $json.seriesMasterId }}",
+                "type": "string"
+              },
+              {
+                "id": "f12",
+                "name": "occurrenceId",
+                "value": "={{ $json.occurrenceId }}",
+                "type": "string"
+              },
+              {
+                "id": "f13",
+                "name": "total_asistentes",
+                "value": "={{ $json.attendees?.length ?? 0 }}",
+                "type": "number"
+              },
+              {
+                "id": "f14",
+                "name": "asistentes",
+                "value": "={{ $json.attendees?.map(a => a.emailAddress.name).join(', ') ?? '' }}",
+                "type": "string"
+              },
+              {
+                "id": "f15",
+                "name": "correos_asistentes",
+                "value": "={{ $json.attendees?.map(a => a.emailAddress.address).join(', ') ?? '' }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "c8d2a00f-354f-470c-851f-8ebc2aaf7ef8",
+        "name": "Mapear Campos",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          912,
+          1568
+        ]
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "get-meetings",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1,
+        "position": [
+          -656,
+          1632
+        ],
+        "id": "a563e4b7-0a1c-4de2-ab24-7dfd5d892026",
+        "name": "Webhook1",
+        "webhookId": "6b68a844-c6c5-427b-a8e5-eff470a7c650",
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "batchSize": 5,
+          "options": {}
+        },
+        "id": "66ccccfc-f97e-47c4-b04e-c204b4eb79d9",
+        "name": "Split In Batches1",
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          16,
+          1632
+        ]
+      },
+      {
+        "parameters": {
+          "amount": 1
+        },
+        "id": "5411fb61-1855-4a3c-8d08-dbccf25c488f",
+        "name": "Wait 1s entre batches1",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          240,
+          1840
+        ],
+        "webhookId": "wait-webhook-batches"
+      },
+      {
+        "parameters": {
+          "respondWith": "allIncomingItems",
+          "options": {
+            "enableStreaming": false
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1360,
+          1568
+        ],
+        "id": "5dc4a07c-3ede-41b3-8c5d-98abf5d41cd4",
+        "name": "Respond to Webhook1"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -992,
+          2816
+        ],
+        "id": "4aa07779-6f05-4c38-b5b9-5bbc25b1905f",
+        "name": "When clicking ‘Execute workflow’"
+      },
+      {
+        "parameters": {
+          "aggregate": "aggregateAllItemData",
+          "destinationFieldName": "reuniones",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          1152,
+          1568
+        ],
+        "id": "8a55a6bc-8fe3-408a-b137-5422acf985b2",
+        "name": "Aggregate"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1dfXMG0LKO08fcTdkC3C2tPK74rLXS9HD87GfqDAx7Oo",
+            "mode": "list",
+            "cachedResultName": "Reuniones_ti.desarrollo",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dfXMG0LKO08fcTdkC3C2tPK74rLXS9HD87GfqDAx7Oo/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1567945447,
+            "mode": "list",
+            "cachedResultName": "Reuniones",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dfXMG0LKO08fcTdkC3C2tPK74rLXS9HD87GfqDAx7Oo/edit#gid=1567945447"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "titulo",
+                "lookupValue": "={{ $json.body.titulo }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "16fc3b07-6b24-4fcb-83af-c02015fe6001",
+        "name": "Leer Google Sheets",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          224,
+          3456
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "get-meet",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "39c0a93a-99ca-41fe-b8e3-58fe0253c4c2",
+        "name": "Webhook2",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1,
+        "position": [
+          -160,
+          3456
+        ],
+        "webhookId": "6b68a844-c6c5-427b-a8e5-eff470a7c650"
+      },
+      {
+        "parameters": {
+          "respondWith": "allIncomingItems",
+          "options": {}
+        },
+        "id": "7df9e205-be58-4171-99cc-554dc3321cd2",
+        "name": "Respond to Webhook2",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          512,
+          3456
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "f1",
+                "name": "seriesMasterId",
+                "value": "={{ $json.seriesMasterId ?? '' }}",
+                "type": "string"
+              },
+              {
+                "id": "f2",
+                "name": "occurrenceId",
+                "value": "={{ $json.occurrenceId ?? $json.id }}",
+                "type": "string"
+              },
+              {
+                "id": "f3",
+                "name": "titulo",
+                "value": "={{ $json.subject }}",
+                "type": "string"
+              },
+              {
+                "id": "f4",
+                "name": "inicio",
+                "value": "={{ $json.start.dateTime }}",
+                "type": "string"
+              },
+              {
+                "id": "f5",
+                "name": "fin",
+                "value": "={{ $json.end.dateTime }}",
+                "type": "string"
+              },
+              {
+                "id": "f6",
+                "name": "zona_horaria",
+                "value": "={{ $json.start.timeZone }}",
+                "type": "string"
+              },
+              {
+                "id": "f7",
+                "name": "organizador",
+                "value": "={{ $json.organizer.emailAddress.name }}",
+                "type": "string"
+              },
+              {
+                "id": "f8",
+                "name": "organizador_email",
+                "value": "={{ $json.organizer.emailAddress.address }}",
+                "type": "string"
+              },
+              {
+                "id": "f9",
+                "name": "soy_organizador",
+                "value": "={{ $json.isOrganizer }}",
+                "type": "string"
+              },
+              {
+                "id": "f10",
+                "name": "link_teams",
+                "value": "={{ $json.onlineMeeting?.joinUrl ?? '' }}",
+                "type": "string"
+              },
+              {
+                "id": "f11",
+                "name": "es_online",
+                "value": "={{ $json.isOnlineMeeting }}",
+                "type": "string"
+              },
+              {
+                "id": "f12",
+                "name": "tipo_evento",
+                "value": "={{ $json.type }}",
+                "type": "string"
+              },
+              {
+                "id": "f13",
+                "name": "asistentes",
+                "value": "={{ $json.attendees?.map(a => a.emailAddress.name).join(', ') ?? '' }}",
+                "type": "string"
+              },
+              {
+                "id": "f14",
+                "name": "correos_asistentes",
+                "value": "={{ $json.attendees?.map(a => a.emailAddress.address).join(', ') ?? '' }}",
+                "type": "string"
+              },
+              {
+                "id": "f15",
+                "name": "total_asistentes",
+                "value": "={{ $json.attendees?.length ?? 0 }}",
+                "type": "string"
+              },
+              {
+                "id": "f16",
+                "name": "ultima_sync",
+                "value": "={{ $now.toISO() }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "4fa02c4b-9ef3-491b-b706-35a8fe763c1a",
+        "name": "Mapear Campos Recurrentes",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          896,
+          2704
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "f1",
+                "name": "seriesMasterId",
+                "value": "={{ $json.id }}",
+                "type": "string"
+              },
+              {
+                "id": "f2",
+                "name": "occurrenceId",
+                "value": "={{ $json.id }}",
+                "type": "string"
+              },
+              {
+                "id": "f3",
+                "name": "titulo",
+                "value": "={{ $json.subject }}",
+                "type": "string"
+              },
+              {
+                "id": "f4",
+                "name": "inicio",
+                "value": "={{ $json.start.dateTime }}",
+                "type": "string"
+              },
+              {
+                "id": "f5",
+                "name": "fin",
+                "value": "={{ $json.end.dateTime }}",
+                "type": "string"
+              },
+              {
+                "id": "f6",
+                "name": "zona_horaria",
+                "value": "={{ $json.start.timeZone }}",
+                "type": "string"
+              },
+              {
+                "id": "f7",
+                "name": "organizador",
+                "value": "={{ $json.organizer.emailAddress.name }}",
+                "type": "string"
+              },
+              {
+                "id": "f8",
+                "name": "organizador_email",
+                "value": "={{ $json.organizer.emailAddress.address }}",
+                "type": "string"
+              },
+              {
+                "id": "f9",
+                "name": "soy_organizador",
+                "value": "FALSE",
+                "type": "string"
+              },
+              {
+                "id": "f10",
+                "name": "link_teams",
+                "value": "={{ \n  $json.onlineMeeting?.joinUrl \n  ?? $json.bodyPreview?.match(/https:\\/\\/teams\\.microsoft\\.com\\/meet\\/[^\\s\\r\\n]+/)?.[0] \n  ?? $json.bodyPreview?.match(/https:\\/\\/teams\\.microsoft\\.com\\/l\\/meetup-join\\/[^\\s\\r\\n]+/)?.[0]\n  ?? ''\n}}",
+                "type": "string"
+              },
+              {
+                "id": "f11",
+                "name": "es_online",
+                "value": "TRUE",
+                "type": "string"
+              },
+              {
+                "id": "f12",
+                "name": "tipo_evento",
+                "value": "={{ $json.type }}",
+                "type": "string"
+              },
+              {
+                "id": "f13",
+                "name": "asistentes",
+                "value": "={{ $json.attendees?.map(a => a.emailAddress.name).join(', ') ?? '' }}",
+                "type": "string"
+              },
+              {
+                "id": "f14",
+                "name": "correos_asistentes",
+                "value": "={{ $json.attendees?.map(a => a.emailAddress.address).join(', ') ?? '' }}",
+                "type": "string"
+              },
+              {
+                "id": "f15",
+                "name": "total_asistentes",
+                "value": "={{ $json.attendees?.length ?? 0 }}",
+                "type": "string"
+              },
+              {
+                "id": "f16",
+                "name": "ultima_sync",
+                "value": "={{ $now.toISO() }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "7b2c9313-414b-41f2-95b0-7014f83c0641",
+        "name": "Mapear Campos Simples",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          272,
+          3136
+        ]
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "cronExpression",
+                "expression": "0 7 * * 1-5"
+              }
+            ]
+          }
+        },
+        "id": "15b00050-2d92-495c-8de2-9139a0e3043a",
+        "name": "Schedule 7AM (L-V)1",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          -672,
+          2864
+        ]
+      },
+      {
+        "parameters": {
+          "url": "https://graph.microsoft.com/v1.0/me/events",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "microsoftOutlookOAuth2Api",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "$filter",
+                "value": "type eq 'seriesMaster'"
+              },
+              {
+                "name": "$select",
+                "value": "id,subject,type,recurrence,start,end,organizer,isOnlineMeeting,onlineMeetingProvider"
+              },
+              {
+                "name": "$orderby",
+                "value": "lastModifiedDateTime desc"
+              },
+              {
+                "name": "$top",
+                "value": "50"
+              }
+            ]
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Prefer",
+                "value": "outlook.timezone=\"SA Pacific Standard Time\""
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "5e46f24b-24a7-40ef-863c-598d32573269",
+        "name": "Get SeriesMasters3",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -464,
+          2720
+        ],
+        "credentials": {
+          "microsoftOutlookOAuth2Api": {
+            "id": "9PzZSt6H7nHqgUkg",
+            "name": "Microsoft Outlook ti.desarrollo"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "value",
+          "options": {}
+        },
+        "id": "99d28088-3679-42be-9417-e6fcb2766103",
+        "name": "Split Masters3",
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          -240,
+          2720
+        ]
+      },
+      {
+        "parameters": {
+          "batchSize": 5,
+          "options": {}
+        },
+        "id": "d181ff1a-bba6-4785-a6e4-27f7d904effc",
+        "name": "Split In Batches3",
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          -16,
+          2720
+        ]
+      },
+      {
+        "parameters": {
+          "url": "={{ 'https://graph.microsoft.com/v1.0/me/events/' + $json.id + '/instances' }}",
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "microsoftOutlookOAuth2Api",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "startDateTime",
+                "value": "={{ $now.setZone('America/Guayaquil').startOf('day').toISO() }}"
+              },
+              {
+                "name": "endDateTime",
+                "value": "={{ $now.setZone('America/Guayaquil').plus({days: 30}).endOf('day').toISO() }}"
+              },
+              {
+                "name": "$select",
+                "value": "id,subject,type,start,end,organizer,attendees,isOnlineMeeting,onlineMeeting,seriesMasterId,occurrenceId,isCancelled,isOrganizer"
+              },
+              {
+                "name": "$top",
+                "value": "30"
+              }
+            ]
+          },
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Prefer",
+                "value": "outlook.timezone=\"SA Pacific Standard Time\""
+              },
+              {
+                "name": "Retry-After",
+                "value": "1"
+              }
+            ]
+          },
+          "options": {
+            "batching": {
+              "batch": {
+                "batchSize": 1,
+                "batchInterval": 500
+              }
+            }
+          }
+        },
+        "id": "0648ea7b-18c9-4b3b-ad23-924819ebd177",
+        "name": "Get Instances (30 días)1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          208,
+          2720
+        ],
+        "credentials": {
+          "microsoftOutlookOAuth2Api": {
+            "id": "9PzZSt6H7nHqgUkg",
+            "name": "Microsoft Outlook ti.desarrollo"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "amount": 1
+        },
+        "id": "bc60d573-8060-4f2b-a8ef-6f96af0bc29d",
+        "name": "Wait 1s1",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          208,
+          2912
+        ],
+        "webhookId": "wait-sync-batches"
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "value",
+          "options": {}
+        },
+        "id": "7e5e68a4-9c85-45a3-abe3-5a2ecaf1fd70",
+        "name": "Split Instances3",
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          432,
+          2720
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "c1",
+                "leftValue": "={{ $json.isCancelled }}",
+                "rightValue": false,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "7b7a494a-ecc8-40fb-b46a-8e7823ccc347",
+        "name": "Filtrar Canceladas3",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          656,
+          2720
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1dfXMG0LKO08fcTdkC3C2tPK74rLXS9HD87GfqDAx7Oo",
+            "mode": "list",
+            "cachedResultName": "Reuniones_ti.desarrollo"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1567945447,
+            "mode": "list",
+            "cachedResultName": "Reuniones"
+          },
+          "columns": {
+            "mappingMode": "autoMapInputData",
+            "value": {},
+            "matchingColumns": [
+              "seriesMasterId"
+            ],
+            "schema": [
+              {
+                "id": "seriesMasterId",
+                "displayName": "seriesMasterId",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "occurrenceId",
+                "displayName": "occurrenceId",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "titulo",
+                "displayName": "titulo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "inicio",
+                "displayName": "inicio",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "fin",
+                "displayName": "fin",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "zona_horaria",
+                "displayName": "zona_horaria",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "organizador",
+                "displayName": "organizador",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "organizador_email",
+                "displayName": "organizador_email",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "soy_organizador",
+                "displayName": "soy_organizador",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "link_teams",
+                "displayName": "link_teams",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "es_online",
+                "displayName": "es_online",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "asistentes",
+                "displayName": "asistentes",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "correos_asistentes",
+                "displayName": "correos_asistentes",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "total_asistentes",
+                "displayName": "total_asistentes",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "ultima_sync",
+                "displayName": "ultima_sync",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "tipo_evento",
+                "displayName": "tipo_evento",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "9b99f084-b447-4f48-9c01-600d527c474f",
+        "name": "Upsert Google Sheets1",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          1088,
+          2704
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "resource": "event",
+          "filters": {}
+        },
+        "type": "n8n-nodes-base.microsoftOutlook",
+        "typeVersion": 2,
+        "position": [
+          -480,
+          3136
+        ],
+        "id": "56ae3686-d651-4640-afe4-55d72c7260bf",
+        "name": "Get many events",
+        "webhookId": "2d8bea1a-e545-48aa-8f34-bcf398b79903",
+        "credentials": {
+          "microsoftOutlookOAuth2Api": {
+            "id": "9PzZSt6H7nHqgUkg",
+            "name": "Microsoft Outlook ti.desarrollo"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1dfXMG0LKO08fcTdkC3C2tPK74rLXS9HD87GfqDAx7Oo",
+            "mode": "list",
+            "cachedResultName": "Reuniones_ti.desarrollo"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1567945447,
+            "mode": "list",
+            "cachedResultName": "Reuniones"
+          },
+          "columns": {
+            "mappingMode": "autoMapInputData",
+            "value": {},
+            "matchingColumns": [
+              "seriesMasterId"
+            ],
+            "schema": [
+              {
+                "id": "seriesMasterId",
+                "displayName": "seriesMasterId",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "occurrenceId",
+                "displayName": "occurrenceId",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "titulo",
+                "displayName": "titulo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "inicio",
+                "displayName": "inicio",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "fin",
+                "displayName": "fin",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "zona_horaria",
+                "displayName": "zona_horaria",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "organizador",
+                "displayName": "organizador",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "organizador_email",
+                "displayName": "organizador_email",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "soy_organizador",
+                "displayName": "soy_organizador",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "link_teams",
+                "displayName": "link_teams",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "es_online",
+                "displayName": "es_online",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "asistentes",
+                "displayName": "asistentes",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "correos_asistentes",
+                "displayName": "correos_asistentes",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "total_asistentes",
+                "displayName": "total_asistentes",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "ultima_sync",
+                "displayName": "ultima_sync",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "tipo_evento",
+                "displayName": "tipo_evento",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "800f6d74-37a3-4171-93af-d3a6e1b2fa3d",
+        "name": "Upsert Google Sheets",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          1088,
+          3136
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1dfXMG0LKO08fcTdkC3C2tPK74rLXS9HD87GfqDAx7Oo",
+            "mode": "list",
+            "cachedResultName": "Reuniones_ti.desarrollo",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dfXMG0LKO08fcTdkC3C2tPK74rLXS9HD87GfqDAx7Oo/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1567945447,
+            "mode": "list",
+            "cachedResultName": "Reuniones",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dfXMG0LKO08fcTdkC3C2tPK74rLXS9HD87GfqDAx7Oo/edit#gid=1567945447"
+          },
+          "options": {}
+        },
+        "id": "2fb8f79b-6d50-402e-93aa-f04c2f70865f",
+        "name": "Leer Google Sheets1",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          224,
+          3728
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "get-meetings",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "ed380c31-6c14-40a4-a4d1-34b0e0227691",
+        "name": "Webhook3",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1,
+        "position": [
+          -160,
+          3728
+        ],
+        "webhookId": "6b68a844-c6c5-427b-a8e5-eff470a7c650"
+      },
+      {
+        "parameters": {
+          "respondWith": "allIncomingItems",
+          "options": {}
+        },
+        "id": "bd52c32b-da44-43cf-8dc0-b25217d4584b",
+        "name": "Respond to Webhook3",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          512,
+          3728
+        ]
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Get many events1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get many events1": {
+        "main": [
+          [
+            {
+              "node": "Filter Invited Meetings",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter Invited Meetings": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split In Batches": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Get Instances1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger2": {
+        "main": [
+          [
+            {
+              "node": "Get SeriesMasters1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get SeriesMasters1": {
+        "main": [
+          [
+            {
+              "node": "Split Masters1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Masters1": {
+        "main": [
+          [
+            {
+              "node": "Split In Batches",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Instances1": {
+        "main": [
+          [
+            {
+              "node": "Split Instances2",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Wait 1s entre batches",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Instances2": {
+        "main": [
+          [
+            {
+              "node": "Filtrar Canceladas1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filtrar Canceladas1": {
+        "main": [
+          [
+            {
+              "node": "Mapear Campos1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait 1s entre batches": {
+        "main": [
+          [
+            {
+              "node": "Split In Batches",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get SeriesMasters": {
+        "main": [
+          [
+            {
+              "node": "Split Masters",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Masters": {
+        "main": [
+          [
+            {
+              "node": "Split In Batches1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Instances": {
+        "main": [
+          [
+            {
+              "node": "Split Instances",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Wait 1s entre batches1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Instances": {
+        "main": [
+          [
+            {
+              "node": "Filtrar Canceladas",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filtrar Canceladas": {
+        "main": [
+          [
+            {
+              "node": "Mapear Campos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Mapear Campos": {
+        "main": [
+          [
+            {
+              "node": "Aggregate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook1": {
+        "main": [
+          [
+            {
+              "node": "Get SeriesMasters",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split In Batches1": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Get Instances",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait 1s entre batches1": {
+        "main": [
+          [
+            {
+              "node": "Split In Batches1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "Get SeriesMasters3",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Get many events",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Leer Google Sheets": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook2": {
+        "main": [
+          [
+            {
+              "node": "Leer Google Sheets",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Mapear Campos Recurrentes": {
+        "main": [
+          [
+            {
+              "node": "Upsert Google Sheets1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Mapear Campos Simples": {
+        "main": [
+          [
+            {
+              "node": "Upsert Google Sheets",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule 7AM (L-V)1": {
+        "main": [
+          [
+            {
+              "node": "Get SeriesMasters3",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Get many events",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get SeriesMasters3": {
+        "main": [
+          [
+            {
+              "node": "Split Masters3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Masters3": {
+        "main": [
+          [
+            {
+              "node": "Split In Batches3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split In Batches3": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Get Instances (30 días)1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Instances (30 días)1": {
+        "main": [
+          [
+            {
+              "node": "Split Instances3",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Wait 1s1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait 1s1": {
+        "main": [
+          [
+            {
+              "node": "Split In Batches3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Instances3": {
+        "main": [
+          [
+            {
+              "node": "Filtrar Canceladas3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filtrar Canceladas3": {
+        "main": [
+          [
+            {
+              "node": "Mapear Campos Recurrentes",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get many events": {
+        "main": [
+          [
+            {
+              "node": "Mapear Campos Simples",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Leer Google Sheets1": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook3": {
+        "main": [
+          [
+            {
+              "node": "Leer Google Sheets1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "ZEI MOBILVENDOR",
+    "name": "Version 8.3",
+    "description": "",
+    "autosaved": true
+  },
+  "activeVersionId": "7b1ad544-f6e2-448c-92b7-0c9e14a2cc5a",
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get many events1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many events1": {
+      "main": [
+        [
+          {
+            "node": "Filter Invited Meetings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Invited Meetings": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split In Batches": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Get Instances1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger2": {
+      "main": [
+        [
+          {
+            "node": "Get SeriesMasters1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get SeriesMasters1": {
+      "main": [
+        [
+          {
+            "node": "Split Masters1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Masters1": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Instances1": {
+      "main": [
+        [
+          {
+            "node": "Split Instances2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Wait 1s entre batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Instances2": {
+      "main": [
+        [
+          {
+            "node": "Filtrar Canceladas1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar Canceladas1": {
+      "main": [
+        [
+          {
+            "node": "Mapear Campos1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 1s entre batches": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get SeriesMasters": {
+      "main": [
+        [
+          {
+            "node": "Split Masters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Masters": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Instances": {
+      "main": [
+        [
+          {
+            "node": "Split Instances",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Wait 1s entre batches1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Instances": {
+      "main": [
+        [
+          {
+            "node": "Filtrar Canceladas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar Canceladas": {
+      "main": [
+        [
+          {
+            "node": "Mapear Campos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mapear Campos": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Get SeriesMasters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split In Batches1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Get Instances",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 1s entre batches1": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get SeriesMasters3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get many events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook2": {
+      "main": [
+        [
+          {
+            "node": "Leer Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mapear Campos Recurrentes": {
+      "main": [
+        [
+          {
+            "node": "Upsert Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mapear Campos Simples": {
+      "main": [
+        [
+          {
+            "node": "Upsert Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule 7AM (L-V)1": {
+      "main": [
+        [
+          {
+            "node": "Get SeriesMasters3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get many events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get SeriesMasters3": {
+      "main": [
+        [
+          {
+            "node": "Split Masters3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Masters3": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split In Batches3": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Get Instances (30 días)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Instances (30 días)1": {
+      "main": [
+        [
+          {
+            "node": "Split Instances3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Wait 1s1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 1s1": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Instances3": {
+      "main": [
+        [
+          {
+            "node": "Filtrar Canceladas3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar Canceladas3": {
+      "main": [
+        [
+          {
+            "node": "Mapear Campos Recurrentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many events": {
+      "main": [
+        [
+          {
+            "node": "Mapear Campos Simples",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook3": {
+      "main": [
+        [
+          {
+            "node": "Leer Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-05-07T02:32:49.827Z",
+  "id": "0LZ76kJYEEr3NhUL",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "SYNC Reuniones Outlook → Google Sheets (Recurrentes + Simples)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "get-meetings",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -576,
+        736
+      ],
+      "id": "6fba1159-d080-4626-8afb-af46404641d8",
+      "name": "Webhook",
+      "webhookId": "6b68a844-c6c5-427b-a8e5-eff470a7c650",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "functionCode": "return items.filter(item => {\n  const attendees = item.json.attendees || [];\n  const userEmail = $node['Webhook'].json.body.email;\n  return attendees.some(att => att.emailAddress.address === userEmail);\n});"
+      },
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        736
+      ],
+      "id": "67b8fbe6-afd6-4979-9d8f-0f80ad1f7833",
+      "name": "Filter Invited Meetings"
+    },
+    {
+      "parameters": {
+        "resource": "event",
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.microsoftOutlook",
+      "typeVersion": 2,
+      "position": [
+        -304,
+        736
+      ],
+      "id": "c3920cbf-c384-46be-82c8-a937f9a212fe",
+      "name": "Get many events1",
+      "webhookId": "2d8bea1a-e545-48aa-8f34-bcf398b79903",
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "9PzZSt6H7nHqgUkg",
+          "name": "Microsoft Outlook ti.desarrollo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        240,
+        736
+      ],
+      "id": "d52e9755-5e50-4fa8-8f9c-36897f05a023",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "batchSize": 5,
+        "options": {}
+      },
+      "id": "25da431f-b96e-4d1e-a324-e26e85905ebc",
+      "name": "Split In Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        64,
+        976
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "id": "e7ff8b14-1675-4fa5-94c0-cba3d7d7168b",
+      "name": "Wait 1s entre batches",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        176,
+        1184
+      ],
+      "webhookId": "wait-webhook-batches"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "46ade0cd-2bef-47d8-854b-d7b72a122a00",
+      "name": "Schedule Trigger2",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -592,
+        976
+      ],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/me/events",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "microsoftOutlookOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "$filter",
+              "value": "type eq 'seriesMaster'"
+            },
+            {
+              "name": "$select",
+              "value": "id,subject,type,recurrence,start,end,organizer,isOnlineMeeting,onlineMeetingProvider"
+            },
+            {
+              "name": "$orderby",
+              "value": "lastModifiedDateTime desc"
+            },
+            {
+              "name": "$top",
+              "value": "50"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Prefer",
+              "value": "outlook.timezone=\"SA Pacific Standard Time\""
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3924af9c-850d-4ef4-aef4-6051eaf63f67",
+      "name": "Get SeriesMasters1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -384,
+        976
+      ],
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "9PzZSt6H7nHqgUkg",
+          "name": "Microsoft Outlook ti.desarrollo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "value",
+        "options": {}
+      },
+      "id": "f2d42e80-5b0c-4cc2-8426-b67a2d3d1e32",
+      "name": "Split Masters1",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        976
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://graph.microsoft.com/v1.0/me/events/' + $json.id + '/instances' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "microsoftOutlookOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "startDateTime",
+              "value": "={{ $now.setZone('America/Guayaquil').startOf('day').toISO() }}"
+            },
+            {
+              "name": "endDateTime",
+              "value": "={{ $now.setZone('America/Guayaquil').plus({days: 7}).endOf('day').toISO() }}"
+            },
+            {
+              "name": "$select",
+              "value": "id,subject,type,start,end,organizer,attendees,isOnlineMeeting,onlineMeeting,seriesMasterId,occurrenceId,isCancelled,isOrganizer,bodyPreview"
+            },
+            {
+              "name": "$top",
+              "value": "10"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Prefer",
+              "value": "outlook.timezone=\"SA Pacific Standard Time\""
+            },
+            {
+              "name": "Retry-After",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 500
+            }
+          }
+        }
+      },
+      "id": "55dc23be-bb52-4e86-a530-3dfec98ede97",
+      "name": "Get Instances1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        288,
+        992
+      ],
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "9PzZSt6H7nHqgUkg",
+          "name": "Microsoft Outlook ti.desarrollo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "value",
+        "options": {}
+      },
+      "id": "0dfa4bea-9057-4930-8b28-d373cef30b0f",
+      "name": "Split Instances2",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        512,
+        976
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "cond_cancelled",
+              "leftValue": "={{ $json.isCancelled }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "735cdcc4-3a66-4478-8f60-8d3c3ddd71ad",
+      "name": "Filtrar Canceladas1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        736,
+        976
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f1",
+              "name": "titulo",
+              "value": "={{ $json.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "f2",
+              "name": "inicio",
+              "value": "={{ $json.start.dateTime }}",
+              "type": "string"
+            },
+            {
+              "id": "f3",
+              "name": "fin",
+              "value": "={{ $json.end.dateTime }}",
+              "type": "string"
+            },
+            {
+              "id": "f4",
+              "name": "zona_horaria",
+              "value": "={{ $json.start.timeZone }}",
+              "type": "string"
+            },
+            {
+              "id": "f5",
+              "name": "organizador",
+              "value": "={{ $json.organizer.emailAddress.name }}",
+              "type": "string"
+            },
+            {
+              "id": "f6",
+              "name": "organizador_email",
+              "value": "={{ $json.organizer.emailAddress.address }}",
+              "type": "string"
+            },
+            {
+              "id": "f7",
+              "name": "soy_organizador",
+              "value": "={{ $json.isOrganizer }}",
+              "type": "boolean"
+            },
+            {
+              "id": "f8",
+              "name": "link_teams",
+              "value": "={{ $json.onlineMeeting?.joinUrl ?? 'No disponible' }}",
+              "type": "string"
+            },
+            {
+              "id": "f9",
+              "name": "es_online",
+              "value": "={{ $json.isOnlineMeeting }}",
+              "type": "boolean"
+            },
+            {
+              "id": "f10",
+              "name": "tipo",
+              "value": "={{ $json.type }}",
+              "type": "string"
+            },
+            {
+              "id": "f11",
+              "name": "seriesMasterId",
+              "value": "={{ $json.seriesMasterId }}",
+              "type": "string"
+            },
+            {
+              "id": "f12",
+              "name": "occurrenceId",
+              "value": "={{ $json.occurrenceId }}",
+              "type": "string"
+            },
+            {
+              "id": "f13",
+              "name": "total_asistentes",
+              "value": "={{ $json.attendees?.length ?? 0 }}",
+              "type": "number"
+            },
+            {
+              "id": "f14",
+              "name": "asistentes",
+              "value": "={{ $json.attendees?.map(a => a.emailAddress.name).join(', ') ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "052df0f6-222d-4dbc-8f78-2d90f02dbfa5",
+              "name": "correos_asistentes ",
+              "value": "={{ $json.attendees?.map(a => a.emailAddress.address).join(', ') ?? '' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "89ec7423-f6e6-48ca-b5c2-bdf1418ddb09",
+      "name": "Mapear Campos1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        944,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/me/events",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "microsoftOutlookOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "$filter",
+              "value": "type eq 'seriesMaster'"
+            },
+            {
+              "name": "$select",
+              "value": "id,subject,type,recurrence,start,end,organizer,isOnlineMeeting,onlineMeetingProvider"
+            },
+            {
+              "name": "$orderby",
+              "value": "lastModifiedDateTime desc"
+            },
+            {
+              "name": "$top",
+              "value": "50"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Prefer",
+              "value": "outlook.timezone=\"SA Pacific Standard Time\""
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2d7856dc-2f06-4218-9d8e-92df28177c32",
+      "name": "Get SeriesMasters",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -432,
+        1632
+      ],
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "9PzZSt6H7nHqgUkg",
+          "name": "Microsoft Outlook ti.desarrollo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "value",
+        "options": {}
+      },
+      "id": "28be0c04-9d16-4be3-9cc3-6238b79f292e",
+      "name": "Split Masters",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        1632
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://graph.microsoft.com/v1.0/me/events/' + $json.id + '/instances' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "microsoftOutlookOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "startDateTime",
+              "value": "={{ $now.setZone('America/Guayaquil').startOf('day').toISO() }}"
+            },
+            {
+              "name": "endDateTime",
+              "value": "={{ $now.setZone('America/Guayaquil').plus({days: 7}).endOf('day').toISO() }}"
+            },
+            {
+              "name": "$select",
+              "value": "id,subject,type,start,end,organizer,attendees,isOnlineMeeting,onlineMeeting,seriesMasterId,occurrenceId,isCancelled,isOrganizer,bodyPreview"
+            },
+            {
+              "name": "$top",
+              "value": "10"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Prefer",
+              "value": "outlook.timezone=\"SA Pacific Standard Time\""
+            },
+            {
+              "name": "Retry-After",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 500
+            }
+          }
+        }
+      },
+      "id": "a1b7ac2b-e226-4300-943f-026ab5ee13ae",
+      "name": "Get Instances",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        1632
+      ],
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "9PzZSt6H7nHqgUkg",
+          "name": "Microsoft Outlook ti.desarrollo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "value",
+        "options": {}
+      },
+      "id": "4db6f346-c5bb-4ab5-b90d-55d6833492f1",
+      "name": "Split Instances",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        464,
+        1632
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "cond_cancelled",
+              "leftValue": "={{ $json.isCancelled }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "9c043966-9d2f-49c6-ae72-884e73a3fa82",
+      "name": "Filtrar Canceladas",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        688,
+        1632
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f1",
+              "name": "titulo",
+              "value": "={{ $json.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "f2",
+              "name": "inicio",
+              "value": "={{ $json.start.dateTime }}",
+              "type": "string"
+            },
+            {
+              "id": "f3",
+              "name": "fin",
+              "value": "={{ $json.end.dateTime }}",
+              "type": "string"
+            },
+            {
+              "id": "f4",
+              "name": "zona_horaria",
+              "value": "={{ $json.start.timeZone }}",
+              "type": "string"
+            },
+            {
+              "id": "f5",
+              "name": "organizador",
+              "value": "={{ $json.organizer.emailAddress.name }}",
+              "type": "string"
+            },
+            {
+              "id": "f6",
+              "name": "organizador_email",
+              "value": "={{ $json.organizer.emailAddress.address }}",
+              "type": "string"
+            },
+            {
+              "id": "f7",
+              "name": "soy_organizador",
+              "value": "={{ $json.isOrganizer }}",
+              "type": "boolean"
+            },
+            {
+              "id": "f8",
+              "name": "link_teams",
+              "value": "={{ $json.onlineMeeting?.joinUrl ?? 'No disponible' }}",
+              "type": "string"
+            },
+            {
+              "id": "f9",
+              "name": "es_online",
+              "value": "={{ $json.isOnlineMeeting }}",
+              "type": "boolean"
+            },
+            {
+              "id": "f10",
+              "name": "tipo",
+              "value": "={{ $json.type }}",
+              "type": "string"
+            },
+            {
+              "id": "f11",
+              "name": "seriesMasterId",
+              "value": "={{ $json.seriesMasterId }}",
+              "type": "string"
+            },
+            {
+              "id": "f12",
+              "name": "occurrenceId",
+              "value": "={{ $json.occurrenceId }}",
+              "type": "string"
+            },
+            {
+              "id": "f13",
+              "name": "total_asistentes",
+              "value": "={{ $json.attendees?.length ?? 0 }}",
+              "type": "number"
+            },
+            {
+              "id": "f14",
+              "name": "asistentes",
+              "value": "={{ $json.attendees?.map(a => a.emailAddress.name).join(', ') ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "f15",
+              "name": "correos_asistentes",
+              "value": "={{ $json.attendees?.map(a => a.emailAddress.address).join(', ') ?? '' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c8d2a00f-354f-470c-851f-8ebc2aaf7ef8",
+      "name": "Mapear Campos",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        912,
+        1568
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "get-meetings",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -656,
+        1632
+      ],
+      "id": "a563e4b7-0a1c-4de2-ab24-7dfd5d892026",
+      "name": "Webhook1",
+      "webhookId": "6b68a844-c6c5-427b-a8e5-eff470a7c650",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "batchSize": 5,
+        "options": {}
+      },
+      "id": "66ccccfc-f97e-47c4-b04e-c204b4eb79d9",
+      "name": "Split In Batches1",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        16,
+        1632
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "id": "5411fb61-1855-4a3c-8d08-dbccf25c488f",
+      "name": "Wait 1s entre batches1",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        1840
+      ],
+      "webhookId": "wait-webhook-batches"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "enableStreaming": false
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1360,
+        1568
+      ],
+      "id": "5dc4a07c-3ede-41b3-8c5d-98abf5d41cd4",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -992,
+        2816
+      ],
+      "id": "4aa07779-6f05-4c38-b5b9-5bbc25b1905f",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "reuniones",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        1568
+      ],
+      "id": "8a55a6bc-8fe3-408a-b137-5422acf985b2",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1dfXMG0LKO08fcTdkC3C2tPK74rLXS9HD87GfqDAx7Oo",
+          "mode": "list",
+          "cachedResultName": "Reuniones_ti.desarrollo",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dfXMG0LKO08fcTdkC3C2tPK74rLXS9HD87GfqDAx7Oo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1567945447,
+          "mode": "list",
+          "cachedResultName": "Reuniones",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dfXMG0LKO08fcTdkC3C2tPK74rLXS9HD87GfqDAx7Oo/edit#gid=1567945447"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "titulo",
+              "lookupValue": "={{ $json.body.titulo }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "16fc3b07-6b24-4fcb-83af-c02015fe6001",
+      "name": "Leer Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        224,
+        3456
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "get-meet",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "39c0a93a-99ca-41fe-b8e3-58fe0253c4c2",
+      "name": "Webhook2",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        3456
+      ],
+      "webhookId": "6b68a844-c6c5-427b-a8e5-eff470a7c650"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "id": "7df9e205-be58-4171-99cc-554dc3321cd2",
+      "name": "Respond to Webhook2",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        512,
+        3456
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f1",
+              "name": "seriesMasterId",
+              "value": "={{ $json.seriesMasterId ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "f2",
+              "name": "occurrenceId",
+              "value": "={{ $json.occurrenceId ?? $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "f3",
+              "name": "titulo",
+              "value": "={{ $json.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "f4",
+              "name": "inicio",
+              "value": "={{ $json.start.dateTime }}",
+              "type": "string"
+            },
+            {
+              "id": "f5",
+              "name": "fin",
+              "value": "={{ $json.end.dateTime }}",
+              "type": "string"
+            },
+            {
+              "id": "f6",
+              "name": "zona_horaria",
+              "value": "={{ $json.start.timeZone }}",
+              "type": "string"
+            },
+            {
+              "id": "f7",
+              "name": "organizador",
+              "value": "={{ $json.organizer.emailAddress.name }}",
+              "type": "string"
+            },
+            {
+              "id": "f8",
+              "name": "organizador_email",
+              "value": "={{ $json.organizer.emailAddress.address }}",
+              "type": "string"
+            },
+            {
+              "id": "f9",
+              "name": "soy_organizador",
+              "value": "={{ $json.isOrganizer }}",
+              "type": "string"
+            },
+            {
+              "id": "f10",
+              "name": "link_teams",
+              "value": "={{ $json.onlineMeeting?.joinUrl ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "f11",
+              "name": "es_online",
+              "value": "={{ $json.isOnlineMeeting }}",
+              "type": "string"
+            },
+            {
+              "id": "f12",
+              "name": "tipo_evento",
+              "value": "={{ $json.type }}",
+              "type": "string"
+            },
+            {
+              "id": "f13",
+              "name": "asistentes",
+              "value": "={{ $json.attendees?.map(a => a.emailAddress.name).join(', ') ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "f14",
+              "name": "correos_asistentes",
+              "value": "={{ $json.attendees?.map(a => a.emailAddress.address).join(', ') ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "f15",
+              "name": "total_asistentes",
+              "value": "={{ $json.attendees?.length ?? 0 }}",
+              "type": "string"
+            },
+            {
+              "id": "f16",
+              "name": "ultima_sync",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4fa02c4b-9ef3-491b-b706-35a8fe763c1a",
+      "name": "Mapear Campos Recurrentes",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        896,
+        2704
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f1",
+              "name": "seriesMasterId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "f2",
+              "name": "occurrenceId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "f3",
+              "name": "titulo",
+              "value": "={{ $json.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "f4",
+              "name": "inicio",
+              "value": "={{ $json.start.dateTime }}",
+              "type": "string"
+            },
+            {
+              "id": "f5",
+              "name": "fin",
+              "value": "={{ $json.end.dateTime }}",
+              "type": "string"
+            },
+            {
+              "id": "f6",
+              "name": "zona_horaria",
+              "value": "={{ $json.start.timeZone }}",
+              "type": "string"
+            },
+            {
+              "id": "f7",
+              "name": "organizador",
+              "value": "={{ $json.organizer.emailAddress.name }}",
+              "type": "string"
+            },
+            {
+              "id": "f8",
+              "name": "organizador_email",
+              "value": "={{ $json.organizer.emailAddress.address }}",
+              "type": "string"
+            },
+            {
+              "id": "f9",
+              "name": "soy_organizador",
+              "value": "FALSE",
+              "type": "string"
+            },
+            {
+              "id": "f10",
+              "name": "link_teams",
+              "value": "={{ \n  $json.onlineMeeting?.joinUrl \n  ?? $json.bodyPreview?.match(/https:\\/\\/teams\\.microsoft\\.com\\/meet\\/[^\\s\\r\\n]+/)?.[0] \n  ?? $json.bodyPreview?.match(/https:\\/\\/teams\\.microsoft\\.com\\/l\\/meetup-join\\/[^\\s\\r\\n]+/)?.[0]\n  ?? ''\n}}",
+              "type": "string"
+            },
+            {
+              "id": "f11",
+              "name": "es_online",
+              "value": "TRUE",
+              "type": "string"
+            },
+            {
+              "id": "f12",
+              "name": "tipo_evento",
+              "value": "={{ $json.type }}",
+              "type": "string"
+            },
+            {
+              "id": "f13",
+              "name": "asistentes",
+              "value": "={{ $json.attendees?.map(a => a.emailAddress.name).join(', ') ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "f14",
+              "name": "correos_asistentes",
+              "value": "={{ $json.attendees?.map(a => a.emailAddress.address).join(', ') ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "f15",
+              "name": "total_asistentes",
+              "value": "={{ $json.attendees?.length ?? 0 }}",
+              "type": "string"
+            },
+            {
+              "id": "f16",
+              "name": "ultima_sync",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7b2c9313-414b-41f2-95b0-7014f83c0641",
+      "name": "Mapear Campos Simples",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        272,
+        3136
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 7 * * 1-5"
+            }
+          ]
+        }
+      },
+      "id": "15b00050-2d92-495c-8de2-9139a0e3043a",
+      "name": "Schedule 7AM (L-V)1",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -672,
+        2864
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/me/events",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "microsoftOutlookOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "$filter",
+              "value": "type eq 'seriesMaster'"
+            },
+            {
+              "name": "$select",
+              "value": "id,subject,type,recurrence,start,end,organizer,isOnlineMeeting,onlineMeetingProvider"
+            },
+            {
+              "name": "$orderby",
+              "value": "lastModifiedDateTime desc"
+            },
+            {
+              "name": "$top",
+              "value": "50"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Prefer",
+              "value": "outlook.timezone=\"SA Pacific Standard Time\""
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5e46f24b-24a7-40ef-863c-598d32573269",
+      "name": "Get SeriesMasters3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -464,
+        2720
+      ],
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "9PzZSt6H7nHqgUkg",
+          "name": "Microsoft Outlook ti.desarrollo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "value",
+        "options": {}
+      },
+      "id": "99d28088-3679-42be-9417-e6fcb2766103",
+      "name": "Split Masters3",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        2720
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 5,
+        "options": {}
+      },
+      "id": "d181ff1a-bba6-4785-a6e4-27f7d904effc",
+      "name": "Split In Batches3",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -16,
+        2720
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://graph.microsoft.com/v1.0/me/events/' + $json.id + '/instances' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "microsoftOutlookOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "startDateTime",
+              "value": "={{ $now.setZone('America/Guayaquil').startOf('day').toISO() }}"
+            },
+            {
+              "name": "endDateTime",
+              "value": "={{ $now.setZone('America/Guayaquil').plus({days: 30}).endOf('day').toISO() }}"
+            },
+            {
+              "name": "$select",
+              "value": "id,subject,type,start,end,organizer,attendees,isOnlineMeeting,onlineMeeting,seriesMasterId,occurrenceId,isCancelled,isOrganizer"
+            },
+            {
+              "name": "$top",
+              "value": "30"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Prefer",
+              "value": "outlook.timezone=\"SA Pacific Standard Time\""
+            },
+            {
+              "name": "Retry-After",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 500
+            }
+          }
+        }
+      },
+      "id": "0648ea7b-18c9-4b3b-ad23-924819ebd177",
+      "name": "Get Instances (30 días)1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        208,
+        2720
+      ],
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "9PzZSt6H7nHqgUkg",
+          "name": "Microsoft Outlook ti.desarrollo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "id": "bc60d573-8060-4f2b-a8ef-6f96af0bc29d",
+      "name": "Wait 1s1",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        2912
+      ],
+      "webhookId": "wait-sync-batches"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "value",
+        "options": {}
+      },
+      "id": "7e5e68a4-9c85-45a3-abe3-5a2ecaf1fd70",
+      "name": "Split Instances3",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        432,
+        2720
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.isCancelled }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "7b7a494a-ecc8-40fb-b46a-8e7823ccc347",
+      "name": "Filtrar Canceladas3",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        656,
+        2720
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1dfXMG0LKO08fcTdkC3C2tPK74rLXS9HD87GfqDAx7Oo",
+          "mode": "list",
+          "cachedResultName": "Reuniones_ti.desarrollo"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1567945447,
+          "mode": "list",
+          "cachedResultName": "Reuniones"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "seriesMasterId"
+          ],
+          "schema": [
+            {
+              "id": "seriesMasterId",
+              "displayName": "seriesMasterId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "occurrenceId",
+              "displayName": "occurrenceId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "titulo",
+              "displayName": "titulo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "inicio",
+              "displayName": "inicio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fin",
+              "displayName": "fin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "zona_horaria",
+              "displayName": "zona_horaria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "organizador",
+              "displayName": "organizador",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "organizador_email",
+              "displayName": "organizador_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "soy_organizador",
+              "displayName": "soy_organizador",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "link_teams",
+              "displayName": "link_teams",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "es_online",
+              "displayName": "es_online",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "asistentes",
+              "displayName": "asistentes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "correos_asistentes",
+              "displayName": "correos_asistentes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "total_asistentes",
+              "displayName": "total_asistentes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ultima_sync",
+              "displayName": "ultima_sync",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tipo_evento",
+              "displayName": "tipo_evento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "9b99f084-b447-4f48-9c01-600d527c474f",
+      "name": "Upsert Google Sheets1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1088,
+        2704
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "event",
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.microsoftOutlook",
+      "typeVersion": 2,
+      "position": [
+        -480,
+        3136
+      ],
+      "id": "56ae3686-d651-4640-afe4-55d72c7260bf",
+      "name": "Get many events",
+      "webhookId": "2d8bea1a-e545-48aa-8f34-bcf398b79903",
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "9PzZSt6H7nHqgUkg",
+          "name": "Microsoft Outlook ti.desarrollo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1dfXMG0LKO08fcTdkC3C2tPK74rLXS9HD87GfqDAx7Oo",
+          "mode": "list",
+          "cachedResultName": "Reuniones_ti.desarrollo"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1567945447,
+          "mode": "list",
+          "cachedResultName": "Reuniones"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "seriesMasterId"
+          ],
+          "schema": [
+            {
+              "id": "seriesMasterId",
+              "displayName": "seriesMasterId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "occurrenceId",
+              "displayName": "occurrenceId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "titulo",
+              "displayName": "titulo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "inicio",
+              "displayName": "inicio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fin",
+              "displayName": "fin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "zona_horaria",
+              "displayName": "zona_horaria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "organizador",
+              "displayName": "organizador",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "organizador_email",
+              "displayName": "organizador_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "soy_organizador",
+              "displayName": "soy_organizador",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "link_teams",
+              "displayName": "link_teams",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "es_online",
+              "displayName": "es_online",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "asistentes",
+              "displayName": "asistentes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "correos_asistentes",
+              "displayName": "correos_asistentes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "total_asistentes",
+              "displayName": "total_asistentes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ultima_sync",
+              "displayName": "ultima_sync",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tipo_evento",
+              "displayName": "tipo_evento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "800f6d74-37a3-4171-93af-d3a6e1b2fa3d",
+      "name": "Upsert Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1088,
+        3136
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1dfXMG0LKO08fcTdkC3C2tPK74rLXS9HD87GfqDAx7Oo",
+          "mode": "list",
+          "cachedResultName": "Reuniones_ti.desarrollo",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dfXMG0LKO08fcTdkC3C2tPK74rLXS9HD87GfqDAx7Oo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1567945447,
+          "mode": "list",
+          "cachedResultName": "Reuniones",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1dfXMG0LKO08fcTdkC3C2tPK74rLXS9HD87GfqDAx7Oo/edit#gid=1567945447"
+        },
+        "options": {}
+      },
+      "id": "2fb8f79b-6d50-402e-93aa-f04c2f70865f",
+      "name": "Leer Google Sheets1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        224,
+        3728
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "get-meetings",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "ed380c31-6c14-40a4-a4d1-34b0e0227691",
+      "name": "Webhook3",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        3728
+      ],
+      "webhookId": "6b68a844-c6c5-427b-a8e5-eff470a7c650"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "id": "bd52c32b-da44-43cf-8dc0-b25217d4584b",
+      "name": "Respond to Webhook3",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        512,
+        3728
+      ]
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mobilvendor.com",
+            "user-agent": "node",
+            "content-length": "41",
+            "accept": "*/*",
+            "accept-encoding": "br, gzip, deflate",
+            "accept-language": "*",
+            "content-type": "application/json",
+            "sec-fetch-mode": "cors",
+            "x-forwarded-for": "10.0.0.2",
+            "x-forwarded-host": "n8n.mobilvendor.com",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "d66efeba465b",
+            "x-real-ip": "10.0.0.2"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "email": "ti.desarrollo@mobilvendor.com"
+          },
+          "webhookUrl": "https://n8n.mobilvendor.com/webhook/get-meetings",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Webhook1": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mobilvendor.com",
+            "user-agent": "node",
+            "content-length": "41",
+            "accept": "*/*",
+            "accept-encoding": "br, gzip, deflate",
+            "accept-language": "*",
+            "content-type": "application/json",
+            "sec-fetch-mode": "cors",
+            "x-forwarded-for": "10.0.0.2",
+            "x-forwarded-host": "n8n.mobilvendor.com",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "d66efeba465b",
+            "x-real-ip": "10.0.0.2"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "email": "ti.desarrollo@mobilvendor.com"
+          },
+          "webhookUrl": "https://n8n.mobilvendor.com/webhook/get-meetings",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Webhook2": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mobilvendor.com",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+            "content-length": "123",
+            "accept": "application/json",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "en-US,en;q=0.9,es-419;q=0.8,es;q=0.7",
+            "content-type": "application/json",
+            "cookie": {
+              "__redacted": true,
+              "reason": "node_defined_field",
+              "canReveal": false
+            },
+            "origin": "chrome-extension://pagpfbbbagddapooeolpnijlmgaophbh",
+            "priority": "u=1, i",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "none",
+            "sec-fetch-storage-access": "active",
+            "x-forwarded-for": "10.0.0.2",
+            "x-forwarded-host": "n8n.mobilvendor.com",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "936a8da302ec",
+            "x-real-ip": "10.0.0.2"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "titulo": "(30) Calendar | pruebas chrome 15:30 (Externo) | Microsoft Teams",
+            "link_teams": "https://teams.cloud.microsoft/"
+          },
+          "webhookUrl": "https://n8n.mobilvendor.com/webhook/get-meetings",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Webhook3": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mobilvendor.com",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+            "content-length": "123",
+            "accept": "application/json",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "en-US,en;q=0.9,es-419;q=0.8,es;q=0.7",
+            "content-type": "application/json",
+            "cookie": {
+              "__redacted": true,
+              "reason": "node_defined_field",
+              "canReveal": false
+            },
+            "origin": "chrome-extension://pagpfbbbagddapooeolpnijlmgaophbh",
+            "priority": "u=1, i",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "none",
+            "sec-fetch-storage-access": "active",
+            "x-forwarded-for": "10.0.0.2",
+            "x-forwarded-host": "n8n.mobilvendor.com",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "936a8da302ec",
+            "x-real-ip": "10.0.0.2"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "titulo": "(30) Calendar | pruebas chrome 15:30 (Externo) | Microsoft Teams",
+            "link_teams": "https://teams.cloud.microsoft/"
+          },
+          "webhookUrl": "https://n8n.mobilvendor.com/webhook/get-meetings",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-05-07T02:32:49.838Z",
+      "createdAt": "2026-05-07T02:32:49.838Z",
+      "role": "workflow:owner",
+      "workflowId": "0LZ76kJYEEr3NhUL",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": {
+    "node:Schedule 7AM (L-V)": {
+      "recurrenceRules": []
+    },
+    "node:Schedule 7AM (L-V)1": {
+      "recurrenceRules": []
+    }
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-05-08T18:11:24.283Z",
+      "createdAt": "2026-05-08T18:11:24.283Z",
+      "id": "wdk8A6RYiA2pky4Y",
+      "name": "Meetings Sync"
+    }
+  ],
+  "triggerCount": 3,
+  "updatedAt": "2026-05-20T21:56:32.869Z",
+  "versionId": "7b1ad544-f6e2-448c-92b7-0c9e14a2cc5a"
+}
