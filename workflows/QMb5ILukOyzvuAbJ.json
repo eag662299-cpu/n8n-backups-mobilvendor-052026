@@ -1,0 +1,428 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Set RUC & File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set RUC & File": {
+      "main": [
+        [
+          {
+            "node": "Buscar carpeta RUC",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar carpeta RUC": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Existe carpeta?": {
+      "main": [
+        [
+          {
+            "node": "Prepare Files (Existente)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Crear carpeta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear carpeta": {
+      "main": [
+        [
+          {
+            "node": "Prepare Files (Existente)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Existe carpeta?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file (carpeta existente)": {
+      "main": [
+        [
+          {
+            "node": "Prepare Files (Existente)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Upload file (carpeta existente)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Files (Existente)": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:47.241Z",
+  "id": "QMb5ILukOyzvuAbJ",
+  "isArchived": false,
+  "meta": null,
+  "name": "CARGA DOCUMENTOS CLIENTE",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Subir documento Cliente",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "RUC",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Cargar Documentos",
+              "fieldType": "file"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c9e90170-1822-4794-aeb6-56873cfa5f31",
+      "name": "On form submission",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -704,
+        288
+      ],
+      "webhookId": "018dec0c-0153-4299-ab4a-fb0e4a115461"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "ruc",
+              "value": "={{ $json.RUC }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "dce5da30-7e34-4d1a-a04f-ef62e66fd19d",
+      "name": "Set RUC & File",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "item",
+        "site": {
+          "__rl": true,
+          "value": "mobilvendorcom.sharepoint.com,2a3c0e3c-63a7-4896-a1aa-eee69d62f998,eb7bc58d-8151-4fa3-bdc4-2e5dcf3c16d9",
+          "mode": "list",
+          "cachedResultName": "PRUEBA"
+        },
+        "list": {
+          "__rl": true,
+          "value": "cf121afc-5ba5-48c4-a0f1-e43087f539f9",
+          "mode": "list",
+          "cachedResultName": "Documentos"
+        },
+        "filter": "=",
+        "returnAll": true,
+        "options": {
+          "fields": [
+            "id",
+            "webUrl",
+            "fields"
+          ]
+        },
+        "simplify": false,
+        "requestOptions": {}
+      },
+      "id": "b4067f1f-735e-4fa9-a6bf-e5b3877900bb",
+      "name": "Buscar carpeta RUC",
+      "type": "n8n-nodes-base.microsoftSharePoint",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        288
+      ],
+      "credentials": {
+        "microsoftSharePointOAuth2Api": {
+          "id": "Mk0zfp4BGXet86UQ",
+          "name": "Microsoft SharePoint account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.existe }}",
+              "value2": "={{ true }}"
+            }
+          ]
+        }
+      },
+      "id": "96205d92-9461-4bb5-8b94-df3da003f8e1",
+      "name": "Existe carpeta?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        208,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "item",
+        "operation": "create",
+        "site": {
+          "__rl": true,
+          "value": "mobilvendorcom.sharepoint.com,2a3c0e3c-63a7-4896-a1aa-eee69d62f998,eb7bc58d-8151-4fa3-bdc4-2e5dcf3c16d9",
+          "mode": "list",
+          "cachedResultName": "PRUEBA"
+        },
+        "list": {
+          "__rl": true,
+          "value": "cf121afc-5ba5-48c4-a0f1-e43087f539f9",
+          "mode": "list",
+          "cachedResultName": "Documentos"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ContentType",
+              "canBeUsedToMatch": false,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "Tipo de contenido",
+              "readOnly": false,
+              "required": false,
+              "type": "number"
+            },
+            {
+              "id": "FileLeafRef",
+              "canBeUsedToMatch": false,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "Nombre",
+              "readOnly": false,
+              "required": true,
+              "type": "number"
+            },
+            {
+              "id": "Title",
+              "canBeUsedToMatch": false,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "Título",
+              "readOnly": false,
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "requestOptions": {}
+      },
+      "id": "3bc94260-1539-4e4b-ac26-5517cc417936",
+      "name": "Crear carpeta",
+      "type": "n8n-nodes-base.microsoftSharePoint",
+      "typeVersion": 1,
+      "position": [
+        416,
+        304
+      ],
+      "credentials": {
+        "microsoftSharePointOAuth2Api": {
+          "id": "Mk0zfp4BGXet86UQ",
+          "name": "Microsoft SharePoint account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtener el RUC desde el nodo Set RUC & File\nconst ruc = $('Set RUC & File').first().json.RUC;\n\n// Obtener items del nodo Buscar carpeta RUC\nconst items = $items(\"Buscar carpeta RUC\").map(i => i.json);\n\n// Buscar coincidencia por nombre o por URL\nconst match = items.find(i =>\n  (i.name && i.name.toString() === ruc) ||\n  (i.webUrl && decodeURIComponent(i.webUrl).includes(\"/RUC/\" + ruc))\n);\n\n// Extraer datos si existe carpeta\nlet carpetaId = null;\nlet carpetaUrl = null;\nlet listId = null;\nlet folderGuid = null;\n\n// ESTE ES EL VALOR QUE QUIERES\nconst driveId = $input.first().json.id || null;\n\nif (match) {\n  carpetaId = match.id; // List item ID\n  carpetaUrl = match.webUrl;\n\n  if (match.parentReference) {\n    listId = match.parentReference.listId || null;      \n    folderGuid = match.parentReference.id || null;\n  }\n}\n\nreturn [\n  {\n    json: {\n      ruc,\n      existe: !!match,\n      carpetaId,\n      carpetaUrl,\n      listId,\n      folderGuid,\n      driveId  // ← YA ESTÁ INCLUIDO AQUÍ\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        32,
+        288
+      ],
+      "id": "3dfb7ccc-4c4b-4676-88c6-cfdfc4960a81",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "site": {
+          "__rl": true,
+          "value": "mobilvendorcom.sharepoint.com,2a3c0e3c-63a7-4896-a1aa-eee69d62f998,eb7bc58d-8151-4fa3-bdc4-2e5dcf3c16d9",
+          "mode": "list",
+          "cachedResultName": "PRUEBA"
+        },
+        "folder": {
+          "__rl": true,
+          "value": "={{ $('Code').item.json.driveId }}",
+          "mode": "id"
+        },
+        "fileName": "={{ $('Prepare Files (Existente)').item.json.filename }}",
+        "fileContents": "data",
+        "requestOptions": {}
+      },
+      "id": "a437de4e-63d2-4c6e-aafb-bfebffafb718",
+      "name": "Upload file (carpeta existente)",
+      "type": "n8n-nodes-base.microsoftSharePoint",
+      "typeVersion": 1,
+      "position": [
+        1248,
+        176
+      ],
+      "credentials": {
+        "microsoftSharePointOAuth2Api": {
+          "id": "Mk0zfp4BGXet86UQ",
+          "name": "Microsoft SharePoint account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        960,
+        160
+      ],
+      "id": "a12ad779-5d4d-4a89-9f82-1bc23e3aea7c",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Obtener el nodo del formulario\nconst form = $('On form submission').first();\n\n// 2. Verificar que existan binarios\nif (!form.binary) {\n  throw new Error(\"No se recibieron binarios desde el formulario.\");\n}\n\n// 3. Detectar todos los binarios del formulario cuyo nombre comience con 'Cargar_Documentos_'\nconst binaryKeys = Object.keys(form.binary).filter(k =>\n  k.startsWith(\"Cargar_Documentos_\")\n);\n\n// Validar\nif (binaryKeys.length === 0) {\n  throw new Error(\"No se encontraron binarios con el prefijo 'Cargar_Documentos_'.\");\n}\n\n// 4. Ordenar los binarios por número (_0, _1, _2...)\nbinaryKeys.sort((a, b) => {\n  const ai = parseInt(a.split(\"_\").pop());\n  const bi = parseInt(b.split(\"_\").pop());\n  return ai - bi;\n});\n\n// 5. Construir array de binarios en orden\nconst filesBinary = binaryKeys.map(k => form.binary[k]);\n\n// 6. Obtener los JSON de archivos\nconst filesJson = form.json[\"Cargar Documentos\"];\n\n// 7. Obtener carpeta destino\nconst carpetaId = $input.item.json.carpetaId || $input.item.json.id;\n\n// 8. Empaquetar todo para el loop\nreturn filesJson.map((file, i) => ({\n  json: {\n    filename: file.filename,\n    mimetype: file.mimetype,\n    size: file.size,\n    carpetaId\n  },\n  binary: {\n    data: filesBinary[i]\n  }\n}));\n"
+      },
+      "id": "8a8013d9-569c-4f82-a42a-8475a0b84f28",
+      "name": "Prepare Files (Existente)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        784,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.microsoft.com/v1.0/sites/{{ $json.parentReference.siteId }}//lists/{{ $json.parentReference.listId }}/items/2/driveItem",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -128,
+        288
+      ],
+      "id": "6baa6050-d966-441f-8a1d-e477b0614c05",
+      "name": "HTTP Request",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "rtxDh1vSk3F4bb0q",
+          "name": "Conexion SharePoint"
+        }
+      }
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:48.170Z",
+      "createdAt": "2026-01-13T02:49:48.170Z",
+      "role": "workflow:owner",
+      "workflowId": "QMb5ILukOyzvuAbJ",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T15:06:28.223Z",
+  "versionId": "5dee1364-b23a-42f7-b156-e3c7600a70de"
+}
