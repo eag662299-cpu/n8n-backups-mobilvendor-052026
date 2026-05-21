@@ -1,0 +1,493 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Buscar Empresas (Google Maps)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Empresas (Google Maps)": {
+      "main": [
+        [
+          {
+            "node": "Normalizar Empresas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar Empresas": {
+      "main": [
+        [
+          {
+            "node": "Buscar Decisores (LinkedIn)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Decisores (LinkedIn)": {
+      "main": [
+        [
+          {
+            "node": "Extraer URLs LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer URLs LinkedIn": {
+      "main": [
+        [
+          {
+            "node": "Calificar Lead (Scoring)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calificar Lead (Scoring)": {
+      "main": [
+        [
+          {
+            "node": "Crear Lead en Bitrix24",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear Lead en Bitrix24": {
+      "main": [
+        [
+          {
+            "node": "Registrar en Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar en Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Notificación Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:47.262Z",
+  "id": "fGiQqOj1xWPPm028",
+  "isArchived": false,
+  "meta": null,
+  "name": "Lead Generation - Google Maps + LinkedIn + Bitrix24",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-trigger",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search.json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "engine",
+              "value": "google_maps"
+            },
+            {
+              "name": "q",
+              "value": "gerentes de consumo masivo Quito"
+            },
+            {
+              "name": "api_key",
+              "value": "fb7a79e37aa19a853dd0a09214f700090969eaef67a43aeb76cffda8fb2d4838"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "http-serpapi-maps",
+      "name": "Buscar Empresas (Google Maps)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        464,
+        304
+      ],
+      "notes": "Busca empresas en Google Maps usando SerpApi"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items[0].json.local_results.map(biz => ({\n  json: {\n    nombre: biz.title || \"\",\n    direccion: biz.address || \"\",\n    telefono: biz.phone || \"\",\n    web: biz.website || \"\",\n    categoria: biz.type || \"\",\n    rating: biz.rating || 0,\n    reviews: biz.reviews || 0,\n    ciudad: \"Quito\"\n  }\n}));"
+      },
+      "id": "code-normalize",
+      "name": "Normalizar Empresas",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        304
+      ],
+      "notes": "Extrae y normaliza la información de cada empresa"
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search.json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "engine",
+              "value": "google"
+            },
+            {
+              "name": "q",
+              "value": "=site:linkedin.com/in director comercial {{ $json.nombre }} {{ $json.ciudad }}"
+            },
+            {
+              "name": "api_key",
+              "value": "=fb7a79e37aa19a853dd0a09214f700090969eaef67a43aeb76cffda8fb2d4838"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "http-serpapi-linkedin",
+      "name": "Buscar Decisores (LinkedIn)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        912,
+        304
+      ],
+      "notes": "Busca perfiles de LinkedIn relacionados con la empresa"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => ({\n  json: {\n    ...item.json,\n    perfil_linkedin: item.json.organic_results?.[0]?.link || \"\",\n    titulo: item.json.organic_results?.[0]?.title || \"\",\n    descripcion: item.json.organic_results?.[0]?.snippet || \"\"\n  }\n}));"
+      },
+      "id": "code-extract-linkedin",
+      "name": "Extraer URLs LinkedIn",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        304
+      ],
+      "notes": "Extrae el primer resultado de LinkedIn encontrado"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const score =\n    (item.json.rating > 4 ? 3 : 0) +\n    (item.json.reviews > 100 ? 2 : 0) +\n    (item.json.perfil_linkedin ? 3 : 0) +\n    (item.json.descripcion.toLowerCase().includes(\"gerente\") || \n     item.json.descripcion.toLowerCase().includes(\"director\") ? 2 : 0);\n\n  const calidad =\n    score >= 7 ? \"ALTA\" :\n    score >= 4 ? \"MEDIA\" : \"BAJA\";\n\n  return {\n    json: {\n      ...item.json,\n      lead_score: score,\n      calidad_lead: calidad,\n      fecha_captura: new Date().toISOString().split('T')[0]\n    }\n  };\n});"
+      },
+      "id": "code-lead-scoring",
+      "name": "Calificar Lead (Scoring)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        304
+      ],
+      "notes": "Asigna puntuación de calidad al lead basado en criterios"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.BITRIX_WEBHOOK_URL }}crm.lead.add.json",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "fields[TITLE]",
+              "value": "={{ $json.nombre }} - {{ $json.calidad_lead }}"
+            },
+            {
+              "name": "fields[NAME]",
+              "value": "={{ $json.titulo }}"
+            },
+            {
+              "name": "fields[STATUS_ID]",
+              "value": "NEW"
+            },
+            {
+              "name": "fields[PHONE][0][VALUE]",
+              "value": "={{ $json.telefono }}"
+            },
+            {
+              "name": "fields[PHONE][0][VALUE_TYPE]",
+              "value": "WORK"
+            },
+            {
+              "name": "fields[WEB][0][VALUE]",
+              "value": "={{ $json.web }}"
+            },
+            {
+              "name": "fields[COMMENTS]",
+              "value": "=LinkedIn: {{ $json.perfil_linkedin }}\nDirección: {{ $json.direccion }}\nCategoría: {{ $json.categoria }}\nRating: {{ $json.rating }} ({{ $json.reviews }} reviews)\nCalidad: {{ $json.calidad_lead }}\nScore: {{ $json.lead_score }}"
+            },
+            {
+              "name": "fields[SOURCE_DESCRIPTION]",
+              "value": "SerpApi Google Maps + LinkedIn"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "http-bitrix",
+      "name": "Crear Lead en Bitrix24",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1568,
+        304
+      ],
+      "disabled": true,
+      "notes": "Crea el lead automáticamente en Bitrix24 CRM"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1uiuWv6L6KISITbHa_56sHkxo7CrubYmyu7QW8P5s9j4",
+          "mode": "list",
+          "cachedResultName": "prospeccion",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uiuWv6L6KISITbHa_56sHkxo7CrubYmyu7QW8P5s9j4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uiuWv6L6KISITbHa_56sHkxo7CrubYmyu7QW8P5s9j4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "search_metadata",
+              "displayName": "search_metadata",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "search_parameters",
+              "displayName": "search_parameters",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "search_information",
+              "displayName": "search_information",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "error",
+              "displayName": "error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "perfil_linkedin",
+              "displayName": "perfil_linkedin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "titulo",
+              "displayName": "titulo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "descripcion",
+              "displayName": "descripcion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "lead_score",
+              "displayName": "lead_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "calidad_lead",
+              "displayName": "calidad_lead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha_captura",
+              "displayName": "fecha_captura",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "organic_results",
+              "displayName": "organic_results",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "pagination",
+              "displayName": "pagination",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "serpapi_pagination",
+              "displayName": "serpapi_pagination",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "inline_images",
+              "displayName": "inline_images",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "google-sheets",
+      "name": "Registrar en Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1792,
+        304
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fm3jifX2nPTobuSZ",
+          "name": "Google Sheets account"
+        }
+      },
+      "notes": "Guarda registro del lead en hoja de cálculo"
+    },
+    {
+      "parameters": {
+        "subject": "🔔 Nuevo Lead Capturado - {{ $json.calidad_lead }}",
+        "options": {}
+      },
+      "id": "send-email",
+      "name": "Notificación Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        304
+      ],
+      "webhookId": "7fbfb552-1bda-4e15-8ab3-a1e198eea6f9",
+      "notes": "Envía notificación cuando se captura un lead"
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:48.186Z",
+      "createdAt": "2026-01-13T02:49:48.186Z",
+      "role": "workflow:owner",
+      "workflowId": "fGiQqOj1xWPPm028",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T02:49:47.262Z",
+  "versionId": "cd564ca9-fc23-4ad2-9fa2-e06f249de9d3"
+}
