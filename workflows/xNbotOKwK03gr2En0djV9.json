@@ -1,0 +1,69 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-28T20:42:57.889Z",
+  "id": "xNbotOKwK03gr2En0djV9",
+  "isArchived": false,
+  "meta": null,
+  "name": "My workflow 27",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d5141e9a-7c40-4f66-96f0-66c4c6f33175",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://n8n.mobilvendor.com/webhook/learning/videos",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "19340da1-80ba-484b-9579-0882473f4f4d",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-28T20:42:57.896Z",
+      "createdAt": "2026-01-28T20:42:57.896Z",
+      "role": "workflow:owner",
+      "workflowId": "xNbotOKwK03gr2En0djV9",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-28T20:43:05.586Z",
+  "versionId": "de9989af-0419-469a-aecf-26982a478116"
+}
