@@ -1,0 +1,741 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-01-30T21:08:16.000Z",
+    "createdAt": "2026-01-30T21:07:59.814Z",
+    "versionId": "20cc039f-e83f-4d33-873d-4156e9725777",
+    "workflowId": "Mob7xZo3qeI206p8",
+    "nodes": [
+      {
+        "parameters": {},
+        "id": "c5bb9f12-6dc7-44ab-9c06-7bd92d27100a",
+        "name": "Manual Trigger",
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          64,
+          208
+        ]
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1IQoeynFSkj6wop93HmnjDeKSF9VWyJ1Bl6CohPeQes0",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Fireflies Meetings",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IQoeynFSkj6wop93HmnjDeKSF9VWyJ1Bl6CohPeQes0/edit#gid=0"
+          },
+          "options": {}
+        },
+        "id": "c03b3a78-629c-481b-982d-bd4062e29f36",
+        "name": "Google Sheets - Get Row(s)",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          368,
+          208
+        ],
+        "alwaysOutputData": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "/*\n  Cálculo de cumplimiento semanal flexible (laboral)\n  - Si viene semana manual → calcula esa semana específica (lunes–viernes)\n  - Si NO → semana laboral automática:\n        * Lunes → fin = viernes\n        * Martes–Viernes → fin = hoy\n        * Sábado/Domingo → fin = viernes\n  - Soporta fechas Fireflies: \"Wed, Nov 12th - 08:05 AM-05:00 GMT (7 mins)\"\n*/\n\n/* ============================================================\n   CONFIGURACIÓN MANUAL DE SEMANA (DENTRO DEL CÓDIGO)\n   ============================================================ */\nconst SEMANA_INICIO_MANUAL = ''; // <-- pon aquí el lunes que quieras, o deja '' para automático\n\nconst CONFIG = {\n  \"REUNIÓN_D.ORGANIZACIONAL_DAILY\": { grupo: \"D. Organizacional\", dias: [\"LUNES\",\"MARTES\",\"MIERCOLES\",\"JUEVES\",\"VIERNES\"], esperadas: 5 },\n  \n  // SOPORTE - acepta ambas variantes de nombre\n  \"Daily - Soporte\": { grupo: \"Soporte\", dias: [\"LUNES\",\"MIERCOLES\",\"VIERNES\"], esperadas: 3 },\n  \"Daily Soporte\": { grupo: \"Soporte\", dias: [\"LUNES\",\"MIERCOLES\",\"VIERNES\"], esperadas: 3 },\n  \n  // COMERCIAL - ahora es WEEKLY (solo lunes)\n  \"REUNIÓN_COMERCIAL_WEEKLY\": { grupo: \"Comercial\", dias: [\"LUNES\"], esperadas: 1 },\n  \n  // TICs - todas las variantes cuentan hacia el mismo grupo\n  \"DAILY-TIC's\": { grupo: \"TICs\", dias: [\"LUNES\",\"MIERCOLES\",\"VIERNES\"], esperadas: 3 },\n  \"RESUMEN_DAILY_TICs\": { grupo: \"TICs\", dias: [\"LUNES\",\"MIERCOLES\",\"VIERNES\"], esperadas: 3 },\n  \"RESUMEN_DAILY_TCIS\": { grupo: \"TICs\", dias: [\"LUNES\",\"MIERCOLES\",\"VIERNES\"], esperadas: 3 },\n  \"RESUMEN_DAILY_TICS\": { grupo: \"TICs\", dias: [\"LUNES\",\"MIERCOLES\",\"VIERNES\"], esperadas: 3 },\n  \n  \"DAILY_MARKETING_TAREAS\": { grupo: \"Marketing\", dias: [\"LUNES\",\"MIERCOLES\",\"VIERNES\"], esperadas: 3 },\n  \n  // FINANCIERO LATAM se mantiene\n  \"REUNION_FINANCIERO_LATAM_DAILY\": { grupo: \"Financiero LATAM\", dias: [\"LUNES\"], esperadas: 1 },\n  \n  // FINANCIERO - ahora es WEEKLY (solo lunes)\n  \"REUNION_FINANCIERO_DAILY\": { grupo: \"Financiero\", dias: [\"LUNES\"], esperadas: 1 },\n  \n  // PROYECTOS - nuevo grupo WEEKLY\n  \"REUNIÓN_PROY.MOBILVENDOR_WEEKLY\": { grupo: \"Proyectos\", dias: [\"LUNES\"], esperadas: 1 },\n\n  // GERENCIA - acepta ambas variantes\n  \"REUNIÓN_GERENCIA_WEEKLY\": { grupo: \"Gerencia\", dias: [\"LUNES\"], esperadas: 1 },\n  \"Reunión_Gerencia_Weekly\": { grupo: \"Gerencia\", dias: [\"LUNES\"], esperadas: 1 },\n\n  // OPERACIONES - todas las variantes del mismo grupo\n  \"REUNIÓN_WEEKLY_OPERACIONES\": { grupo: \"Operaciones\", dias: [\"LUNES\",\"MIERCOLES\",\"VIERNES\"], esperadas: 3 },\n  \"REUNIÓN_OPERACIONES_WEEKLY\": { grupo: \"Operaciones\", dias: [\"LUNES\",\"MIERCOLES\",\"VIERNES\"], esperadas: 3 },\n  \"REUNIÓN_INHOUSE_WEEKLY\": { grupo: \"Operaciones\", dias: [\"LUNES\",\"MIERCOLES\",\"VIERNES\"], esperadas: 3 }\n};\n\nfunction safeStr(v) {\n  if (v === null || v === undefined) return \"\";\n  return String(v);\n}\n\n/* ============================================================\n      SELECCIÓN DE SEMANA FLEXIBLE LABORAL\n   ============================================================ */\n\nfunction getMonday(date) {\n  const d = new Date(date);\n  const day = d.getDay();\n  const diff = day === 0 ? -6 : 1 - day;\n  d.setDate(d.getDate() + diff);\n  d.setHours(0,0,0,0);\n  return d;\n}\n\nlet semanaManual = null;\n\n// Semana manual desde código\nif (SEMANA_INICIO_MANUAL) {\n  const d = new Date(SEMANA_INICIO_MANUAL);\n  if (!isNaN(d)) semanaManual = d;\n}\n\n// Semana manual recibida desde JSON (opcional)\nif (!semanaManual && $json.semanaInicio) {\n  const d2 = new Date($json.semanaInicio);\n  if (!isNaN(d2)) semanaManual = d2;\n}\n\nlet inicio, fin;\n\nif (semanaManual) {\n  // Semana manual laboral → lunes a viernes\n  inicio = new Date(semanaManual);\n  inicio.setHours(0,0,0,0);\n\n  fin = new Date(inicio);\n  fin.setDate(inicio.getDate() + 4); // viernes\n  fin.setHours(23,59,59,999);\n\n} else {\n  // ==========================\n  // semana laboral automática\n  // ==========================\n  const hoy = new Date();\n  inicio = getMonday(hoy);\n\n  const dia = hoy.getDay(); // 0 dom, 1 lun, ... 6 sab\n\n  if (dia === 1) {\n    // Lunes → lunes a viernes\n    fin = new Date(inicio);\n    fin.setDate(inicio.getDate() + 4);\n  } else if (dia >= 2 && dia <= 5) {\n    // Martes–Viernes → inicio lunes, fin hoy\n    fin = new Date(hoy);\n  } else {\n    // Sábado/Domingo → cerrar en viernes\n    fin = new Date(inicio);\n    fin.setDate(inicio.getDate() + 4);\n  }\n\n  fin.setHours(23,59,59,999);\n}\n\n/* ============================================================\n      PARSEO DE FECHAS FIRELIES / GOOGLESHEETS\n   ============================================================ */\n\nconst MONTHS = {\n  jan:0,feb:1,mar:2,apr:3,may:4,jun:5,\n  jul:6,aug:7,sep:8,oct:9,nov:10,dec:11\n};\n\nfunction buildDateFromParts(year, monthIdx, dayNum, hour24, minute, offset) {\n  const mm = String(monthIdx + 1).padStart(2,'0');\n  const dd = String(dayNum).padStart(2,'0');\n  const HH = String(hour24).padStart(2,'0');\n  const MI = String(minute).padStart(2,'0');\n\n  if (offset) {\n    const iso = `${year}-${mm}-${dd}T${HH}:${MI}:00${offset}`;\n    const d = new Date(iso);\n    return isNaN(d) ? null : d;\n  }\n  const d = new Date(year, monthIdx, dayNum, hour24, minute);\n  return isNaN(d) ? null : d;\n}\n\nfunction parseSpecialMeetingDate(raw) {\n  const s = safeStr(raw).trim();\n  if (!s) return null;\n\n  const re = /^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\\s*([A-Za-z]{3})\\s*(\\d{1,2})(?:st|nd|rd|th)?\\s*-\\s*(\\d{1,2}):(\\d{2})\\s*(AM|PM)(?:[^\\d]*(\\+\\d{2}:\\d{2}|-\\d{2}:\\d{2}))?/i;\n  const m = s.match(re);\n  if (!m) return null;\n\n  const monthIdx = MONTHS[m[1].toLowerCase()];\n  if (monthIdx === undefined) return null;\n\n  let hh = Number(m[3]);\n  const minute = Number(m[4]);\n  const ampm = m[5].toUpperCase();\n  const offset = m[6] || null;\n\n  if (ampm === \"PM\" && hh !== 12) hh += 12;\n  if (ampm === \"AM\" && hh === 12) hh = 0;\n\n  const year = inicio.getFullYear();\n  const dayNum = Number(m[2]);\n\n  const candidates = [year, year - 1, year + 1];\n  for (const y of candidates) {\n    const d = buildDateFromParts(y, monthIdx, dayNum, hh, minute, offset);\n    if (d && d >= inicio && d <= fin) return d;\n  }\n\n  return buildDateFromParts(year, monthIdx, dayNum, hh, minute, offset);\n}\n\nfunction parseSheetsDate(raw) {\n  if (raw instanceof Date) return raw;\n\n  if (typeof raw === \"number\") {\n    const ms = Math.round((raw - 25569) * 86400 * 1000);\n    const d = new Date(ms);\n    return isNaN(d) ? null : d;\n  }\n\n  const special = parseSpecialMeetingDate(raw);\n  if (special) return special;\n\n  const s = safeStr(raw).trim();\n  if (!s) return null;\n\n  const d = new Date(s);\n  if (!isNaN(d)) return d;\n\n  const dm = s.match(/^(\\d{1,2})\\/(\\d{1,2})\\/(\\d{4})$/);\n  if (dm) {\n    const dd = Number(dm[1]);\n    const mm = Number(dm[2]) - 1;\n    const yy = Number(dm[3]);\n    const d2 = new Date(Date.UTC(yy, mm, dd));\n    return isNaN(d2) ? null : d2;\n  }\n\n  return null;\n}\n\n/* ============================================================\n      PROCESAMIENTO DE FILAS\n   ============================================================ */\n\nconst stats = {};\nfor (const k of Object.keys(CONFIG)) {\n  const c = CONFIG[k];\n  if (!stats[c.grupo]) {\n    stats[c.grupo] = {\n      departamento: c.grupo,\n      dias: c.dias,\n      esperadas: c.esperadas,\n      realizadas: 0,\n      fechas: new Set(),\n      textoChunks: []\n    };\n  }\n}\n\nconst rows = $input.all();\nconst reunionesPorGrupoDia = {}; // Para evitar duplicados: grupo_YYYY-MM-DD\n\nfor (const item of rows) {\n  const r = item.json || {};\n  const title = safeStr(r[\"Title\"]).trim();\n  if (!title || !CONFIG[title]) continue;\n\n  const fecha = parseSheetsDate(r[\"Date\"]);\n  if (!fecha) continue;\n  if (fecha < inicio || fecha > fin) continue;\n\n  const cfg = CONFIG[title];\n  const s = stats[cfg.grupo];\n\n  // Crear clave única: grupo + fecha (solo día, sin hora)\n  const fechaSolo = fecha.toISOString().slice(0, 10);\n  const claveUnica = `${cfg.grupo}_${fechaSolo}`;\n\n  // Solo contar si no hemos visto esta reunión de este grupo en este día\n  if (!reunionesPorGrupoDia[claveUnica]) {\n    reunionesPorGrupoDia[claveUnica] = true;\n    s.realizadas += 1;\n    s.fechas.add(fecha.toISOString());\n  }\n\n  // Siempre agregar el contenido (aunque sea del mismo día)\n  const chunk = [\n    safeStr(r[\"Gist\"]),\n    safeStr(r[\"Overview\"]),\n    safeStr(r[\"Notes\"]),\n    safeStr(r[\"Action Items\"])\n  ].join(\" \").trim();\n\n  if (chunk) s.textoChunks.push(chunk);\n}\n\n/* ============================================================\n      ARMADO DEL RESULTADO\n   ============================================================ */\n\nconst MAX_CHARS = 12000;\n\nreturn Object.values(stats).map(s => {\n  const texto = s.textoChunks.join(\"\\n\");\n  const textoRecortado =\n    texto.length > MAX_CHARS ? texto.slice(0, MAX_CHARS) + \"\\n... (recortado)\" : texto;\n\n  const cumplimiento =\n    s.esperadas > 0 ? Math.round((s.realizadas / s.esperadas) * 100) : 0;\n\n  return {\n    json: {\n      departamento: s.departamento,\n      diasEsperados: s.dias,\n      reunionesEsperadas: s.esperadas,\n      reunionesRealizadas: s.realizadas,\n      cumplimiento,\n      texto: textoRecortado,\n      semana: {\n        inicio: inicio.toISOString().slice(0, 10),\n        fin: fin.toISOString().slice(0, 10)\n      }\n    }\n  };\n});\n"
+        },
+        "id": "540d981c-921b-46d6-9178-7770cbb941e5",
+        "name": "Calcular Cumplimiento",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          704,
+          208
+        ],
+        "alwaysOutputData": true
+      },
+      {
+        "parameters": {
+          "modelId": {
+            "__rl": true,
+            "value": "gpt-4.1-mini",
+            "mode": "list",
+            "cachedResultName": "GPT-4.1-MINI"
+          },
+          "messages": {
+            "values": [
+              {
+                "content": "Eres un asistente experto que genera resúmenes ejecutivos semanales.",
+                "role": "system"
+              },
+              {
+                "content": "={{ `\nDepartamento: ${$json.departamento}\n\nResumen ejecutivo:\n\n- Si en varias reuniones se abordan los mismos temas, se menciona una vez con su estado actualizado.\n- Si no hay contenido relevante, indica: \"Sin novedades registradas.\"\n\nContenido:\n\n${$json.texto || 'Sin novedades registradas'}\n\nTemas tratados:\n\n` }}\n"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "213081f1-fa6e-4485-bf2c-3b718d108641",
+        "name": "Resumen IA (OpenAI)",
+        "type": "@n8n/n8n-nodes-langchain.openAi",
+        "typeVersion": 1.8,
+        "position": [
+          1024,
+          208
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "E7b7vwKLzPo4JwAR",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "/*\n  Extraer Resumen IA\n  - Normaliza la salida del nodo OpenAI (langchain) a un campo: `resumen`\n  - Soporta múltiples formatos de salida (choices, output, text, content, response, etc.)\n  - Mantiene 1 item por item\n*/\n\nfunction safeStr(v) {\n  if (v === null || v === undefined) return \"\";\n  return String(v);\n}\n\nfunction getByPath(obj, path) {\n  try {\n    return path.split('.').reduce((acc, key) => {\n      if (acc === null || acc === undefined) return undefined;\n      const m = key.match(/^(\\w+)\\[(\\d+)\\]$/);\n      if (m) {\n        const k = m[1];\n        const idx = Number(m[2]);\n        return acc?.[k]?.[idx];\n      }\n      return acc?.[key];\n    }, obj);\n  } catch (e) {\n    return undefined;\n  }\n}\n\nconst CANDIDATE_PATHS = [\n  // OpenAI estándar\n  'choices[0].message.content',\n  'choices[0].text',\n  // Langchain/n8n variantes\n  'output',\n  'text',\n  'content',\n  'response',\n  'resumen',\n  'data.output',\n  'data.text',\n  'data.content',\n  'data.response',\n  'result.output',\n  'result.text',\n  'result.content',\n  // Algunas estructuras de mensajes\n  'message.content',\n  'message',\n  // Variantes con arrays\n  'generations[0].text',\n  'generations[0].message.content'\n];\n\nreturn $input.all().map(item => {\n  const j = item.json || {};\n\n  let resumen = \"\";\n  for (const p of CANDIDATE_PATHS) {\n    const v = getByPath(j, p);\n    const s = safeStr(v).trim();\n    if (s) {\n      resumen = s;\n      break;\n    }\n  }\n\n  // Fallback: si existe cualquier string grande en el JSON, tomar el más largo (solo si parece resumen)\n  if (!resumen) {\n    const strings = [];\n    const stack = [j];\n    const visited = new Set();\n    while (stack.length) {\n      const cur = stack.pop();\n      if (!cur || typeof cur !== 'object') continue;\n      if (visited.has(cur)) continue;\n      visited.add(cur);\n      for (const [k, v] of Object.entries(cur)) {\n        if (typeof v === 'string') {\n          const sv = v.trim();\n          if (sv && sv.length >= 20) strings.push(sv);\n        } else if (v && typeof v === 'object') {\n          stack.push(v);\n        }\n      }\n    }\n    strings.sort((a, b) => b.length - a.length);\n    if (strings[0]) resumen = strings[0];\n  }\n\n  const resumenFinal = resumen || \"Sin novedades registradas.\";\n\n  return { json: { resumen: resumenFinal } };\n});"
+        },
+        "id": "9262da87-0db2-40c5-82f1-b9aef0d2d3ad",
+        "name": "Extraer Resumen IA",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1360,
+          336
+        ],
+        "alwaysOutputData": true
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "combinationMode": "mergeByPosition",
+          "options": {
+            "fuzzyCompare": false,
+            "includeUnpaired": true
+          }
+        },
+        "id": "da198942-3fa0-450e-92e9-b4989e881219",
+        "name": "Merge (Stats + Resumen)",
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 2.1,
+        "position": [
+          1552,
+          208
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "/*\n  Generar HTML de reporte\n*/\n\nconst items = $input.all();\nconst semana = items?.[0]?.json?.semana || { inicio: \"\", fin: \"\" };\n\nlet html = `<h2>📊 Informe Semanal de Reuniones</h2>\n<p><b>Semana:</b> ${semana.inicio} al ${semana.fin}</p>\n\n<h3>1️⃣ Cumplimiento</h3>\n<table border=\"1\" cellpadding=\"6\" style=\"border-collapse: collapse;\">\n<tr><th>Departamento</th><th>Cumplimiento</th><th>Realizadas</th><th>Esperadas</th></tr>`;\n\nfor (const i of items) {\n  const j = i.json;\n  const c = (j.cumplimiento >= 90) ? \"green\" : (j.cumplimiento >= 70) ? \"orange\" : \"red\";\n\n  html += `<tr>\n    <td>${j.departamento}</td>\n    <td style=\"color:${c}\"><b>${j.cumplimiento}%</b></td>\n    <td>${j.reunionesRealizadas}</td>\n    <td>${j.reunionesEsperadas}</td>\n  </tr>`;\n}\n\nhtml += `</table>\n\n<h3>2️⃣ Resumen por área</h3>`;\n\nfor (const i of items) {\n  const j = i.json;\n  const resumen = (j.resumen || \"Sin novedades registradas.\").replace(/\\n/g, \"<br>\");\n  html += `<h4>${j.departamento}</h4><p>${resumen}</p>`;\n}\n\nreturn [{ json: { html } }];"
+        },
+        "id": "e02597fe-18c9-410a-b137-81a9c0c6d23b",
+        "name": "Generar HTML",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1792,
+          208
+        ]
+      },
+      {
+        "parameters": {
+          "toRecipients": "t.garzon@mobilvendor.com",
+          "subject": "Informe Semanal de Reuniones",
+          "bodyContent": "={{ $json.html }}",
+          "additionalFields": {
+            "bodyContentType": "html"
+          }
+        },
+        "type": "n8n-nodes-base.microsoftOutlook",
+        "typeVersion": 2,
+        "position": [
+          2000,
+          208
+        ],
+        "id": "c6353fbe-8048-45cb-8753-6bc1e491261f",
+        "name": "Send a message",
+        "webhookId": "64e2ebd2-59ec-4b0a-81d4-75ba18c2eb7c",
+        "credentials": {
+          "microsoftOutlookOAuth2Api": {
+            "id": "JySFgjY3Gqtx7Gdo",
+            "name": "Microsoft Outlook account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "weeks",
+                "triggerAtHour": 12
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          64,
+          384
+        ],
+        "id": "93a66b59-9302-49fb-a5aa-d84447f172b3",
+        "name": "Schedule Trigger"
+      },
+      {
+        "parameters": {
+          "content": "## Descripción General\nEste flujo genera automáticamente el informe semanal de reuniones de Mobilvendor.\nCombina datos de Google Sheets, cálculo de cumplimiento, análisis de IA y envío automático vía Outlook."
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          0,
+          -352
+        ],
+        "typeVersion": 1,
+        "id": "59311574-df37-4d47-a1b0-b66c6f34ccf2",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "content": "## Frecuencia de Ejecución \n\nAutomático: Cada domingo a las 12:00 AM mediante Schedule Trigger.\n\nManual: Puede ejecutarse bajo demanda desde n8n.",
+          "height": 688
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          0,
+          -160
+        ],
+        "typeVersion": 1,
+        "id": "ab43e673-dc5c-4443-8ff7-04920836b492",
+        "name": "Sticky Note1"
+      },
+      {
+        "parameters": {
+          "content": "## Cálculo cumplimiento\n\nConfigurada en el Code Node:\nconst SEMANA_INICIO_MANUAL = 'YYYY-MM-DD';\nSe toma lunes → viernes.\n\nSemana Automática\n\nLunes → lunes a viernes\n\nMartes–Viernes → lunes a hoy\n\nSábado/Domingo → semana laboral anterior (lunes–viernes)",
+          "height": 688,
+          "color": 4
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          640,
+          -160
+        ],
+        "typeVersion": 1,
+        "id": "8e884932-7ecd-4c6b-9b75-a0d50160b486",
+        "name": "Sticky Note2"
+      },
+      {
+        "parameters": {
+          "content": "## Generación de Resumen por Departamento\n\nLa IA genera un resumen por departamento utilizando:\n\nGist\n\nOverview\n\nNotes\n\nAction Items\n\nSi no hay texto → “Sin novedades registradas”",
+          "height": 688,
+          "width": 304,
+          "color": 5
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          976,
+          -160
+        ],
+        "typeVersion": 1,
+        "id": "6d8bcbce-dc4e-4901-b3fc-6724de46cc52",
+        "name": "Sticky Note3"
+      }
+    ],
+    "connections": {
+      "Manual Trigger": {
+        "main": [
+          [
+            {
+              "node": "Google Sheets - Get Row(s)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Sheets - Get Row(s)": {
+        "main": [
+          [
+            {
+              "node": "Calcular Cumplimiento",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Calcular Cumplimiento": {
+        "main": [
+          [
+            {
+              "node": "Resumen IA (OpenAI)",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Merge (Stats + Resumen)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Resumen IA (OpenAI)": {
+        "main": [
+          [
+            {
+              "node": "Extraer Resumen IA",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extraer Resumen IA": {
+        "main": [
+          [
+            {
+              "node": "Merge (Stats + Resumen)",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Merge (Stats + Resumen)": {
+        "main": [
+          [
+            {
+              "node": "Generar HTML",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Generar HTML": {
+        "main": [
+          [
+            {
+              "node": "Send a message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Google Sheets - Get Row(s)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "ZEI MOBILVENDOR",
+    "name": "Version 3",
+    "description": "Se realizan cambios  en la cantidad de reuniones  en el código de cumplimiento",
+    "autosaved": true
+  },
+  "activeVersionId": "20cc039f-e83f-4d33-873d-4156e9725777",
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Get Row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Get Row(s)": {
+      "main": [
+        [
+          {
+            "node": "Calcular Cumplimiento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcular Cumplimiento": {
+      "main": [
+        [
+          {
+            "node": "Resumen IA (OpenAI)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge (Stats + Resumen)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resumen IA (OpenAI)": {
+      "main": [
+        [
+          {
+            "node": "Extraer Resumen IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer Resumen IA": {
+      "main": [
+        [
+          {
+            "node": "Merge (Stats + Resumen)",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge (Stats + Resumen)": {
+      "main": [
+        [
+          {
+            "node": "Generar HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generar HTML": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Get Row(s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:40.868Z",
+  "id": "Mob7xZo3qeI206p8",
+  "isArchived": false,
+  "meta": null,
+  "name": "Resumen_Semanal_Dailys",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "c5bb9f12-6dc7-44ab-9c06-7bd92d27100a",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        64,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1IQoeynFSkj6wop93HmnjDeKSF9VWyJ1Bl6CohPeQes0",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Fireflies Meetings",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IQoeynFSkj6wop93HmnjDeKSF9VWyJ1Bl6CohPeQes0/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "c03b3a78-629c-481b-982d-bd4062e29f36",
+      "name": "Google Sheets - Get Row(s)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        368,
+        208
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "/*\n  Cálculo de cumplimiento semanal flexible (laboral)\n  - Si viene semana manual → calcula esa semana específica (lunes–viernes)\n  - Si NO → semana laboral automática:\n        * Lunes → fin = viernes\n        * Martes–Viernes → fin = hoy\n        * Sábado/Domingo → fin = viernes\n  - Soporta fechas Fireflies: \"Wed, Nov 12th - 08:05 AM-05:00 GMT (7 mins)\"\n*/\n\n/* ============================================================\n   CONFIGURACIÓN MANUAL DE SEMANA (DENTRO DEL CÓDIGO)\n   ============================================================ */\nconst SEMANA_INICIO_MANUAL = '2026-02-23'; // <-- pon aquí el lunes que quieras, o deja '' para automático\n\nconst CONFIG = {\n  \"REUNIÓN_D.ORGANIZACIONAL_DAILY\": { grupo: \"D. Organizacional\", dias: [\"LUNES\",\"MARTES\",\"MIERCOLES\",\"JUEVES\",\"VIERNES\"], esperadas: 5 },\n  \n  // SOPORTE - acepta ambas variantes de nombre\n  \"Daily - Soporte\": { grupo: \"Soporte\", dias: [\"LUNES\",\"MIERCOLES\",\"VIERNES\"], esperadas: 3 },\n  \"Daily Soporte\": { grupo: \"Soporte\", dias: [\"LUNES\",\"MIERCOLES\",\"VIERNES\"], esperadas: 3 },\n  \n  // COMERCIAL - ahora es WEEKLY (solo lunes)\n  \"REUNION_COMERCIAL_DAILY\": { grupo: \"Comercial\", dias: [\"LUNES\",\"MARTES\",\"MIERCOLES\",\"JUEVES\",\"VIERNES\"], esperadas: 5 },\n  \n  // TICs - todas las variantes cuentan hacia el mismo grupo\n  \"DAILY-TIC's\": { grupo: \"TICs\", dias: [\"LUNES\",\"MIERCOLES\",\"VIERNES\"], esperadas: 3 },\n  \"RESUMEN_DAILY_TICs\": { grupo: \"TICs\", dias: [\"LUNES\",\"MIERCOLES\",\"VIERNES\"], esperadas: 3 },\n  \"RESUMEN_DAILY_TCIS\": { grupo: \"TICs\", dias: [\"LUNES\",\"MIERCOLES\",\"VIERNES\"], esperadas: 3 },\n  \"RESUMEN_DAILY_TICS\": { grupo: \"TICs\", dias: [\"LUNES\",\"MIERCOLES\",\"VIERNES\"], esperadas: 3 },\n  \n  \"DAILY_MARKETING_TAREAS\": { grupo: \"Marketing\", dias: [\"LUNES\",\"MIERCOLES\",\"VIERNES\"], esperadas: 3 },\n  \n  // FINANCIERO LATAM se mantiene\n  \"REUNION_FINANCIERO_LATAM_DAILY\": { grupo: \"Financiero LATAM\", dias: [\"LUNES\"], esperadas: 1 },\n  \n  // FINANCIERO - ahora es WEEKLY (solo lunes)\n  \"REUNION_FINANCIERO_DAILY\": { grupo: \"Financiero\", dias: [\"LUNES\"], esperadas: 1 },\n  \n  // PROYECTOS - nuevo grupo WEEKLY\n  \"REUNIÓN_PROY.MOBILVENDOR_WEEKLY\": { grupo: \"Proyectos\", dias: [\"LUNES\"], esperadas: 1 },\n\n  // GERENCIA - acepta ambas variantes\n  \"REUNIÓN_GERENCIA_WEEKLY\": { grupo: \"Gerencia\", dias: [\"LUNES\"], esperadas: 1 },\n  \"Reunión_Gerencia_Weekly\": { grupo: \"Gerencia\", dias: [\"LUNES\"], esperadas: 1 },\n\n  // OPERACIONES - todas las variantes del mismo grupo\n  \"REUNIÓN_WEEKLY_OPERACIONES\": { grupo: \"Operaciones\", dias: [\"LUNES\",\"MIERCOLES\",\"VIERNES\"], esperadas: 3 },\n  \"REUNIÓN_OPERACIONES_WEEKLY\": { grupo: \"Operaciones\", dias: [\"LUNES\",\"MIERCOLES\",\"VIERNES\"], esperadas: 3 },\n  \"REUNIÓN_INHOUSE_WEEKLY\": { grupo: \"Operaciones\", dias: [\"LUNES\",\"MIERCOLES\",\"VIERNES\"], esperadas: 3 }\n};\n\nfunction safeStr(v) {\n  if (v === null || v === undefined) return \"\";\n  return String(v);\n}\n\n/* ============================================================\n      SELECCIÓN DE SEMANA FLEXIBLE LABORAL\n   ============================================================ */\n\nfunction getMonday(date) {\n  const d = new Date(date);\n  const day = d.getDay();\n  const diff = day === 0 ? -6 : 1 - day;\n  d.setDate(d.getDate() + diff);\n  d.setHours(0,0,0,0);\n  return d;\n}\n\nlet semanaManual = null;\n\n// Semana manual desde código\nif (SEMANA_INICIO_MANUAL) {\n  const d = new Date(SEMANA_INICIO_MANUAL);\n  if (!isNaN(d)) semanaManual = d;\n}\n\n// Semana manual recibida desde JSON (opcional)\nif (!semanaManual && $json.semanaInicio) {\n  const d2 = new Date($json.semanaInicio);\n  if (!isNaN(d2)) semanaManual = d2;\n}\n\nlet inicio, fin;\n\nif (semanaManual) {\n  // Semana manual laboral → lunes a viernes\n  inicio = new Date(semanaManual);\n  inicio.setHours(0,0,0,0);\n\n  fin = new Date(inicio);\n  fin.setDate(inicio.getDate() + 4); // viernes\n  fin.setHours(23,59,59,999);\n\n} else {\n  // ==========================\n  // semana laboral automática\n  // ==========================\n  const hoy = new Date();\n  inicio = getMonday(hoy);\n\n  const dia = hoy.getDay(); // 0 dom, 1 lun, ... 6 sab\n\n  if (dia === 1) {\n    // Lunes → lunes a viernes\n    fin = new Date(inicio);\n    fin.setDate(inicio.getDate() + 4);\n  } else if (dia >= 2 && dia <= 5) {\n    // Martes–Viernes → inicio lunes, fin hoy\n    fin = new Date(hoy);\n  } else {\n    // Sábado/Domingo → cerrar en viernes\n    fin = new Date(inicio);\n    fin.setDate(inicio.getDate() + 4);\n  }\n\n  fin.setHours(23,59,59,999);\n}\n\n/* ============================================================\n      PARSEO DE FECHAS FIRELIES / GOOGLESHEETS\n   ============================================================ */\n\nconst MONTHS = {\n  jan:0,feb:1,mar:2,apr:3,may:4,jun:5,\n  jul:6,aug:7,sep:8,oct:9,nov:10,dec:11\n};\n\nfunction buildDateFromParts(year, monthIdx, dayNum, hour24, minute, offset) {\n  const mm = String(monthIdx + 1).padStart(2,'0');\n  const dd = String(dayNum).padStart(2,'0');\n  const HH = String(hour24).padStart(2,'0');\n  const MI = String(minute).padStart(2,'0');\n\n  if (offset) {\n    const iso = `${year}-${mm}-${dd}T${HH}:${MI}:00${offset}`;\n    const d = new Date(iso);\n    return isNaN(d) ? null : d;\n  }\n  const d = new Date(year, monthIdx, dayNum, hour24, minute);\n  return isNaN(d) ? null : d;\n}\n\nfunction parseSpecialMeetingDate(raw) {\n  const s = safeStr(raw).trim();\n  if (!s) return null;\n\n  const re = /^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\\s*([A-Za-z]{3})\\s*(\\d{1,2})(?:st|nd|rd|th)?\\s*-\\s*(\\d{1,2}):(\\d{2})\\s*(AM|PM)(?:[^\\d]*(\\+\\d{2}:\\d{2}|-\\d{2}:\\d{2}))?/i;\n  const m = s.match(re);\n  if (!m) return null;\n\n  const monthIdx = MONTHS[m[1].toLowerCase()];\n  if (monthIdx === undefined) return null;\n\n  let hh = Number(m[3]);\n  const minute = Number(m[4]);\n  const ampm = m[5].toUpperCase();\n  const offset = m[6] || null;\n\n  if (ampm === \"PM\" && hh !== 12) hh += 12;\n  if (ampm === \"AM\" && hh === 12) hh = 0;\n\n  const year = inicio.getFullYear();\n  const dayNum = Number(m[2]);\n\n  const candidates = [year, year - 1, year + 1];\n  for (const y of candidates) {\n    const d = buildDateFromParts(y, monthIdx, dayNum, hh, minute, offset);\n    if (d && d >= inicio && d <= fin) return d;\n  }\n\n  return buildDateFromParts(year, monthIdx, dayNum, hh, minute, offset);\n}\n\nfunction parseSheetsDate(raw) {\n  if (raw instanceof Date) return raw;\n\n  if (typeof raw === \"number\") {\n    const ms = Math.round((raw - 25569) * 86400 * 1000);\n    const d = new Date(ms);\n    return isNaN(d) ? null : d;\n  }\n\n  const special = parseSpecialMeetingDate(raw);\n  if (special) return special;\n\n  const s = safeStr(raw).trim();\n  if (!s) return null;\n\n  const d = new Date(s);\n  if (!isNaN(d)) return d;\n\n  const dm = s.match(/^(\\d{1,2})\\/(\\d{1,2})\\/(\\d{4})$/);\n  if (dm) {\n    const dd = Number(dm[1]);\n    const mm = Number(dm[2]) - 1;\n    const yy = Number(dm[3]);\n    const d2 = new Date(Date.UTC(yy, mm, dd));\n    return isNaN(d2) ? null : d2;\n  }\n\n  return null;\n}\n\n/* ============================================================\n      PROCESAMIENTO DE FILAS\n   ============================================================ */\n\nconst stats = {};\nfor (const k of Object.keys(CONFIG)) {\n  const c = CONFIG[k];\n  if (!stats[c.grupo]) {\n    stats[c.grupo] = {\n      departamento: c.grupo,\n      dias: c.dias,\n      esperadas: c.esperadas,\n      realizadas: 0,\n      fechas: new Set(),\n      textoChunks: []\n    };\n  }\n}\n\nconst rows = $input.all();\nconst reunionesPorGrupoDia = {}; // Para evitar duplicados: grupo_YYYY-MM-DD\n\nfor (const item of rows) {\n  const r = item.json || {};\n  const title = safeStr(r[\"Title\"]).trim();\n  if (!title || !CONFIG[title]) continue;\n\n  const fecha = parseSheetsDate(r[\"Date\"]);\n  if (!fecha) continue;\n  if (fecha < inicio || fecha > fin) continue;\n\n  const cfg = CONFIG[title];\n  const s = stats[cfg.grupo];\n\n  // Crear clave única: grupo + fecha (solo día, sin hora)\n  const fechaSolo = fecha.toISOString().slice(0, 10);\n  const claveUnica = `${cfg.grupo}_${fechaSolo}`;\n\n  // Solo contar si no hemos visto esta reunión de este grupo en este día\n  if (!reunionesPorGrupoDia[claveUnica]) {\n    reunionesPorGrupoDia[claveUnica] = true;\n    s.realizadas += 1;\n    s.fechas.add(fecha.toISOString());\n  }\n\n  // Siempre agregar el contenido (aunque sea del mismo día)\n  const chunk = [\n    safeStr(r[\"Gist\"]),\n    safeStr(r[\"Overview\"]),\n    safeStr(r[\"Notes\"]),\n    safeStr(r[\"Action Items\"])\n  ].join(\" \").trim();\n\n  if (chunk) s.textoChunks.push(chunk);\n}\n\n/* ============================================================\n      ARMADO DEL RESULTADO\n   ============================================================ */\n\nconst MAX_CHARS = 12000;\n\nreturn Object.values(stats).map(s => {\n  const texto = s.textoChunks.join(\"\\n\");\n  const textoRecortado =\n    texto.length > MAX_CHARS ? texto.slice(0, MAX_CHARS) + \"\\n... (recortado)\" : texto;\n\n  const cumplimiento =\n    s.esperadas > 0 ? Math.round((s.realizadas / s.esperadas) * 100) : 0;\n\n  return {\n    json: {\n      departamento: s.departamento,\n      diasEsperados: s.dias,\n      reunionesEsperadas: s.esperadas,\n      reunionesRealizadas: s.realizadas,\n      cumplimiento,\n      texto: textoRecortado,\n      semana: {\n        inicio: inicio.toISOString().slice(0, 10),\n        fin: fin.toISOString().slice(0, 10)\n      }\n    }\n  };\n});\n"
+      },
+      "id": "540d981c-921b-46d6-9178-7770cbb941e5",
+      "name": "Calcular Cumplimiento",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        704,
+        208
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "Eres un asistente experto que genera resúmenes ejecutivos semanales.",
+              "role": "system"
+            },
+            {
+              "content": "={{ `\nDepartamento: ${$json.departamento}\n\nResumen ejecutivo:\n\n- Si en varias reuniones se abordan los mismos temas, se menciona una vez con su estado actualizado.\n- Si no hay contenido relevante, indica: \"Sin novedades registradas.\"\n\nContenido:\n\n${$json.texto || 'Sin novedades registradas'}\n\nTemas tratados:\n\n` }}\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "213081f1-fa6e-4485-bf2c-3b718d108641",
+      "name": "Resumen IA (OpenAI)",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1024,
+        208
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "E7b7vwKLzPo4JwAR",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "/*\n  Extraer Resumen IA\n  - Normaliza la salida del nodo OpenAI (langchain) a un campo: `resumen`\n  - Soporta múltiples formatos de salida (choices, output, text, content, response, etc.)\n  - Mantiene 1 item por item\n*/\n\nfunction safeStr(v) {\n  if (v === null || v === undefined) return \"\";\n  return String(v);\n}\n\nfunction getByPath(obj, path) {\n  try {\n    return path.split('.').reduce((acc, key) => {\n      if (acc === null || acc === undefined) return undefined;\n      const m = key.match(/^(\\w+)\\[(\\d+)\\]$/);\n      if (m) {\n        const k = m[1];\n        const idx = Number(m[2]);\n        return acc?.[k]?.[idx];\n      }\n      return acc?.[key];\n    }, obj);\n  } catch (e) {\n    return undefined;\n  }\n}\n\nconst CANDIDATE_PATHS = [\n  // OpenAI estándar\n  'choices[0].message.content',\n  'choices[0].text',\n  // Langchain/n8n variantes\n  'output',\n  'text',\n  'content',\n  'response',\n  'resumen',\n  'data.output',\n  'data.text',\n  'data.content',\n  'data.response',\n  'result.output',\n  'result.text',\n  'result.content',\n  // Algunas estructuras de mensajes\n  'message.content',\n  'message',\n  // Variantes con arrays\n  'generations[0].text',\n  'generations[0].message.content'\n];\n\nreturn $input.all().map(item => {\n  const j = item.json || {};\n\n  let resumen = \"\";\n  for (const p of CANDIDATE_PATHS) {\n    const v = getByPath(j, p);\n    const s = safeStr(v).trim();\n    if (s) {\n      resumen = s;\n      break;\n    }\n  }\n\n  // Fallback: si existe cualquier string grande en el JSON, tomar el más largo (solo si parece resumen)\n  if (!resumen) {\n    const strings = [];\n    const stack = [j];\n    const visited = new Set();\n    while (stack.length) {\n      const cur = stack.pop();\n      if (!cur || typeof cur !== 'object') continue;\n      if (visited.has(cur)) continue;\n      visited.add(cur);\n      for (const [k, v] of Object.entries(cur)) {\n        if (typeof v === 'string') {\n          const sv = v.trim();\n          if (sv && sv.length >= 20) strings.push(sv);\n        } else if (v && typeof v === 'object') {\n          stack.push(v);\n        }\n      }\n    }\n    strings.sort((a, b) => b.length - a.length);\n    if (strings[0]) resumen = strings[0];\n  }\n\n  const resumenFinal = resumen || \"Sin novedades registradas.\";\n\n  return { json: { resumen: resumenFinal } };\n});"
+      },
+      "id": "9262da87-0db2-40c5-82f1-b9aef0d2d3ad",
+      "name": "Extraer Resumen IA",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        336
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByPosition",
+        "options": {
+          "fuzzyCompare": false,
+          "includeUnpaired": true
+        }
+      },
+      "id": "da198942-3fa0-450e-92e9-b4989e881219",
+      "name": "Merge (Stats + Resumen)",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [
+        1552,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "/*\n  Generar HTML de reporte\n*/\n\nconst items = $input.all();\nconst semana = items?.[0]?.json?.semana || { inicio: \"\", fin: \"\" };\n\nlet html = `<h2>📊 Informe Semanal de Reuniones</h2>\n<p><b>Semana:</b> ${semana.inicio} al ${semana.fin}</p>\n\n<h3>1️⃣ Cumplimiento</h3>\n<table border=\"1\" cellpadding=\"6\" style=\"border-collapse: collapse;\">\n<tr><th>Departamento</th><th>Cumplimiento</th><th>Realizadas</th><th>Esperadas</th></tr>`;\n\nfor (const i of items) {\n  const j = i.json;\n  const c = (j.cumplimiento >= 90) ? \"green\" : (j.cumplimiento >= 70) ? \"orange\" : \"red\";\n\n  html += `<tr>\n    <td>${j.departamento}</td>\n    <td style=\"color:${c}\"><b>${j.cumplimiento}%</b></td>\n    <td>${j.reunionesRealizadas}</td>\n    <td>${j.reunionesEsperadas}</td>\n  </tr>`;\n}\n\nhtml += `</table>\n\n<h3>2️⃣ Resumen por área</h3>`;\n\nfor (const i of items) {\n  const j = i.json;\n  const resumen = (j.resumen || \"Sin novedades registradas.\").replace(/\\n/g, \"<br>\");\n  html += `<h4>${j.departamento}</h4><p>${resumen}</p>`;\n}\n\nreturn [{ json: { html } }];"
+      },
+      "id": "e02597fe-18c9-410a-b137-81a9c0c6d23b",
+      "name": "Generar HTML",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1792,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "toRecipients": "t.garzon@mobilvendor.com",
+        "subject": "Informe Semanal de Reuniones",
+        "bodyContent": "={{ $json.html }}",
+        "additionalFields": {
+          "bodyContentType": "html"
+        }
+      },
+      "type": "n8n-nodes-base.microsoftOutlook",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        208
+      ],
+      "id": "c6353fbe-8048-45cb-8753-6bc1e491261f",
+      "name": "Send a message",
+      "webhookId": "64e2ebd2-59ec-4b0a-81d4-75ba18c2eb7c",
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "JySFgjY3Gqtx7Gdo",
+          "name": "Microsoft Outlook account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtHour": 12
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        384
+      ],
+      "id": "93a66b59-9302-49fb-a5aa-d84447f172b3",
+      "name": "Schedule Trigger",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Descripción General\nEste flujo genera automáticamente el informe semanal de reuniones de Mobilvendor.\nCombina datos de Google Sheets, cálculo de cumplimiento, análisis de IA y envío automático vía Outlook."
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        -352
+      ],
+      "typeVersion": 1,
+      "id": "59311574-df37-4d47-a1b0-b66c6f34ccf2",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Frecuencia de Ejecución \n\nAutomático: Cada domingo a las 12:00 AM mediante Schedule Trigger.\n\nManual: Puede ejecutarse bajo demanda desde n8n.",
+        "height": 688
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        -160
+      ],
+      "typeVersion": 1,
+      "id": "ab43e673-dc5c-4443-8ff7-04920836b492",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Cálculo cumplimiento\n\nConfigurada en el Code Node:\nconst SEMANA_INICIO_MANUAL = 'YYYY-MM-DD';\nSe toma lunes → viernes.\n\nSemana Automática\n\nLunes → lunes a viernes\n\nMartes–Viernes → lunes a hoy\n\nSábado/Domingo → semana laboral anterior (lunes–viernes)",
+        "height": 688,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        640,
+        -160
+      ],
+      "typeVersion": 1,
+      "id": "8e884932-7ecd-4c6b-9b75-a0d50160b486",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Generación de Resumen por Departamento\n\nLa IA genera un resumen por departamento utilizando:\n\nGist\n\nOverview\n\nNotes\n\nAction Items\n\nSi no hay texto → “Sin novedades registradas”",
+        "height": 688,
+        "width": 304,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        976,
+        -160
+      ],
+      "typeVersion": 1,
+      "id": "6d8bcbce-dc4e-4901-b3fc-6724de46cc52",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2026-01-18T17:02:07.855-05:00",
+          "Readable date": "January 18th 2026, 5:02:07 pm",
+          "Readable time": "5:02:07 pm",
+          "Day of week": "Sunday",
+          "Year": "2026",
+          "Month": "January",
+          "Day of month": "18",
+          "Hour": "17",
+          "Minute": "02",
+          "Second": "07",
+          "Timezone": "America/New_York (UTC-05:00)"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:41.126Z",
+      "createdAt": "2026-01-13T02:49:41.126Z",
+      "role": "workflow:owner",
+      "workflowId": "Mob7xZo3qeI206p8",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-03-03T13:39:55.210Z",
+  "versionId": "11ca793c-cb1e-419b-9975-2f594c1dc178"
+}
