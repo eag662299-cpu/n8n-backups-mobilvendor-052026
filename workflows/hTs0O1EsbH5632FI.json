@@ -1,0 +1,532 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Apollo Search Companies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apollo Search Companies": {
+      "main": [
+        [
+          {
+            "node": "Process Companies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Companies": {
+      "main": [
+        [
+          {
+            "node": "Apollo Search People",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apollo Search People": {
+      "main": [
+        [
+          {
+            "node": "Enrich Decision Maker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enrich Decision Maker": {
+      "main": [
+        [
+          {
+            "node": "Lead Scoring",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lead Scoring": {
+      "main": [
+        [
+          {
+            "node": "Qualify Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qualify Lead": {
+      "main": [
+        [
+          {
+            "node": "Generate Email AI",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark Rejected",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Email AI": {
+      "main": [
+        [
+          {
+            "node": "Prepare Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Email": {
+      "main": [
+        [
+          {
+            "node": "Send Email Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email Gmail": {
+      "main": [
+        [
+          {
+            "node": "Add Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Metadata": {
+      "main": [
+        [
+          {
+            "node": "Save to Sheets",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Notify Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Rejected": {
+      "main": [
+        [
+          {
+            "node": "Save Rejected",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:40.660Z",
+  "id": "hTs0O1EsbH5632FI",
+  "isArchived": false,
+  "meta": null,
+  "name": "Lead Apollo",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "daysInterval": 7
+            }
+          ]
+        }
+      },
+      "id": "5c11d377-5f7a-479c-9027-efce4c1b6dc6",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1136,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apollo.io/v1/mixed_companies/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"api_key\": \"UP3cs0WcNubn4kt6lpvZLQ\",\n  \"page\": 1,\n  \"per_page\": 2,\n  \"organization_locations\": [\"Ecuador\"],\n  \"organization_num_employees_ranges\": [\"100,500\", \"501,1000\", \"1001+\"]\n}",
+        "options": {}
+      },
+      "id": "224d54bd-17da-4941-be4d-31aec32a7a38",
+      "name": "Apollo Search Companies",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -928,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Procesar respuesta de Apollo.io\nconst response = $input.first().json;\nconst companies = response.organizations || [];\n\nif (companies.length === 0) {\n  return [{ json: { error: 'No se encontraron empresas' } }];\n}\n\n// Mapear a formato limpio\nreturn companies.map(company => ({\n  json: {\n    empresa_id: company.id || 'N/A',\n    empresa: company.name || 'N/A',\n    website: company.website_url || 'N/A',\n    industria: company.industry || 'N/A',\n    empleados: company.estimated_num_employees || 0,\n    ubicacion: (company.city || '') + ', ' + (company.country || ''),\n    telefono: company.phone || 'N/A',\n    linkedin_empresa: company.linkedin_url || 'N/A'\n  }\n}));"
+      },
+      "id": "f9950ea6-d02d-4bc5-bab0-0775cd4dfd77",
+      "name": "Process Companies",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -704,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apollo.io/v1/mixed_people/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"api_key\": \"TU_APOLLO_API_KEY\",\n  \"page\": 1,\n  \"per_page\": 5,\n  \"organization_ids\": [\"{{ $json.empresa_id }}\"],\n  \"person_titles\": [\"CEO\", \"Director\", \"Gerente\"],\n  \"person_seniorities\": [\"director\", \"vp\", \"c_suite\"]\n}",
+        "options": {}
+      },
+      "id": "dbd82b74-6b3a-4457-8a06-878e7f5c5269",
+      "name": "Apollo Search People",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -480,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtener datos de entrada\nconst peopleResponse = $input.first().json;\nconst empresaData = $input.first().json;\n\nconst people = peopleResponse.people || [];\n\nif (people.length === 0) {\n  return [{\n    json: {\n      ...empresaData,\n      skip: true,\n      tomador_decision: 'N/A',\n      cargo: 'N/A',\n      email: 'N/A',\n      lead_score: 0\n    }\n  }];\n}\n\n// Tomar primer decisor\nconst decisor = people[0];\n\nreturn [{\n  json: {\n    ...empresaData,\n    tomador_decision: decisor.name || 'N/A',\n    cargo: decisor.title || 'N/A',\n    email: decisor.email || 'N/A',\n    linkedin_url: decisor.linkedin_url || 'N/A',\n    skip: false\n  }\n}];"
+      },
+      "id": "ec964bc9-4ce3-4e82-9528-0e64364c4d32",
+      "name": "Enrich Decision Maker",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -256,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Lead Scoring\nconst data = $input.first().json;\n\nif (data.skip || data.email === 'N/A') {\n  return [{ json: { ...data, lead_score: 0, calidad: 'Baja' } }];\n}\n\nlet score = 50; // Base score\n\n// Por tamaño\nif (data.empleados >= 500) score += 25;\nelse if (data.empleados >= 100) score += 15;\n\n// Por email\nif (data.email && data.email !== 'N/A') score += 25;\n\nreturn [{\n  json: {\n    ...data,\n    lead_score: score,\n    calidad: score >= 70 ? 'Alta' : score >= 50 ? 'Media' : 'Baja'\n  }\n}];"
+      },
+      "id": "38b18174-2a96-4839-869c-f349e358eea4",
+      "name": "Lead Scoring",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -48,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false
+          },
+          "conditions": [
+            {
+              "id": "check-score",
+              "leftValue": "={{ $json.lead_score }}",
+              "rightValue": 50,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "check-email",
+              "leftValue": "={{ $json.email }}",
+              "rightValue": "N/A",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "188694b3-9cae-4ba3-880e-9b20709c59ea",
+      "name": "Qualify Lead",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        192,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "TU_ANTHROPIC_API_KEY"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"claude-sonnet-4-20250514\",\n  \"max_tokens\": 500,\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Genera un email breve y profesional para {{ $json.tomador_decision }} ({{ $json.cargo }}) de {{ $json.empresa }}. Ofrece una reunión de 15 minutos para discutir soluciones de consumo masivo. Máximo 100 palabras. Solo devuelve el texto del email.\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "dfc19274-38df-45dd-bab2-0ab02d303640",
+      "name": "Generate Email AI",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        400,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const claudeResponse = $input.first().json;\nconst emailText = claudeResponse.content?.[0]?.text || 'Email generado';\n\nreturn [{\n  json: {\n    ...$input.first().json,\n    email_content: emailText,\n    email_subject: `Oportunidad ${$input.first().json.empresa}`\n  }\n}];"
+      },
+      "id": "67e4c03d-6f9a-4ae8-a5ce-cd1f800a50c2",
+      "name": "Prepare Email",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "subject": "={{ $json.email_subject }}",
+        "emailType": "text",
+        "message": "={{ $json.email_content }}",
+        "options": {}
+      },
+      "id": "fc93433b-d1bd-420f-a35a-8bf22ca552a4",
+      "name": "Send Email Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        848,
+        128
+      ],
+      "webhookId": "e022cb16-bbaf-43ed-b97c-6ed1c79315cf"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "add-date",
+              "name": "fecha_contacto",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "add-status",
+              "name": "estado",
+              "value": "Email Enviado",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "6aeae9a6-3015-4226-aa58-439ee1657498",
+      "name": "Add Metadata",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1072,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "TU_GOOGLE_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Fecha": "={{ $json.fecha_contacto }}",
+            "Empresa": "={{ $json.empresa }}",
+            "Contacto": "={{ $json.tomador_decision }}",
+            "Email": "={{ $json.email }}",
+            "Score": "={{ $json.lead_score }}",
+            "Estado": "={{ $json.estado }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "39fa658a-df1f-4e47-9df0-809185f9ba4f",
+      "name": "Save to Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1280,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "TU_TELEGRAM_CHAT_ID",
+        "text": "=✅ Lead contactado:\n\nEmpresa: {{ $json.empresa }}\nContacto: {{ $json.tomador_decision }}\nScore: {{ $json.lead_score }}/100",
+        "additionalFields": {}
+      },
+      "id": "e87d4bbf-9d80-4b22-b5f9-2173999b9b55",
+      "name": "Notify Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1280,
+        336
+      ],
+      "webhookId": "36cf5f49-f246-4837-bc90-012e5d388a45"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "reject-status",
+              "name": "estado",
+              "value": "Descartado",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "43d05448-d3f9-45df-8923-5cb86752c312",
+      "name": "Mark Rejected",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        336
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "TU_GOOGLE_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=1",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Fecha": "={{ $now.toISO() }}",
+            "Empresa": "={{ $json.empresa }}",
+            "Score": "={{ $json.lead_score }}",
+            "Estado": "={{ $json.estado }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "5fa62ac7-dce2-4f69-bd75-6bc88a1bbafc",
+      "name": "Save Rejected",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        624,
+        336
+      ]
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:40.911Z",
+      "createdAt": "2026-01-13T02:49:40.911Z",
+      "role": "workflow:owner",
+      "workflowId": "hTs0O1EsbH5632FI",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T02:49:40.660Z",
+  "versionId": "d737ebec-7042-477a-9670-84e461d6dbbb"
+}
