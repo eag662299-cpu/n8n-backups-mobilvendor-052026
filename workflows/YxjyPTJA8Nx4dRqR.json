@@ -1,0 +1,75 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get a transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:46.395Z",
+  "id": "YxjyPTJA8Nx4dRqR",
+  "isArchived": false,
+  "meta": null,
+  "name": "My workflow 17",
+  "nodes": [
+    {
+      "parameters": {
+        "transcriptId": "01K6N5KEWSYCM8FCFKN41QWC4Z"
+      },
+      "type": "@firefliesai/n8n-nodes-fireflies.fireflies",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        -128
+      ],
+      "id": "9cb3b213-42a5-4f03-9949-06f7728c83bc",
+      "name": "Get a transcript",
+      "credentials": {
+        "firefliesApi": {
+          "id": "i1NcwHmjW0ps21nP",
+          "name": "Fireflies ti.desarrollo"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        -128
+      ],
+      "id": "d9b120d8-917e-4e85-8ef8-637e5305ad8f",
+      "name": "When clicking ‘Execute workflow’"
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:46.696Z",
+      "createdAt": "2026-01-13T02:49:46.696Z",
+      "role": "workflow:owner",
+      "workflowId": "YxjyPTJA8Nx4dRqR",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T02:49:46.395Z",
+  "versionId": "0ac6e6b1-40ae-43fb-8f97-8139b17c9245"
+}
