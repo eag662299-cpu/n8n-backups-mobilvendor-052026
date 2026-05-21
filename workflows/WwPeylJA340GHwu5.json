@@ -1,0 +1,896 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Webhook Formulario": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Es MQL?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Datos": {
+      "main": [
+        [
+          {
+            "node": "Validación OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validación datos Formulario?": {
+      "main": [
+        [
+          {
+            "node": "Datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validación OK": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "EnvioP1_Validación Datos",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append row in sheet2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request SRI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Es MQL?1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request SRI",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Validación_Giro_Empresa",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request SRI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request SRI": {
+      "main": [
+        [
+          {
+            "node": "HTTP BITRIX",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validación datos Formulario?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:40.909Z",
+  "id": "WwPeylJA340GHwu5",
+  "isArchived": false,
+  "meta": null,
+  "name": "Calificación_Lead Bitrix_OnPremise",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "65808279-9e8b-4c93-a665-fb72df0c9a61",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        48,
+        400
+      ],
+      "id": "f82e574b-c23c-4e87-be79-9d67f931fcca",
+      "name": "Webhook Formulario",
+      "webhookId": "65808279-9e8b-4c93-a665-fb72df0c9a61"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Busca si la empresa {{ $json.empresa }} tiene presencia en redes sociales o una página web y si su giro de negocio es {{ $json.industria }}. Si ambas condiciones se cumplen, responde con true. Si alguna de las condiciones no se cumple, responde con false. Tu respuesta debe ser siempre true o false.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1056,
+        272
+      ],
+      "id": "13a2f0c4-bd18-4df1-acf2-c9cb78301533",
+      "name": "AI Agent",
+      "alwaysOutputData": true,
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1072,
+        736
+      ],
+      "id": "f1089d7e-6f7d-4222-914a-8df9951ceacf",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2de00892-2baf-43c3-8015-7a671991f811",
+              "name": "email",
+              "value": "={{ $('Validación datos Formulario?').item.json.email }}",
+              "type": "string"
+            },
+            {
+              "id": "44b680fa-4f18-4e50-a36e-5f041bcb9646",
+              "name": "nombre",
+              "value": "={{ $json.nombre }}",
+              "type": "string"
+            },
+            {
+              "id": "6141a207-bb11-4153-a2cd-2cceea755cdc",
+              "name": "empresa",
+              "value": "={{ $json.empresa }}",
+              "type": "string"
+            },
+            {
+              "id": "37d16b43-644f-40f9-ac39-6d655f9bee7f",
+              "name": "industria",
+              "value": "={{ $json.industria }}",
+              "type": "string"
+            },
+            {
+              "id": "b62d7b62-8574-422c-bc69-a89f44ebfd97",
+              "name": "empleados",
+              "value": "={{ $('Validación datos Formulario?').item.json.personas }}",
+              "type": "string"
+            },
+            {
+              "id": "ad64e2bd-c001-41e0-902c-b946d8115f40",
+              "name": "phone",
+              "value": "={{ $json.telefonoNormalizado }}",
+              "type": "string"
+            },
+            {
+              "id": "c6f7b547-b28d-4970-8c0d-9caaecf4db3d",
+              "name": "ip",
+              "value": "={{ $('Webhook Formulario').item.json.headers['x-forwarded-for'] }}",
+              "type": "string"
+            },
+            {
+              "id": "490bdc23-1386-4d07-a41d-641c5bd0a371",
+              "name": "MQL",
+              "value": "={{ $json.MQL }}",
+              "type": "string"
+            },
+            {
+              "id": "93707705-81ad-400b-9783-ff16cd1e9589",
+              "name": "Pais",
+              "value": "={{ $('Webhook Formulario').item.json.query.Country }}",
+              "type": "string"
+            },
+            {
+              "id": "95ae5d82-ee6e-4f8e-8d0e-75540ba2f8e1",
+              "name": "Facturacion",
+              "value": "={{ $('Webhook Formulario').item.json.query.Pricing }}",
+              "type": "string"
+            },
+            {
+              "id": "2cb903c1-50e2-4c78-a714-091a571a38b7",
+              "name": "RUC",
+              "value": "={{ $('Webhook Formulario').item.json.query.DNI }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        400
+      ],
+      "id": "363b74d5-d1d6-4d2d-a19d-e131cf9b5779",
+      "name": "Datos",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "phoneNumberId": "102646042734013",
+        "recipientPhoneNumber": "={{ $json.phone }}",
+        "template": "n8n_mkt|es"
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        1248,
+        720
+      ],
+      "id": "e4eb0c89-2d33-4eca-a1d7-31da83644972",
+      "name": "EnvioP1_Validación Datos",
+      "webhookId": "9257c2e2-0a7c-4714-8bf8-0c23aceea090",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "tk6zrwxJLxGE2YuG",
+          "name": "WhatsApp account_TEST"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "phoneNumberId": "102646042734013",
+        "recipientPhoneNumber": "={{ $('Validación OK').item.json.phone }}",
+        "template": "n8n_mkt|es"
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        2048,
+        416
+      ],
+      "id": "24e918dc-6ae9-4b4b-b44e-cad9d8c23fa6",
+      "name": "Validación_Giro_Empresa",
+      "webhookId": "7f106f1c-a158-406d-be9d-46e1c473473b",
+      "alwaysOutputData": true,
+      "credentials": {
+        "whatsAppApi": {
+          "id": "tk6zrwxJLxGE2YuG",
+          "name": "WhatsApp account_TEST"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Datos del formulario\nconst nombre = $input.first().json.query.Name || \"\";\nconst email =  $input.first().json.query.Email|| \"\";\nconst telefono = $input.first().json.query.Phone || \"\";\nconst empresa =   $input.first().json.query.Company || \"\";\nconst industria = $input.first().json.query.Industry || \"\";\nconst personas =  $input.first().json.query.Employed || \"\";\nconst pais = $input.first().json.query.Country || \"\";\nconst DNI = $input.first().json.query.DNI || \"\";\nconst facturacion = $input.first().json.query.Pricing || \"\";\n\n// 2. Lista de correos gratuitos (no empresariales)\nconst freeDomains = [\n  \"gmail.com\",\"yahoo.com\",\"hotmail.com\",\"outlook.com\",\n  \"live.com\",\"icloud.com\",\"aol.com\",\"protonmail.com\"\n];\n\n// 3. Validación correo empresarial\nconst domain = email.split(\"@\")[1]?.toLowerCase();\nconst esCorreoEmpresarial = domain && !freeDomains.includes(domain);\n\n// 4. Validación industria\nconst esIndustriaValida = industria !== \"Otros\";\n\n\n\n// Normalizamos teléfono al formato internacional (Ecuador +593)\nfunction normalizePhone(phone, countryCode = \"+593\") {\n  if (!phone) return \"\";\n  \n  // Limpia caracteres que no son números\n  let clean = phone.replace(/[^\\d]/g, \"\");\n\n  // Si empieza con \"0\", lo quitamos\n  if (clean.startsWith(\"0\")) {\n    clean = clean.substring(1);\n  }\n\n  // Si ya tiene código de país, lo dejamos\n  if (clean.startsWith(countryCode.replace(\"+\",\"\"))) {\n    return `+${clean}`;\n  }\n\n  // Si no lo tiene, lo agregamos\n  return countryCode + clean;\n}\n\nconst telefonoNormalizado = normalizePhone(telefono, \"+593\");\n// 5. Validación teléfono en formato internacional\n\nfunction validarTelefono(telefonoNormalizado) {\n  if (!telefonoNormalizado) return false;\n\n  // Debe empezar con \"+\"\n  if (!telefonoNormalizado.startsWith(\"+\")) return false;\n\n  // Quitar \"+\" y verificar solo números\n  const clean = telefonoNormalizado.replace(/\\D/g, \"\");\n  \n  // Longitud entre 9 y 15 dígitos\n  return clean.length >= 9 && clean.length <= 15;\n}\nconst esTelefonoValido = validarTelefono(telefonoNormalizado);\n\n// 6. Determinar si es MQL\nconst esMQL = esCorreoEmpresarial && esIndustriaValida && esTelefonoValido;\n\n// 7. Retornar resultado\nreturn {\n  json: {\n    nombre,\n    email,\n    telefonoNormalizado,\n    empresa,\n    industria,\n    personas,\n    esCorreoEmpresarial,\n    esIndustriaValida,\n    esTelefonoValido,\n    MQL: esMQL\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        496,
+        400
+      ],
+      "id": "08755b34-1e18-4ec1-82ba-fa3cf7d28c3c",
+      "name": "Validación datos Formulario?"
+    },
+    {
+      "parameters": {
+        "content": "## FORMULARIO CAPTACIÓN LEADS\nEl formulario sera enbebido en la pagina web https://mobilvendor.com/ y contendra los siguientes Input:\n+ Nombres (Cliente)\n+ Correo electrónico\n+ Teléfono\n+ Nombre empresa\n+ Industria\n++ Consumo masivo\n++ Ferretero\n++ Farmacéutico\n++ Automotor\n++ Otros\n+ Numero de empleados\n++ De 1 a 5\n++ De 6 a 20\n++ Mas de 20\n\n",
+        "height": 560,
+        "width": 432
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "d897f6c2-66f4-478c-be4f-81304e2c4bd1",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg",
+          "mode": "list",
+          "cachedResultName": "MQL",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "MQL2": "={{ $json.output }}",
+            "Presencia en redes": "={{ $('AI Agent').item.json.output }}",
+            "MQL1": "={{ $('Datos').item.json.MQL }}",
+            "ip": "={{ $('Datos').item.json.ip }}",
+            "phone": "={{ $('Datos').item.json.phone }}",
+            "empleados": "={{ $('Datos').item.json.empleados }}",
+            "industria": "={{ $('Datos').item.json.industria }}",
+            "empresa": "={{ $('Datos').item.json.empresa }}",
+            "nombre": "={{ $('Datos').item.json.nombre }}",
+            "email": "={{ $('Datos').item.json.email }}",
+            "id_lead": "={{ $json.body[\"data[FIELDS][ID]\"] }}"
+          },
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": [
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "empresa",
+              "displayName": "empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "industria",
+              "displayName": "industria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "empleados",
+              "displayName": "empleados",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ip",
+              "displayName": "ip",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "MQL1",
+              "displayName": "MQL1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Presencia en redes",
+              "displayName": "Presencia en redes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "MQL2",
+              "displayName": "MQL2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "OK",
+              "displayName": "OK",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "id_lead",
+              "displayName": "id_lead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2048,
+        224
+      ],
+      "id": "e2835db2-9295-4fda-8d7e-311bb8b1b1fa",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fm3jifX2nPTobuSZ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## VALIDACIÓN DE LEAD - MQL\nCon la Información del formulario se realiza las siguientes casos:\n+ Correo Electrónico:\n++ Es correo empresarial ?\n++ Es un correo Valido ?\n+ Teléfono:\n++ Validación de numero de dígitos\n++ Pasar a formato internacional EC\n+ Industria:\n++ Es diferente de Otro ?",
+        "height": 560,
+        "width": 512,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        464,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "27427e33-e969-477e-bf7f-a1483d0b46f8",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## VALIDACIÓN EMPRESA \nSi la validación anterior tiene un valor de TRUE, por medio de IA validamos que el giro de negocio de la empresa corresponda con el sector de Industria seleccionado.\nParámetros de salida TRUE o FALSE\n+ TRUE --> Envió LEAD a Bitrix(Prospecto-Etapa MQL)\n+ FALSE --> Envió Plantilla de Whatsapp para poder identificar el giro de negocio y dar la opción de agendar una cita.\n* Validar RUC en SRI si es TRUE--> saca el nombre comercial si es FALSE se va a LEAD",
+        "height": 928,
+        "width": 528,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        992,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "d3f9b32b-b61b-466f-9b85-987eea8947d8",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## COMUNICACIÓN\nSe establece los canales de comunicación:\n+ MQL= True --> Se consume API de LEAD (Bitrix) para crear el LEAD/MQL\n+ MQL= False --> Se consume servicio de Whatsapp Plantilla 1\n+ Se almacena información de LEAD y su calificación en excel.\n* Enviar whatsapp con agenda del asesor comercial asignado.",
+        "height": 928,
+        "width": 736,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1536,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "bedfe444-156e-47b1-a831-b81371f75540",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a3087298-7044-4d9f-9c3e-6b0d33752a05",
+              "leftValue": "={{ $json.MQL }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        864,
+        400
+      ],
+      "id": "1d7cf5de-43c3-4f8f-b5e2-be20b48e7da0",
+      "name": "Validación OK"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a3087298-7044-4d9f-9c3e-6b0d33752a05",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1344,
+        272
+      ],
+      "id": "e43f3e1c-7664-44ab-bbf3-d531798e8edd",
+      "name": "Es MQL?1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg",
+          "mode": "list",
+          "cachedResultName": "MQL",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "MQL1": "={{ $('Datos').item.json.MQL }}",
+            "ip": "={{ $('Datos').item.json.ip }}",
+            "phone": "={{ $('Datos').item.json.phone }}",
+            "empleados": "={{ $('Datos').item.json.empleados }}",
+            "industria": "={{ $('Datos').item.json.industria }}",
+            "empresa": "={{ $('Datos').item.json.empresa }}",
+            "nombre": "={{ $('Datos').item.json.nombre }}",
+            "email": "={{ $('Datos').item.json.email }}"
+          },
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": [
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "empresa",
+              "displayName": "empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "industria",
+              "displayName": "industria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "empleados",
+              "displayName": "empleados",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ip",
+              "displayName": "ip",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "MQL1",
+              "displayName": "MQL1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Presencia en redes",
+              "displayName": "Presencia en redes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "MQL2",
+              "displayName": "MQL2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1248,
+        576
+      ],
+      "id": "389a137e-2a06-4e07-9941-15465fe6a733",
+      "name": "Append row in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fm3jifX2nPTobuSZ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://mobilvendor.bitrix24.es/rest/1/vz55jbu9kzwezk25/crm.lead.add.json",
+        "sendQuery": true,
+        "specifyQuery": "json",
+        "jsonQuery": "={\n  \"fields\": {\n    \"EMAIL\": [\n      {\n        \"VALUE\": \"{{ $('Datos').first().json.email }}\",\n        \"VALUE_TYPE\": \"WORK\"\n      }\n    ],\n    \"NAME\": \"{{ $('Datos').first().json.nombre }}\",\n    \"PHONE\": [\n      {\n        \"VALUE\": \"{{ $('Validación datos Formulario?').item.json.telefonoNormalizado }}\",\n        \"VALUE_TYPE\": \"WORK\"\n      }\n    ],\n    \"TITLE\": \"{{ $('Datos').first().json.empresa }}\",\n    \"COMPANY_TITLE\": \"{{ $('Datos').first().json.empresa }}\",\n    \"ASSIGNED_BY_ID\": 93,\n    \"UF_CRM_1732907229570\": \"{{$now.format('YYYY-MM-DD')}}\",\n    \"UF_CRM_1757002582\": \"{{ $('Datos').first().json.ip }}\",\n    \"UF_CRM_1756915881203\": \"{{ $json.output ? 1 : 0 }}\",\n    \"ADDRESS_COUNTRY\":\"{{ $('Datos').item.json.Pais }}\",\n    \"SOURCE_ID\" : \"WEBFORM\",\n    \"UF_CRM_1757001339\" :\" {{ $('Datos').item.json.RUC }}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2048,
+        608
+      ],
+      "id": "45fffda5-f97e-464d-a758-e1b8d0014242",
+      "name": "HTTP BITRIX"
+    },
+    {
+      "parameters": {
+        "url": "https://srienlinea.sri.gob.ec/sri-catastro-sujeto-servicio-internet/rest/ConsolidadoContribuyente/existePorNumeroRuc",
+        "sendQuery": true,
+        "specifyQuery": "json",
+        "jsonQuery": "={\n  \"numeroRuc\":\"1003441068001\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1744,
+        608
+      ],
+      "id": "1221075b-413f-4e70-9d57-7cbf5745fc1f",
+      "name": "HTTP Request SRI",
+      "alwaysOutputData": true,
+      "notesInFlow": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "redirect",
+        "redirectURL": "https://mobilvendor.com/GRACIAS/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        240,
+        400
+      ],
+      "id": "e06fc255-e01e-475a-a68d-255360817eac",
+      "name": "Respond to Webhook",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "34acc546-da6a-4d62-bea8-8bdcfc20a27d",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1744,
+        800
+      ],
+      "id": "ed870f27-d77c-411b-a504-6a37f7bc0c57",
+      "name": "Webhook",
+      "webhookId": "34acc546-da6a-4d62-bea8-8bdcfc20a27d"
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:41.154Z",
+      "createdAt": "2026-01-13T02:49:41.154Z",
+      "role": "workflow:owner",
+      "workflowId": "WwPeylJA340GHwu5",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T02:49:40.909Z",
+  "versionId": "8bed9ca2-0233-4c47-9f2d-d909d34305ac"
+}
