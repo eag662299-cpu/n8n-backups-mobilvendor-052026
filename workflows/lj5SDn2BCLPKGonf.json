@@ -1,0 +1,2039 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-04-02T15:45:40.000Z",
+    "createdAt": "2026-04-02T15:45:17.248Z",
+    "versionId": "65f56915-cc10-493d-b5d7-2d3f28bdef76",
+    "workflowId": "lj5SDn2BCLPKGonf",
+    "nodes": [
+      {
+        "parameters": {
+          "content": "## FORMULARIO CAPTACIÓN LEADS\nEl formulario sera enbebido en la pagina web https://mobilvendor.com/ y contendra los siguientes Input:\n+ Nombres (Cliente)\n+ Correo electrónico\n+ Teléfono\n+ Nombre empresa\n+ Industria\n++ Consumo masivo\n++ Ferretero\n++ Farmacéutico\n++ Automotor\n++ Otros\n+ Numero de empleados\n++ De 1 a 5\n++ De 6 a 20\n++ Mas de 20\n\n",
+          "height": 1088,
+          "width": 512
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2624,
+          -224
+        ],
+        "typeVersion": 1,
+        "id": "41d7a3ea-b4ad-45b7-ac18-66900c0f743a",
+        "name": "Sticky Note2"
+      },
+      {
+        "parameters": {
+          "content": "## VALIDACIÓN DE LEAD - MQL\nCon la Información del formulario se realiza las siguientes casos:\n+ Correo Electrónico:\n++ Es correo empresarial ?\n++ Es un correo Valido ?\n+ Teléfono:\n++ Validación de numero de dígitos\n++ Pasar a formato internacional EC\n+ Industria:\n++ Es diferente de Otro ?",
+          "height": 1072,
+          "width": 1824,
+          "color": 5
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          3872,
+          -208
+        ],
+        "typeVersion": 1,
+        "id": "9f1d3edb-78c6-4451-85c9-f08c1cfee458",
+        "name": "Sticky Note6"
+      },
+      {
+        "parameters": {
+          "content": "## COMUNICACIÓN\nSe establece los canales de comunicación:\n+ MQL= True --> Se consume API de LEAD (Bitrix) para crear el LEAD/MQL\n+ MQL= False --> Se consume servicio de Whatsapp Plantilla 1\n+ Se almacena información de LEAD y su calificación en excel.\n* Enviar whatsapp con agenda del asesor comercial asignado.\n* Almacena los UTM en Bitrix para un analisis de campañas efectivas.",
+          "height": 1072,
+          "width": 544,
+          "color": 4
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          3280,
+          -208
+        ],
+        "typeVersion": 1,
+        "id": "e135d6fb-16f7-4c66-8aa0-0ee92b429f2a",
+        "name": "Sticky Note7"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://n8n.mobilvendor.com/webhook/api/sri/consulta",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "accept",
+                "value": "*/*"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "ruc",
+                "value": "={{ $json.RUC }}"
+              },
+              {
+                "name": "pais",
+                "value": "Ecuador"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          4016,
+          240
+        ],
+        "id": "abd1e34a-17d2-493b-b0df-1ae390cf6f94",
+        "name": "HTTP Request SRI",
+        "alwaysOutputData": false,
+        "notesInFlow": false,
+        "retryOnFail": true,
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "1OIzierKFDrXgOr3SDO6eJ7H9nelsPP9-y54Lrbs1AkY",
+            "mode": "list",
+            "cachedResultName": "MVONE",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1OIzierKFDrXgOr3SDO6eJ7H9nelsPP9-y54Lrbs1AkY/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Hoja 1",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1OIzierKFDrXgOr3SDO6eJ7H9nelsPP9-y54Lrbs1AkY/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "id_lead": "={{ $json.result }}",
+              "fuente": "formulario MVONE",
+              "estado_pago": "PENDIENTE",
+              "formulario_contrato_completado": "N",
+              "email": "={{ $('Datos1').item.json.email }}",
+              "nombre": "={{ $('Datos1').item.json.nombre }}",
+              "empresa": "={{ (($('HTTP Request SRI').item.json.contribuyente?.razonSocial || '').trim()) ? $('HTTP Request SRI').item.json.contribuyente.razonSocial : $('Datos1').first().json.empresa }}",
+              "industria": "={{ $('Datos1').item.json.industria }}",
+              "telefono": "={{ $('Datos1').item.json.phone }}",
+              "empleados": "=",
+              "pais ": "={{ $('Datos1').item.json.Pais }}",
+              "ruc": "={{ $('Datos1').item.json.RUC }}",
+              "ip": "={{ $('Datos1').item.json.ip }}",
+              "MQL1": "={{ $('HTTP Request SRI').item.json ? 'TRUE' : 'FALSE' }}",
+              "fecha ": "={{ $now.format ('dd-MM-yyyy')}}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "id_lead",
+                "displayName": "id_lead",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "fecha ",
+                "displayName": "fecha ",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "fuente",
+                "displayName": "fuente",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "estado_pago",
+                "displayName": "estado_pago",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "fecha_pago",
+                "displayName": "fecha_pago",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "formulario_contrato_completado",
+                "displayName": "formulario_contrato_completado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "fecha_formulario_contrato",
+                "displayName": "fecha_formulario_contrato",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "email",
+                "displayName": "email",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "nombre",
+                "displayName": "nombre",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "empresa",
+                "displayName": "empresa",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "industria",
+                "displayName": "industria",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "telefono",
+                "displayName": "telefono",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "empleados",
+                "displayName": "empleados",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "pais ",
+                "displayName": "pais ",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "ruc",
+                "displayName": "ruc",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "ip",
+                "displayName": "ip",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "session_id",
+                "displayName": "session_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "comments",
+                "displayName": "comments",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "MQL1",
+                "displayName": "MQL1",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "OK",
+                "displayName": "OK",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "update_lead",
+                "displayName": "update_lead",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "razon_social",
+                "displayName": "razon_social",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "ruc",
+                "displayName": "ruc",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "rep_nombres",
+                "displayName": "rep_nombres",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "rep_primer_apellido",
+                "displayName": "rep_primer_apellido",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "rep_segundo_apellido",
+                "displayName": "rep_segundo_apellido",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "rep_cedula",
+                "displayName": "rep_cedula",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "rep_fecha_nacimiento",
+                "displayName": "rep_fecha_nacimiento",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "rep_nacionalidad",
+                "displayName": "rep_nacionalidad",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "dir_calle_principal",
+                "displayName": "dir_calle_principal",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "dir_numero",
+                "displayName": "dir_numero",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "dir_calle_secundaria",
+                "displayName": "dir_calle_secundaria",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "dir_oficina",
+                "displayName": "dir_oficina",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "dir_referencia",
+                "displayName": "dir_referencia",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "dir_provincia",
+                "displayName": "dir_provincia",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "dir_canton",
+                "displayName": "dir_canton",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "dir_parroquia",
+                "displayName": "dir_parroquia",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "dir_telefono",
+                "displayName": "dir_telefono",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "dir_email",
+                "displayName": "dir_email",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "correos_facturacion",
+                "displayName": "correos_facturacion",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "doc_ruc_empresa_url",
+                "displayName": "doc_ruc_empresa_url",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "doc_cedula_rep_url",
+                "displayName": "doc_cedula_rep_url",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "doc_acta_constitutiva_url",
+                "displayName": "doc_acta_constitutiva_url",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          5040,
+          224
+        ],
+        "id": "58ca4fb0-2ef0-4870-9e72-dc48dfc7c528",
+        "name": "Append row in sheet1",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://mobilvendor.bitrix24.es/rest/1/r6ke4gy6p0pz5yvs/crm.deal.add.json",
+          "sendQuery": true,
+          "specifyQuery": "json",
+          "jsonQuery": "={\n  \"fields\": {\n    \"TITLE\": \"{{ (($('HTTP Request SRI').item.json.contribuyente?.razonSocial || '').trim()) ? $('HTTP Request SRI').item.json.contribuyente.razonSocial : $('Datos1').first().json.empresa }}\",\n    \"COMPANY_TITLE\": \"{{ (($('HTTP Request SRI').item.json.contribuyente?.razonSocial || '').trim()) ? $('HTTP Request SRI').item.json.contribuyente.razonSocial : $('Datos1').first().json.empresa }}\",\n    \"STAGE_ID\": \"RECEPCIÓN FORMULARIO\",\n    \"CATEGORY_ID\": 9,\n    \"OPENED\": \"Y\",\n    \"ASSIGNED_BY_ID\": 93,\n    \"CONTACT_ID\": \"{{ $json.result }}\",\n    \"UF_CRM_1732907229570\": \"{{$now.format('YYYY-MM-DD')}}\",\n    \"UF_CRM_1757002582\": \"{{ $('Datos1').first().json.ip }}\",\n    \"UF_CRM_68BAEFF04FAFD\": \"{{ ($('Code1').first().json.status === 'OK' && !$('Code1').first().json.errorMessage) ? 1 : 0 }}\",\n    \"UF_CRM_68B8B16A09474\": \"{{ (\n      ($('HTTP Request SRI').first().json.success === true) ||\n      ($('HTTP Request SRI').first().json.success === 1) ||\n      (String($('HTTP Request SRI').first().json.success).toLowerCase() === 'true') ||\n      (String($('HTTP Request SRI').first().json.success) === '1')\n    ) ? 1 : 0 }}\",\n    \"UF_CRM_695E5E4A8B689\": \"{{ $('mobilvendor-one1').item.json.query.utm_source }}\",\n    \"UF_CRM_695E5E4AA08E2\" : \"{{ $('mobilvendor-one1').item.json.query.utm_medium }}\",\n    \"UF_CRM_695E5E4AADFF4\" : \"{{ $('mobilvendor-one1').item.json.query.utm_campaign }}\",\n    \"UF_CRM_695E5E4ABBC91\" : \"{{ $('mobilvendor-one1').item.json.query.utm_content }}\",\n    \"UF_CRM_695E5E4AD9102\" : \"{{ $('mobilvendor-one1').item.json.query.utm_term }}\",\n    \"UF_CRM_695E5E4AE6BD5\" : \"{{ $('mobilvendor-one1').item.json.query.utm_country }}\",\n    \"SOURCE_ID\": \"WEBFORM\",\n    \"UF_CRM_1760641316\": \"{{ $('Datos1').first().json.RUC }}\"\n  }\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          4832,
+          224
+        ],
+        "id": "e0030b3a-4096-49fb-9b31-ffaf615a275c",
+        "name": "HTTP BITRIX_MVONE"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          4304,
+          512
+        ],
+        "id": "7b05946e-70ec-4b90-bbe3-ecfd1dde8b25",
+        "name": "Wait1",
+        "webhookId": "59b70612-0509-468e-9711-ad845f1a6974"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "20a67bc2-263f-48f2-8452-483dd5d86bb1",
+                "leftValue": "={{ $json.status }}",
+                "rightValue": "OK",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "or"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          4352,
+          240
+        ],
+        "id": "2bc328fd-de6d-4a65-91b6-37924c7ba0a2",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "jsCode": "const data = $input.first().json;\nconst nombreEmpresa = $('Datos1').first().json.empresa || \"Sin nombre\";\n\n// Verificar si RUC no fue enviado (error permitido)\nconst errorMsg = data?.error?.message ?? \"\";\nif (\n    typeof errorMsg === \"string\" &&\n    errorMsg.includes(\"El parámetro número RUC es requerido\")\n) {\n    return [{\n        json: {\n            status: \"OK\",\n            info: \"RUC no enviado → se permite continuar\",\n            razonSocial: nombreEmpresa  // ✅ Usa el nombre de la empresa\n        }\n    }];\n}\n\n// Validación normal de errores (después de 3 intentos fallidos)\nif (\n    data.error &&\n    typeof data.error.message === \"string\" &&\n    data.error.message.trim() !== \"\"\n) {\n    return [{\n        json: {\n            status: \"ERROR\",\n            errorMessage: data.error.message,\n            razonSocial: nombreEmpresa  // ✅ Usa el nombre como fallback\n        }\n    }];\n}\n\n// Si la consulta fue exitosa\nreturn [{\n    json: {\n        status: \"OK\",\n        razonSocial: data.contribuyente?.razonSocial || nombreEmpresa\n    }\n}];\n\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          4192,
+          240
+        ],
+        "id": "11ebc75a-47e0-4ddc-807e-840e29e1e1cf",
+        "name": "Code1"
+      },
+      {
+        "parameters": {
+          "respondWith": "redirect",
+          "redirectURL": "={{ $json.url }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4,
+        "position": [
+          5392,
+          224
+        ],
+        "id": "a4335a86-636c-4690-8593-f3b402cdd8e4",
+        "name": "Respond to Webhook1",
+        "alwaysOutputData": false,
+        "notesInFlow": true,
+        "executeOnce": true
+      },
+      {
+        "parameters": {
+          "jsCode": "/**\n * Form (query): Name, Email, Phone, Company, DNI, checkbox\n * UTMs opcionales: utm_source, utm_medium, utm_campaign, utm_content, utm_term, utm_country\n *\n * 🛑 SPAM / VACÍO  → return []                      (sin output, flujo se detiene)\n * ⚠️  INVÁLIDO     → return [{ status: \"INVALID\" }] (pasa al siguiente nodo)\n * ✅  OK           → return [{ status: \"VALID\" }]   (pasa al siguiente nodo)\n */\n\nconst ctx        = $input.first().json || {};\nconst headers    = ctx.headers || {};\nconst httpMethod = (ctx.method || \"\").toUpperCase();\n\n// ---- Unificar entradas ----\nconst query = (ctx.query && typeof ctx.query === \"object\") ? ctx.query : {};\nlet body = ctx.body;\nif (typeof body === \"string\") {\n  try { body = JSON.parse(body); } catch { body = {}; }\n}\nif (!body || typeof body !== \"object\") body = {};\nconst data = { ...query, ...body, ...ctx };\n\n// ---- Helpers ----\nconst s           = (v) => (v === undefined || v === null) ? \"\" : String(v).trim();\nconst stripSpaces = (v) => s(v).replace(/\\s+/g, \" \");\nconst digitsOnly  = (v) => s(v).replace(/\\D/g, \"\");\nconst upperNoSpace = (v) => s(v).toUpperCase().replace(/\\s+/g, \"\");\nfunction truthy(v) {\n  const t = String(v ?? \"\").trim().toLowerCase();\n  return [\"true\",\"1\",\"on\",\"yes\",\"y\",\"si\",\"sí\",\"checked\"].includes(t);\n}\n\nconst NAME_RE  = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]+$/;\nconst EMAIL_RE = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;\nconst E164_RE  = /^\\+?[1-9]\\d{7,14}$/;\n\n// ---- Campos ----\nconst Name     = stripSpaces(data.Name);\nconst Email    = s(data.Email).toLowerCase();\nconst PhoneRaw = s(data.Phone);\nconst Company  = stripSpaces(data.Company);\nconst DNIraw   = s(data.DNI);\nconst Checkbox = data.checkbox;\n\nconst utm = {\n  utm_source:   s(data.utm_source),\n  utm_medium:   s(data.utm_medium),\n  utm_campaign: s(data.utm_campaign),\n  utm_content:  s(data.utm_content),\n  utm_term:     s(data.utm_term),\n  utm_country:  s(data.utm_country),\n};\n\n// =====================================================\n// 🛑 BLOQUE 1 — SEÑALES DE ROBOT\n// =====================================================\nconst tieneFormData = Name || Email || PhoneRaw || Company || DNIraw;\nif (!tieneFormData) return [];\n\nif (httpMethod === \"GET\" && ctx.query) return [];\nif (httpMethod && httpMethod !== \"POST\") return [];\nif (String(data.website || \"\").trim() !== \"\") return [];\n\nconst now       = Date.now();\nconst formStart = Number(data.form_start_ts || 0);\nif (formStart && (now - formStart) < 3000) return [];\n\n// =====================================================\n// 🛑 BLOQUE 2 — INYECCIÓN EN CUALQUIER CAMPO\n// (SQL injection, XSS, shell commands)\n// =====================================================\nconst sqlPattern    = /('|--|;|\\/\\*|\\*\\/|xp_|UNION\\s+SELECT|DROP\\s+TABLE|INSERT\\s+INTO|SELECT\\s+\\*)/i;\nconst scriptPattern = /(javascript:|<script|<\\/script|onerror=|onload=|eval\\(|alert\\()/i;\nconst shellPattern  = /(\\$\\(|`[^`]+`|&&\\s*(rm|cat|wget|curl)|;\\s*(rm|cat|wget))/i;\n\nconst allFields = [Name, Email, Company, DNIraw];\nfor (const field of allFields) {\n  if (sqlPattern.test(field) || scriptPattern.test(field) || shellPattern.test(field)) return [];\n}\n\n// =====================================================\n// 🛑 BLOQUE 3 — NOMBRE SPAM\n// =====================================================\n// Patrones de contenido spam en nombre\nconst urlPattern          = /(https?:\\/\\/|www\\.|[a-z0-9-]+\\.(com|net|org|ru|xyz|info|io))/i;\nconst htmlPattern         = /<[a-z][\\s\\S]*>/i;\nconst emojiPattern        = /[\\uD800-\\uDBFF][\\uDC00-\\uDFFF]/;         // surrogate pairs, sin /u\nconst cyrillicPattern     = /[\\u0400-\\u04FF]/;                         // cirílico (ххх, etc.)\nconst spamKeywords        = /(payment|available|earn|free money|click here|prize|hs=|crypto|bitcoin|\\$\\d)/i;\nconst nombreHumanoPattern = /^[a-zA-ZÀ-ÿÑñ\\s'.-]{3,}$/;\n\nif (Name && (\n  urlPattern.test(Name)          ||\n  htmlPattern.test(Name)         ||\n  emojiPattern.test(Name)        ||\n  cyrillicPattern.test(Name)     ||\n  spamKeywords.test(Name)        ||\n  !nombreHumanoPattern.test(Name)\n)) return [];\n\n// Nombre debe tener al menos nombre + apellido (1 espacio mínimo)\nif (Name && !Name.includes(\" \")) return [];\n\n// =====================================================\n// 🛑 BLOQUE 4 — EMAIL CON DOMINIO SPAM / TEMPORAL\n// =====================================================\nconst spamDomains = new Set([\n  // Dominios temporales conocidos\n  \"mailbox.in.ua\",\"temp-mail.org\",\"guerrillamail.com\",\"yopmail.com\",\n  \"trashmail.com\",\"sharklasers.com\",\"mailnull.com\",\"spamgourmet.com\",\n  \"throwam.com\",\"dispostable.com\",\"maildrop.cc\",\"10minutemail.com\",\n  \"fakeinbox.com\",\"mailinator.com\",\"tempmail.com\",\"getnada.com\",\n  // TLDs de alto riesgo en formularios B2B\n  \"mail.ru\",\"bk.ru\",\"inbox.ru\",\"list.ru\",\"ro.ru\"\n]);\n\nconst emailDomain = Email.includes(\"@\") ? Email.split(\"@\")[1].toLowerCase() : \"\";\nif (emailDomain && spamDomains.has(emailDomain)) return [];\n\n// Detectar cirílico también en el email\nif (cyrillicPattern.test(Email)) return [];\n\n// =====================================================\n// 🛑 BLOQUE 5 — DNI SIN DÍGITOS\n// =====================================================\nconst dniDigits = digitsOnly(DNIraw);\nif (DNIraw && dniDigits.length === 0) return [];\n\n// =====================================================\n// 🛑 BLOQUE 6 — TELÉFONO INVÁLIDO\n// =====================================================\nconst PhoneLocal = digitsOnly(PhoneRaw);\nconst phoneClean = PhoneRaw.replace(/[^\\d+]/g, \"\");\n\nconst looksEcuadorLocal  = (PhoneLocal.length >= 9 && PhoneLocal.length <= 10 && PhoneLocal.startsWith(\"0\"));\nconst looksEcuadorE164   = phoneClean.startsWith(\"+593\");\nconst looksInternational = phoneClean.startsWith(\"+\") && E164_RE.test(phoneClean);\n\n// Teléfono que no es Ecuador ni E.164 internacional válido → bloqueado\nif (PhoneRaw && !looksEcuadorLocal && !looksEcuadorE164 && !looksInternational) return [];\n\n// =====================================================\n// ⚠️  CAMPOS OBLIGATORIOS → INVALID (siguiente nodo)\n// =====================================================\nconst required = { Name, Email, Phone: PhoneRaw, Company, DNI: DNIraw, checkbox: Checkbox };\nconst missingFields = Object.entries(required)\n  .filter(([k, v]) => (k === \"checkbox\") ? !truthy(v) : !v)\n  .map(([k]) => k);\n\nif (missingFields.length > 0) {\n  return [{\n    json: {\n      status: \"INVALID\",\n      reason: missingFields.includes(\"checkbox\") ? \"privacy_not_accepted\" : \"missing_fields\",\n      missingFields,\n      receivedKeys: Object.keys(data),\n    }\n  }];\n}\n\n// =====================================================\n// ⚠️  VALIDACIONES NORMALES → INVALID (siguiente nodo)\n// =====================================================\nif (Name.length < 5 || Name.length > 80) {\n  return [{ json: { status: \"INVALID\", reason: \"invalid_name_length\", Name } }];\n}\nif (!NAME_RE.test(Name)) {\n  return [{ json: { status: \"INVALID\", reason: \"invalid_name_format\", Name } }];\n}\n\nif (!EMAIL_RE.test(Email) || Email.length > 120) {\n  return [{ json: { status: \"INVALID\", reason: \"invalid_email\", Email } }];\n}\n\nif (Company.length < 2 || Company.length > 120) {\n  return [{ json: { status: \"INVALID\", reason: \"invalid_company_length\", Company } }];\n}\n\nif ((phoneClean.match(/\\+/g) || []).length > 1) {\n  return [{ json: { status: \"INVALID\", reason: \"invalid_phone_format\", PhoneRaw } }];\n}\n\n// ---- Phone Ecuador: normalizar a E.164 ----\nlet PhoneNormalized = \"\";\n\nif (looksEcuadorLocal || looksEcuadorE164) {\n  if (looksEcuadorE164) {\n    if (!E164_RE.test(phoneClean)) {\n      return [{ json: { status: \"INVALID\", reason: \"invalid_phone_ecuador_e164\", PhoneRaw } }];\n    }\n    PhoneNormalized = phoneClean;\n  } else {\n    let national = PhoneLocal;\n    if (national.startsWith(\"0\")) national = national.slice(1);\n    PhoneNormalized = `+593${national}`;\n    if (!E164_RE.test(PhoneNormalized)) {\n      return [{ json: { status: \"INVALID\", reason: \"cannot_build_phone_e164_ecuador\", PhoneRaw, PhoneNormalized } }];\n    }\n  }\n} else if (looksInternational) {\n  PhoneNormalized = phoneClean;\n}\n\n// ---- DNI: si tiene 13 dígitos → validar como RUC Ecuador ----\nconst dniUpper = upperNoSpace(DNIraw);\n\nif (dniDigits.length === 13) {\n  if (!/^\\d{13}$/.test(dniDigits)) {\n    return [{ json: { status: \"INVALID\", reason: \"invalid_dni_ecuador_ruc\", DNI: DNIraw } }];\n  }\n} else {\n  if (DNIraw.length < 5) {\n    return [{ json: { status: \"INVALID\", reason: \"invalid_dni_min_length\", DNI: DNIraw } }];\n  }\n}\n\n// =====================================================\n// ✅ OK — LEAD LIMPIO\n// =====================================================\nreturn [{\n  json: {\n    status: \"VALID\",\n    Origen: \"MVONE\",\n    Name,\n    Email,\n    Phone: PhoneLocal,\n    PhoneNormalized,\n    Company,\n    DNI: dniUpper,\n    checkbox: true,\n    ...utm\n  }\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3344,
+          240
+        ],
+        "id": "f238047e-d011-46ba-88dd-0bfe5679c686",
+        "name": "Validación datos Formulario?1",
+        "alwaysOutputData": false
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "2de00892-2baf-43c3-8015-7a671991f811",
+                "name": "email",
+                "value": "={{ $json.Email }}",
+                "type": "string"
+              },
+              {
+                "id": "44b680fa-4f18-4e50-a36e-5f041bcb9646",
+                "name": "nombre",
+                "value": "={{ $json.Name }}",
+                "type": "string"
+              },
+              {
+                "id": "6141a207-bb11-4153-a2cd-2cceea755cdc",
+                "name": "empresa",
+                "value": "={{ $json.Company }}",
+                "type": "string"
+              },
+              {
+                "id": "37d16b43-644f-40f9-ac39-6d655f9bee7f",
+                "name": "industria",
+                "value": "={{ $json.Industry }}",
+                "type": "string"
+              },
+              {
+                "id": "ad64e2bd-c001-41e0-902c-b946d8115f40",
+                "name": "phone",
+                "value": "={{ $json.PhoneNormalized }}",
+                "type": "string"
+              },
+              {
+                "id": "93707705-81ad-400b-9783-ff16cd1e9589",
+                "name": "Pais",
+                "value": "={{ $json.Country }}",
+                "type": "string"
+              },
+              {
+                "id": "2cb903c1-50e2-4c78-a714-091a571a38b7",
+                "name": "RUC",
+                "value": "={{ $json.DNI }}",
+                "type": "string"
+              },
+              {
+                "id": "c6f7b547-b28d-4970-8c0d-9caaecf4db3d",
+                "name": "ip",
+                "value": "={{ $('mobilvendor-one1').item.json.headers['x-real-ip'] }}",
+                "type": "string"
+              },
+              {
+                "id": "95ae5d82-ee6e-4f8e-8d0e-75540ba2f8e1",
+                "name": "facturacion",
+                "value": "=",
+                "type": "string"
+              },
+              {
+                "id": "b62d7b62-8574-422c-bc69-a89f44ebfd97",
+                "name": "empleados",
+                "value": "=",
+                "type": "string"
+              },
+              {
+                "id": "490bdc23-1386-4d07-a41d-641c5bd0a371",
+                "name": "MQL",
+                "value": "=",
+                "type": "string"
+              },
+              {
+                "id": "antispam1",
+                "name": "spamReason",
+                "value": "={{ $json.reason || \"\" }}",
+                "type": "string"
+              },
+              {
+                "id": "antispam2",
+                "name": "spamSignals",
+                "value": "={{ $json.spamSignals || \"\" }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          3584,
+          240
+        ],
+        "id": "ff368604-ba8d-4abc-9213-34ff4befa615",
+        "name": "Datos1",
+        "alwaysOutputData": true
+      },
+      {
+        "parameters": {
+          "jsCode": "const data = $input.first().json;\n\n// Obtener razón social del SRI o del formulario como fallback\nconst razonSocial = \n  $items(\"Code1\")?.[0]?.json?.razonSocial ?? \n  $items(\"Datos1\")?.[0]?.json?.empresa ?? \n  \"\";\n\n// Formato URL\nconst name = encodeURIComponent(razonSocial.trim()).replace(/%20/g, \"+\");\n\nreturn items.map((item) => {\n  const ruc = item.json.ruc ?? \"\";\n  const email = item.json.email ?? \"\";\n  const dealId = item.json.id_lead ?? item.json.deal_id ?? \"\";\n\n  const url =\n    `https://s23.mobilvendor.com/mvone-purchase` +\n    `?identity=${encodeURIComponent(String(ruc).trim())}` +\n    `&name=${name}` +\n    `&email=${encodeURIComponent(String(email).trim())}` +\n    `&deal_id=${encodeURIComponent(String(dealId).trim())}`;\n\n  return { json: { url } };\n});\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          5216,
+          224
+        ],
+        "id": "17408846-891c-4f15-9d21-77886e62286f",
+        "name": "Code in JavaScript1"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://mobilvendor.bitrix24.es/rest/1/0xcb4e9xj579fw8i/crm.deal.update.json",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"id\": \"{{ $('Append row in sheet1').item.json.id_lead }}\",\n  \"fields\": {\n   \"UF_CRM_1770129066\": \"{{ $json.url }}\"\n  }\n}",
+          "options": {}
+        },
+        "id": "56b96d95-be4f-4e74-a11a-61610b15b9e8",
+        "name": "Update Bitrix deal1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4,
+        "position": [
+          5552,
+          224
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://mobilvendor.bitrix24.es/rest/1/r6ke4gy6p0pz5yvs/crm.contact.add.json",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"fields\": {\n    \"NAME\": \"{{ $('Datos1').first().json.nombre }}\",\n    \"OPENED\": \"Y\",\n    \"ASSIGNED_BY_ID\": 93,\n    \"TYPE_ID\": \"CLIENT\",\n    \"SOURCE_ID\": \"WEBFORM\",\n    \"PHONE\": [\n      {\n        \"VALUE\": \"{{ $('Datos1').first().json.PhoneNormalized || $('Datos1').first().json.phone }}\",\n        \"VALUE_TYPE\": \"WORK\"\n      }\n    ],\n    \"EMAIL\": [\n      {\n        \"VALUE\": \"{{ $('Datos1').first().json.email }}\",\n        \"VALUE_TYPE\": \"WORK\"\n      }\n    ]\n  }\n}\n",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          4608,
+          224
+        ],
+        "id": "9826b70a-7124-4921-adaa-4127135a97d7",
+        "name": "Crear contacto1"
+      },
+      {
+        "parameters": {
+          "path": "mobilvendor-one",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          2672,
+          240
+        ],
+        "id": "7857b3d3-29f6-4cb6-9688-6d57771d8058",
+        "name": "mobilvendor-one1",
+        "webhookId": "b43a8148-b761-4ef3-a047-18a04e0e0891"
+      }
+    ],
+    "connections": {
+      "HTTP Request SRI": {
+        "main": [
+          [
+            {
+              "node": "Code1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Append row in sheet1": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP BITRIX_MVONE": {
+        "main": [
+          [
+            {
+              "node": "Append row in sheet1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait1": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request SRI",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Crear contacto1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Wait1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code1": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Respond to Webhook1": {
+        "main": [
+          [
+            {
+              "node": "Update Bitrix deal1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validación datos Formulario?1": {
+        "main": [
+          [
+            {
+              "node": "Datos1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Datos1": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request SRI",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript1": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Crear contacto1": {
+        "main": [
+          [
+            {
+              "node": "HTTP BITRIX_MVONE",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "mobilvendor-one1": {
+        "main": [
+          [
+            {
+              "node": "Validación datos Formulario?1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "ZEI MOBILVENDOR",
+    "name": "Version 16",
+    "description": "Modificación nodo de validación \n\n40 ataques cubiertos: petición vacía · GET con query · método no POST · honeypot · formulario < 3s · SQL injection · SQL avanzado · XSS/script · eval/alert · shell injection · URL en nombre · HTML en nombre · emoji · cirílico · keywords spam ($, payment, earn, hs=) · caracteres no humanos · nombre sin apellido · email dominio temporal · guerrillamail/yopmail · mailinator · dominios .ru spam · cirílico en email · DNI solo letras · DNI muy corto · RUC con letras · teléfono sin formato · prefijo 00 · múltiples + · teléfono fuera de rango · campos vacíos · sin checkbox privacidad · nombre muy corto/largo · nombre con caracteres raros · email mal formado · email muy largo · empresa fuera de rango · teléfono Ecuador inválido · no se puede construir E.164 · RUC 13 dígitos con letras · DNI menor a 5 chars",
+    "autosaved": false
+  },
+  "activeVersionId": "65f56915-cc10-493d-b5d7-2d3f28bdef76",
+  "connections": {
+    "HTTP Request SRI": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP BITRIX_MVONE": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request SRI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Crear contacto1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Update Bitrix deal1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validación datos Formulario?1": {
+      "main": [
+        [
+          {
+            "node": "Datos1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Datos1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request SRI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear contacto1": {
+      "main": [
+        [
+          {
+            "node": "HTTP BITRIX_MVONE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mobilvendor-one1": {
+      "main": [
+        [
+          {
+            "node": "Validación datos Formulario?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T17:17:10.390Z",
+  "id": "lj5SDn2BCLPKGonf",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "MVone - Contrato - Formulario",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## FORMULARIO CAPTACIÓN LEADS\nEl formulario sera enbebido en la pagina web https://mobilvendor.com/ y contendra los siguientes Input:\n+ Nombres (Cliente)\n+ Correo electrónico\n+ Teléfono\n+ Nombre empresa\n+ Industria\n++ Consumo masivo\n++ Ferretero\n++ Farmacéutico\n++ Automotor\n++ Otros\n+ Numero de empleados\n++ De 1 a 5\n++ De 6 a 20\n++ Mas de 20\n\n",
+        "height": 1088,
+        "width": 512
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2624,
+        -224
+      ],
+      "typeVersion": 1,
+      "id": "41d7a3ea-b4ad-45b7-ac18-66900c0f743a",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## VALIDACIÓN DE LEAD - MQL\nCon la Información del formulario se realiza las siguientes casos:\n+ Correo Electrónico:\n++ Es correo empresarial ?\n++ Es un correo Valido ?\n+ Teléfono:\n++ Validación de numero de dígitos\n++ Pasar a formato internacional EC\n+ Industria:\n++ Es diferente de Otro ?",
+        "height": 1072,
+        "width": 1824,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3872,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "9f1d3edb-78c6-4451-85c9-f08c1cfee458",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "## COMUNICACIÓN\nSe establece los canales de comunicación:\n+ MQL= True --> Se consume API de LEAD (Bitrix) para crear el LEAD/MQL\n+ MQL= False --> Se consume servicio de Whatsapp Plantilla 1\n+ Se almacena información de LEAD y su calificación en excel.\n* Enviar whatsapp con agenda del asesor comercial asignado.\n* Almacena los UTM en Bitrix para un analisis de campañas efectivas.",
+        "height": 1072,
+        "width": 544,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3280,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "e135d6fb-16f7-4c66-8aa0-0ee92b429f2a",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n.mobilvendor.com/webhook/api/sri/consulta",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "*/*"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "ruc",
+              "value": "={{ $json.RUC }}"
+            },
+            {
+              "name": "pais",
+              "value": "Ecuador"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4016,
+        240
+      ],
+      "id": "abd1e34a-17d2-493b-b0df-1ae390cf6f94",
+      "name": "HTTP Request SRI",
+      "alwaysOutputData": false,
+      "notesInFlow": false,
+      "retryOnFail": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1OIzierKFDrXgOr3SDO6eJ7H9nelsPP9-y54Lrbs1AkY",
+          "mode": "list",
+          "cachedResultName": "MVONE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1OIzierKFDrXgOr3SDO6eJ7H9nelsPP9-y54Lrbs1AkY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1OIzierKFDrXgOr3SDO6eJ7H9nelsPP9-y54Lrbs1AkY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id_lead": "={{ $json.result }}",
+            "fuente": "formulario MVONE",
+            "estado_pago": "PENDIENTE",
+            "formulario_contrato_completado": "N",
+            "email": "={{ $('Datos1').item.json.email }}",
+            "nombre": "={{ $('Datos1').item.json.nombre }}",
+            "empresa": "={{ (($('HTTP Request SRI').item.json.contribuyente?.razonSocial || '').trim()) ? $('HTTP Request SRI').item.json.contribuyente.razonSocial : $('Datos1').first().json.empresa }}",
+            "industria": "={{ $('Datos1').item.json.industria }}",
+            "telefono": "={{ $('Datos1').item.json.phone }}",
+            "empleados": "=",
+            "pais ": "={{ $('Datos1').item.json.Pais }}",
+            "ruc": "={{ $('Datos1').item.json.RUC }}",
+            "ip": "={{ $('Datos1').item.json.ip }}",
+            "MQL1": "={{ $('HTTP Request SRI').item.json ? 'TRUE' : 'FALSE' }}",
+            "fecha ": "={{ $now.format ('dd-MM-yyyy')}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "id_lead",
+              "displayName": "id_lead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha ",
+              "displayName": "fecha ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fuente",
+              "displayName": "fuente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado_pago",
+              "displayName": "estado_pago",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha_pago",
+              "displayName": "fecha_pago",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "formulario_contrato_completado",
+              "displayName": "formulario_contrato_completado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha_formulario_contrato",
+              "displayName": "fecha_formulario_contrato",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "empresa",
+              "displayName": "empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "industria",
+              "displayName": "industria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "telefono",
+              "displayName": "telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "empleados",
+              "displayName": "empleados",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "pais ",
+              "displayName": "pais ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ruc",
+              "displayName": "ruc",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ip",
+              "displayName": "ip",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "comments",
+              "displayName": "comments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "MQL1",
+              "displayName": "MQL1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "OK",
+              "displayName": "OK",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "update_lead",
+              "displayName": "update_lead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "razon_social",
+              "displayName": "razon_social",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ruc",
+              "displayName": "ruc",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "rep_nombres",
+              "displayName": "rep_nombres",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "rep_primer_apellido",
+              "displayName": "rep_primer_apellido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "rep_segundo_apellido",
+              "displayName": "rep_segundo_apellido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "rep_cedula",
+              "displayName": "rep_cedula",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "rep_fecha_nacimiento",
+              "displayName": "rep_fecha_nacimiento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "rep_nacionalidad",
+              "displayName": "rep_nacionalidad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "dir_calle_principal",
+              "displayName": "dir_calle_principal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "dir_numero",
+              "displayName": "dir_numero",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "dir_calle_secundaria",
+              "displayName": "dir_calle_secundaria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "dir_oficina",
+              "displayName": "dir_oficina",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "dir_referencia",
+              "displayName": "dir_referencia",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "dir_provincia",
+              "displayName": "dir_provincia",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "dir_canton",
+              "displayName": "dir_canton",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "dir_parroquia",
+              "displayName": "dir_parroquia",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "dir_telefono",
+              "displayName": "dir_telefono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "dir_email",
+              "displayName": "dir_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "correos_facturacion",
+              "displayName": "correos_facturacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "doc_ruc_empresa_url",
+              "displayName": "doc_ruc_empresa_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "doc_cedula_rep_url",
+              "displayName": "doc_cedula_rep_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "doc_acta_constitutiva_url",
+              "displayName": "doc_acta_constitutiva_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        5040,
+        224
+      ],
+      "id": "58ca4fb0-2ef0-4870-9e72-dc48dfc7c528",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://mobilvendor.bitrix24.es/rest/1/r6ke4gy6p0pz5yvs/crm.deal.add.json",
+        "sendQuery": true,
+        "specifyQuery": "json",
+        "jsonQuery": "={\n  \"fields\": {\n    \"TITLE\": \"{{ (($('HTTP Request SRI').item.json.contribuyente?.razonSocial || '').trim()) ? $('HTTP Request SRI').item.json.contribuyente.razonSocial : $('Datos1').first().json.empresa }}\",\n    \"COMPANY_TITLE\": \"{{ (($('HTTP Request SRI').item.json.contribuyente?.razonSocial || '').trim()) ? $('HTTP Request SRI').item.json.contribuyente.razonSocial : $('Datos1').first().json.empresa }}\",\n    \"STAGE_ID\": \"RECEPCIÓN FORMULARIO\",\n    \"CATEGORY_ID\": 9,\n    \"OPENED\": \"Y\",\n    \"ASSIGNED_BY_ID\": 93,\n    \"CONTACT_ID\": \"{{ $json.result }}\",\n    \"UF_CRM_1732907229570\": \"{{$now.format('YYYY-MM-DD')}}\",\n    \"UF_CRM_1757002582\": \"{{ $('Datos1').first().json.ip }}\",\n    \"UF_CRM_68BAEFF04FAFD\": \"{{ ($('Code1').first().json.status === 'OK' && !$('Code1').first().json.errorMessage) ? 1 : 0 }}\",\n    \"UF_CRM_68B8B16A09474\": \"{{ (\n      ($('HTTP Request SRI').first().json.success === true) ||\n      ($('HTTP Request SRI').first().json.success === 1) ||\n      (String($('HTTP Request SRI').first().json.success).toLowerCase() === 'true') ||\n      (String($('HTTP Request SRI').first().json.success) === '1')\n    ) ? 1 : 0 }}\",\n    \"UF_CRM_695E5E4A8B689\": \"{{ $('mobilvendor-one1').item.json.query.utm_source }}\",\n    \"UF_CRM_695E5E4AA08E2\" : \"{{ $('mobilvendor-one1').item.json.query.utm_medium }}\",\n    \"UF_CRM_695E5E4AADFF4\" : \"{{ $('mobilvendor-one1').item.json.query.utm_campaign }}\",\n    \"UF_CRM_695E5E4ABBC91\" : \"{{ $('mobilvendor-one1').item.json.query.utm_content }}\",\n    \"UF_CRM_695E5E4AD9102\" : \"{{ $('mobilvendor-one1').item.json.query.utm_term }}\",\n    \"UF_CRM_695E5E4AE6BD5\" : \"{{ $('mobilvendor-one1').item.json.query.utm_country }}\",\n    \"SOURCE_ID\": \"WEBFORM\",\n    \"UF_CRM_1760641316\": \"{{ $('Datos1').first().json.RUC }}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4832,
+        224
+      ],
+      "id": "e0030b3a-4096-49fb-9b31-ffaf615a275c",
+      "name": "HTTP BITRIX_MVONE"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4304,
+        512
+      ],
+      "id": "7b05946e-70ec-4b90-bbe3-ecfd1dde8b25",
+      "name": "Wait1",
+      "webhookId": "59b70612-0509-468e-9711-ad845f1a6974"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "20a67bc2-263f-48f2-8452-483dd5d86bb1",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "OK",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4352,
+        240
+      ],
+      "id": "2bc328fd-de6d-4a65-91b6-37924c7ba0a2",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nconst nombreEmpresa = $('Datos1').first().json.empresa || \"Sin nombre\";\n\n// Verificar si RUC no fue enviado (error permitido)\nconst errorMsg = data?.error?.message ?? \"\";\nif (\n    typeof errorMsg === \"string\" &&\n    errorMsg.includes(\"El parámetro número RUC es requerido\")\n) {\n    return [{\n        json: {\n            status: \"OK\",\n            info: \"RUC no enviado → se permite continuar\",\n            razonSocial: nombreEmpresa  // ✅ Usa el nombre de la empresa\n        }\n    }];\n}\n\n// Validación normal de errores (después de 3 intentos fallidos)\nif (\n    data.error &&\n    typeof data.error.message === \"string\" &&\n    data.error.message.trim() !== \"\"\n) {\n    return [{\n        json: {\n            status: \"ERROR\",\n            errorMessage: data.error.message,\n            razonSocial: nombreEmpresa  // ✅ Usa el nombre como fallback\n        }\n    }];\n}\n\n// Si la consulta fue exitosa\nreturn [{\n    json: {\n        status: \"OK\",\n        razonSocial: data.contribuyente?.razonSocial || nombreEmpresa\n    }\n}];\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4192,
+        240
+      ],
+      "id": "11ebc75a-47e0-4ddc-807e-840e29e1e1cf",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "respondWith": "redirect",
+        "redirectURL": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        5392,
+        224
+      ],
+      "id": "a4335a86-636c-4690-8593-f3b402cdd8e4",
+      "name": "Respond to Webhook1",
+      "alwaysOutputData": false,
+      "notesInFlow": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * Form (query): Name, Email, Phone, Company, DNI, checkbox\n * UTMs opcionales: utm_source, utm_medium, utm_campaign, utm_content, utm_term, utm_country\n *\n * 🛑 SPAM / VACÍO  → return []                      (sin output, flujo se detiene)\n * ⚠️  INVÁLIDO     → return [{ status: \"INVALID\" }] (pasa al siguiente nodo)\n * ✅  OK           → return [{ status: \"VALID\" }]   (pasa al siguiente nodo)\n */\n\nconst ctx        = $input.first().json || {};\nconst headers    = ctx.headers || {};\nconst httpMethod = (ctx.method || \"\").toUpperCase();\n\n// ---- Unificar entradas ----\nconst query = (ctx.query && typeof ctx.query === \"object\") ? ctx.query : {};\nlet body = ctx.body;\nif (typeof body === \"string\") {\n  try { body = JSON.parse(body); } catch { body = {}; }\n}\nif (!body || typeof body !== \"object\") body = {};\nconst data = { ...query, ...body, ...ctx };\n\n// ---- Helpers ----\nconst s           = (v) => (v === undefined || v === null) ? \"\" : String(v).trim();\nconst stripSpaces = (v) => s(v).replace(/\\s+/g, \" \");\nconst digitsOnly  = (v) => s(v).replace(/\\D/g, \"\");\nconst upperNoSpace = (v) => s(v).toUpperCase().replace(/\\s+/g, \"\");\nfunction truthy(v) {\n  const t = String(v ?? \"\").trim().toLowerCase();\n  return [\"true\",\"1\",\"on\",\"yes\",\"y\",\"si\",\"sí\",\"checked\"].includes(t);\n}\n\nconst NAME_RE  = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]+$/;\nconst EMAIL_RE = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;\nconst E164_RE  = /^\\+?[1-9]\\d{7,14}$/;\n\n// ---- Campos ----\nconst Name     = stripSpaces(data.Name);\nconst Email    = s(data.Email).toLowerCase();\nconst PhoneRaw = s(data.Phone);\nconst Company  = stripSpaces(data.Company);\nconst DNIraw   = s(data.DNI);\nconst Checkbox = data.checkbox;\n\nconst utm = {\n  utm_source:   s(data.utm_source),\n  utm_medium:   s(data.utm_medium),\n  utm_campaign: s(data.utm_campaign),\n  utm_content:  s(data.utm_content),\n  utm_term:     s(data.utm_term),\n  utm_country:  s(data.utm_country),\n};\n\n// =====================================================\n// 🛑 BLOQUE 1 — SEÑALES DE ROBOT\n// =====================================================\nconst tieneFormData = Name || Email || PhoneRaw || Company || DNIraw;\nif (!tieneFormData) return [];\n\nif (httpMethod === \"GET\" && ctx.query) return [];\nif (httpMethod && httpMethod !== \"POST\") return [];\nif (String(data.website || \"\").trim() !== \"\") return [];\n\nconst now       = Date.now();\nconst formStart = Number(data.form_start_ts || 0);\nif (formStart && (now - formStart) < 3000) return [];\n\n// =====================================================\n// 🛑 BLOQUE 2 — INYECCIÓN EN CUALQUIER CAMPO\n// (SQL injection, XSS, shell commands)\n// =====================================================\nconst sqlPattern    = /('|--|;|\\/\\*|\\*\\/|xp_|UNION\\s+SELECT|DROP\\s+TABLE|INSERT\\s+INTO|SELECT\\s+\\*)/i;\nconst scriptPattern = /(javascript:|<script|<\\/script|onerror=|onload=|eval\\(|alert\\()/i;\nconst shellPattern  = /(\\$\\(|`[^`]+`|&&\\s*(rm|cat|wget|curl)|;\\s*(rm|cat|wget))/i;\n\nconst allFields = [Name, Email, Company, DNIraw];\nfor (const field of allFields) {\n  if (sqlPattern.test(field) || scriptPattern.test(field) || shellPattern.test(field)) return [];\n}\n\n// =====================================================\n// 🛑 BLOQUE 3 — NOMBRE SPAM\n// =====================================================\n// Patrones de contenido spam en nombre\nconst urlPattern          = /(https?:\\/\\/|www\\.|[a-z0-9-]+\\.(com|net|org|ru|xyz|info|io))/i;\nconst htmlPattern         = /<[a-z][\\s\\S]*>/i;\nconst emojiPattern        = /[\\uD800-\\uDBFF][\\uDC00-\\uDFFF]/;         // surrogate pairs, sin /u\nconst cyrillicPattern     = /[\\u0400-\\u04FF]/;                         // cirílico (ххх, etc.)\nconst spamKeywords        = /(payment|available|earn|free money|click here|prize|hs=|crypto|bitcoin|\\$\\d)/i;\nconst nombreHumanoPattern = /^[a-zA-ZÀ-ÿÑñ\\s'.-]{3,}$/;\n\nif (Name && (\n  urlPattern.test(Name)          ||\n  htmlPattern.test(Name)         ||\n  emojiPattern.test(Name)        ||\n  cyrillicPattern.test(Name)     ||\n  spamKeywords.test(Name)        ||\n  !nombreHumanoPattern.test(Name)\n)) return [];\n\n// Nombre debe tener al menos nombre + apellido (1 espacio mínimo)\nif (Name && !Name.includes(\" \")) return [];\n\n// =====================================================\n// 🛑 BLOQUE 4 — EMAIL CON DOMINIO SPAM / TEMPORAL\n// =====================================================\nconst spamDomains = new Set([\n  // Dominios temporales conocidos\n  \"mailbox.in.ua\",\"temp-mail.org\",\"guerrillamail.com\",\"yopmail.com\",\n  \"trashmail.com\",\"sharklasers.com\",\"mailnull.com\",\"spamgourmet.com\",\n  \"throwam.com\",\"dispostable.com\",\"maildrop.cc\",\"10minutemail.com\",\n  \"fakeinbox.com\",\"mailinator.com\",\"tempmail.com\",\"getnada.com\",\n  // TLDs de alto riesgo en formularios B2B\n  \"mail.ru\",\"bk.ru\",\"inbox.ru\",\"list.ru\",\"ro.ru\"\n]);\n\nconst emailDomain = Email.includes(\"@\") ? Email.split(\"@\")[1].toLowerCase() : \"\";\nif (emailDomain && spamDomains.has(emailDomain)) return [];\n\n// Detectar cirílico también en el email\nif (cyrillicPattern.test(Email)) return [];\n\n// =====================================================\n// 🛑 BLOQUE 5 — DNI SIN DÍGITOS\n// =====================================================\nconst dniDigits = digitsOnly(DNIraw);\nif (DNIraw && dniDigits.length === 0) return [];\n\n// =====================================================\n// 🛑 BLOQUE 6 — TELÉFONO INVÁLIDO\n// =====================================================\nconst PhoneLocal = digitsOnly(PhoneRaw);\nconst phoneClean = PhoneRaw.replace(/[^\\d+]/g, \"\");\n\nconst looksEcuadorLocal  = (PhoneLocal.length >= 9 && PhoneLocal.length <= 10 && PhoneLocal.startsWith(\"0\"));\nconst looksEcuadorE164   = phoneClean.startsWith(\"+593\");\nconst looksInternational = phoneClean.startsWith(\"+\") && E164_RE.test(phoneClean);\n\n// Teléfono que no es Ecuador ni E.164 internacional válido → bloqueado\nif (PhoneRaw && !looksEcuadorLocal && !looksEcuadorE164 && !looksInternational) return [];\n\n// =====================================================\n// ⚠️  CAMPOS OBLIGATORIOS → INVALID (siguiente nodo)\n// =====================================================\nconst required = { Name, Email, Phone: PhoneRaw, Company, DNI: DNIraw, checkbox: Checkbox };\nconst missingFields = Object.entries(required)\n  .filter(([k, v]) => (k === \"checkbox\") ? !truthy(v) : !v)\n  .map(([k]) => k);\n\nif (missingFields.length > 0) {\n  return [{\n    json: {\n      status: \"INVALID\",\n      reason: missingFields.includes(\"checkbox\") ? \"privacy_not_accepted\" : \"missing_fields\",\n      missingFields,\n      receivedKeys: Object.keys(data),\n    }\n  }];\n}\n\n// =====================================================\n// ⚠️  VALIDACIONES NORMALES → INVALID (siguiente nodo)\n// =====================================================\nif (Name.length < 5 || Name.length > 80) {\n  return [{ json: { status: \"INVALID\", reason: \"invalid_name_length\", Name } }];\n}\nif (!NAME_RE.test(Name)) {\n  return [{ json: { status: \"INVALID\", reason: \"invalid_name_format\", Name } }];\n}\n\nif (!EMAIL_RE.test(Email) || Email.length > 120) {\n  return [{ json: { status: \"INVALID\", reason: \"invalid_email\", Email } }];\n}\n\nif (Company.length < 2 || Company.length > 120) {\n  return [{ json: { status: \"INVALID\", reason: \"invalid_company_length\", Company } }];\n}\n\nif ((phoneClean.match(/\\+/g) || []).length > 1) {\n  return [{ json: { status: \"INVALID\", reason: \"invalid_phone_format\", PhoneRaw } }];\n}\n\n// ---- Phone Ecuador: normalizar a E.164 ----\nlet PhoneNormalized = \"\";\n\nif (looksEcuadorLocal || looksEcuadorE164) {\n  if (looksEcuadorE164) {\n    if (!E164_RE.test(phoneClean)) {\n      return [{ json: { status: \"INVALID\", reason: \"invalid_phone_ecuador_e164\", PhoneRaw } }];\n    }\n    PhoneNormalized = phoneClean;\n  } else {\n    let national = PhoneLocal;\n    if (national.startsWith(\"0\")) national = national.slice(1);\n    PhoneNormalized = `+593${national}`;\n    if (!E164_RE.test(PhoneNormalized)) {\n      return [{ json: { status: \"INVALID\", reason: \"cannot_build_phone_e164_ecuador\", PhoneRaw, PhoneNormalized } }];\n    }\n  }\n} else if (looksInternational) {\n  PhoneNormalized = phoneClean;\n}\n\n// ---- DNI: si tiene 13 dígitos → validar como RUC Ecuador ----\nconst dniUpper = upperNoSpace(DNIraw);\n\nif (dniDigits.length === 13) {\n  if (!/^\\d{13}$/.test(dniDigits)) {\n    return [{ json: { status: \"INVALID\", reason: \"invalid_dni_ecuador_ruc\", DNI: DNIraw } }];\n  }\n} else {\n  if (DNIraw.length < 5) {\n    return [{ json: { status: \"INVALID\", reason: \"invalid_dni_min_length\", DNI: DNIraw } }];\n  }\n}\n\n// =====================================================\n// ✅ OK — LEAD LIMPIO\n// =====================================================\nreturn [{\n  json: {\n    status: \"VALID\",\n    Origen: \"MVONE\",\n    Name,\n    Email,\n    Phone: PhoneLocal,\n    PhoneNormalized,\n    Company,\n    DNI: dniUpper,\n    checkbox: true,\n    ...utm\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3344,
+        240
+      ],
+      "id": "f238047e-d011-46ba-88dd-0bfe5679c686",
+      "name": "Validación datos Formulario?1",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2de00892-2baf-43c3-8015-7a671991f811",
+              "name": "email",
+              "value": "={{ $json.Email }}",
+              "type": "string"
+            },
+            {
+              "id": "44b680fa-4f18-4e50-a36e-5f041bcb9646",
+              "name": "nombre",
+              "value": "={{ $json.Name }}",
+              "type": "string"
+            },
+            {
+              "id": "6141a207-bb11-4153-a2cd-2cceea755cdc",
+              "name": "empresa",
+              "value": "={{ $json.Company }}",
+              "type": "string"
+            },
+            {
+              "id": "37d16b43-644f-40f9-ac39-6d655f9bee7f",
+              "name": "industria",
+              "value": "={{ $json.Industry }}",
+              "type": "string"
+            },
+            {
+              "id": "ad64e2bd-c001-41e0-902c-b946d8115f40",
+              "name": "phone",
+              "value": "={{ $json.PhoneNormalized }}",
+              "type": "string"
+            },
+            {
+              "id": "93707705-81ad-400b-9783-ff16cd1e9589",
+              "name": "Pais",
+              "value": "={{ $json.Country }}",
+              "type": "string"
+            },
+            {
+              "id": "2cb903c1-50e2-4c78-a714-091a571a38b7",
+              "name": "RUC",
+              "value": "={{ $json.DNI }}",
+              "type": "string"
+            },
+            {
+              "id": "c6f7b547-b28d-4970-8c0d-9caaecf4db3d",
+              "name": "ip",
+              "value": "={{ $('mobilvendor-one1').item.json.headers['x-real-ip'] }}",
+              "type": "string"
+            },
+            {
+              "id": "95ae5d82-ee6e-4f8e-8d0e-75540ba2f8e1",
+              "name": "facturacion",
+              "value": "=",
+              "type": "string"
+            },
+            {
+              "id": "b62d7b62-8574-422c-bc69-a89f44ebfd97",
+              "name": "empleados",
+              "value": "=",
+              "type": "string"
+            },
+            {
+              "id": "490bdc23-1386-4d07-a41d-641c5bd0a371",
+              "name": "MQL",
+              "value": "=",
+              "type": "string"
+            },
+            {
+              "id": "antispam1",
+              "name": "spamReason",
+              "value": "={{ $json.reason || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "antispam2",
+              "name": "spamSignals",
+              "value": "={{ $json.spamSignals || \"\" }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3584,
+        240
+      ],
+      "id": "ff368604-ba8d-4abc-9213-34ff4befa615",
+      "name": "Datos1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\n\n// Obtener razón social del SRI o del formulario como fallback\nconst razonSocial = \n  $items(\"Code1\")?.[0]?.json?.razonSocial ?? \n  $items(\"Datos1\")?.[0]?.json?.empresa ?? \n  \"\";\n\n// Formato URL\nconst name = encodeURIComponent(razonSocial.trim()).replace(/%20/g, \"+\");\n\nreturn items.map((item) => {\n  const ruc = item.json.ruc ?? \"\";\n  const email = item.json.email ?? \"\";\n  const dealId = item.json.id_lead ?? item.json.deal_id ?? \"\";\n\n  const url =\n    `https://s23.mobilvendor.com/mvone-purchase` +\n    `?identity=${encodeURIComponent(String(ruc).trim())}` +\n    `&name=${name}` +\n    `&email=${encodeURIComponent(String(email).trim())}` +\n    `&deal_id=${encodeURIComponent(String(dealId).trim())}`;\n\n  return { json: { url } };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5216,
+        224
+      ],
+      "id": "17408846-891c-4f15-9d21-77886e62286f",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://mobilvendor.bitrix24.es/rest/1/0xcb4e9xj579fw8i/crm.deal.update.json",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"id\": \"{{ $('Append row in sheet1').item.json.id_lead }}\",\n  \"fields\": {\n   \"UF_CRM_1770129066\": \"{{ $json.url }}\"\n  }\n}",
+        "options": {}
+      },
+      "id": "56b96d95-be4f-4e74-a11a-61610b15b9e8",
+      "name": "Update Bitrix deal1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        5552,
+        224
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://mobilvendor.bitrix24.es/rest/1/r6ke4gy6p0pz5yvs/crm.contact.add.json",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"fields\": {\n    \"NAME\": \"{{ $('Datos1').first().json.nombre }}\",\n    \"OPENED\": \"Y\",\n    \"ASSIGNED_BY_ID\": 93,\n    \"TYPE_ID\": \"CLIENT\",\n    \"SOURCE_ID\": \"WEBFORM\",\n    \"PHONE\": [\n      {\n        \"VALUE\": \"{{ $('Datos1').first().json.PhoneNormalized || $('Datos1').first().json.phone }}\",\n        \"VALUE_TYPE\": \"WORK\"\n      }\n    ],\n    \"EMAIL\": [\n      {\n        \"VALUE\": \"{{ $('Datos1').first().json.email }}\",\n        \"VALUE_TYPE\": \"WORK\"\n      }\n    ]\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        4608,
+        224
+      ],
+      "id": "9826b70a-7124-4921-adaa-4127135a97d7",
+      "name": "Crear contacto1"
+    },
+    {
+      "parameters": {
+        "path": "mobilvendor-one",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        2672,
+        240
+      ],
+      "id": "7857b3d3-29f6-4cb6-9688-6d57771d8058",
+      "name": "mobilvendor-one1",
+      "webhookId": "b43a8148-b761-4ef3-a047-18a04e0e0891"
+    }
+  ],
+  "pinData": {
+    "mobilvendor-one1": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mobilvendor.com",
+            "user-agent": "\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36\"",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "en-US,en;q=0.9",
+            "cookie": "_gid=GA1.2.1942084906.1775083202; _fbp=fb.1.1775083204420.122051600121654765; _tt_enable_cookie=1; _ttp=01KN5K8DFF0EY732VYGY51PZ4X_.tt.1; _cfuvid=YW.z0dNOFRyUUBkzxCcFnxcH5m6NIbM_9MWUCdvhq00-1775083268.569052-1.0.1.1-jCYernWLzYMq3kTlDNtatSX4aGweQUV9sRGcUekctds; _gat_UA-138130575-1=1; _ga_CSVNYNFQWB=GS2.1.s1775083202$o1$g1$t1775083277$j54$l0$h0; _ga=GA1.2.945943219.1775083198; ttcsid_CRHKODRC77U9E32J40N0=1775083206194::k2zIec2n9BHULn5KRi_i.1.1775083288413.1; _gali=wf-form-Email-Form-MV-1; _gcl_au=1.1.1513690452.1775083197.288899695.1775083203.1775083288; _ga_364QJNG2S0=GS2.1.s1775083197$o1$g1$t1775083288$j42$l0$h1102353666; _ga_VMXC8062E4=GS2.1.s1775083202$o1$g1$t1775083288$j43$l0$h0; ttcsid_D6SSC8JC77UANC7OT15G=1775083206186::rwxTkSdXnzgYzk4sN5bY.1.1775083288500.1; ttcsid=1775083206191::TI1LW1Nb1qQx1i_a1JjY.1.1775083288500.0::0.70478.72146::0.0.0.0::0.0.0",
+            "priority": "u=0, i",
+            "referer": "https://mobilvendor.com/",
+            "sec-ch-ua": "\"Not:A-Brand\";v=\"24\", \"Chromium\";v=\"134\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Linux\"",
+            "sec-fetch-dest": "document",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "same-site",
+            "upgrade-insecure-requests": "1",
+            "x-forwarded-for": "10.0.0.2",
+            "x-forwarded-host": "n8n.mobilvendor.com",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "eb62f0b0d11f",
+            "x-real-ip": "10.0.0.2"
+          },
+          "params": {},
+          "query": {
+            "utm_source": "",
+            "utm_medium": "",
+            "utm_campaign": "",
+            "utm_content": "",
+            "utm_term": "",
+            "utm_country": "",
+            "Name": "alptLKEwEKuTwlgVACafN",
+            "Email": "agaq.ef.ojubi.148@gmail.com",
+            "Phone": "2662192157",
+            "Company": "ikQAlCCszmGiQMQyddW",
+            "DNI": "PXicrcqVrlHHpNzXWCPUUpOw",
+            "field": "First",
+            "checkbox": "on"
+          },
+          "body": {},
+          "webhookUrl": "https://n8n.mobilvendor.com/webhook/mobilvendor-one",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T17:17:10.395Z",
+      "createdAt": "2026-01-13T17:17:10.395Z",
+      "role": "workflow:owner",
+      "workflowId": "lj5SDn2BCLPKGonf",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-04-02T15:46:37.113Z",
+  "versionId": "65f56915-cc10-493d-b5d7-2d3f28bdef76"
+}
