@@ -1,0 +1,187 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Flowise_Document_Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Flowise_Document_Store": {
+      "main": [
+        [
+          {
+            "node": "filtro_guidde_id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "filtro_guidde_id": {
+      "main": [
+        [
+          {
+            "node": "Config_Upsert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config_Upsert": {
+      "main": [
+        [
+          {
+            "node": "Flowise_Upsert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Flowise_Upsert": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "createdAt": "2026-02-11T20:52:52.553Z",
+  "id": "WjCj2L9ohET60KbmOAeqZ",
+  "isArchived": false,
+  "meta": null,
+  "name": "Upsert Guidde",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -336
+      ],
+      "id": "748ddf0a-4ef5-43cb-a2b2-b54d87a0e423",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://mobilvendor-ai.com/api/v1/document-store/store",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer BEuSR5XAgcUToj5rjGV1LnCZstS7GxuEfRK72eStn7M"
+            },
+            {
+              "name": "Accept",
+              "value": "*/*"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -112,
+        -336
+      ],
+      "id": "d368b858-7db8-4843-b37a-578312808522",
+      "name": "Flowise_Document_Store"
+    },
+    {
+      "parameters": {
+        "jsCode": "// === SACAR LOADERS \"guidde\" DE kb_guidde_s3 ===\nconst allInput = $input.all();  // <- CAMBIO CLAVE: Todos los items\n\n// Normalizar stores desde todos los items\nlet stores = [];\nfor (const item of allInput) {\n  const data = item.json;\n  if (Array.isArray(data)) {\n    stores = stores.concat(data);\n  } else {\n    stores.push(data);\n  }\n}\n\n// Resto igual...\nconst targetStoreName = 'kb_guidde_s3';\nconst guiddeStore = stores.find(s => (s.name || '').toLowerCase().trim() === targetStoreName.toLowerCase().trim());\n\nif (!guiddeStore) {\n  return [{\n    json: { \n      ok: false, \n      error: `No se encontró \"${targetStoreName}\"`,\n      availableStores: stores.map(s => s.name).filter(Boolean),\n      totalStoresFound: stores.length,\n      inputItemsCount: allInput.length\n    }\n  }];\n}\n\n// Filtrar loaders \"guidde\" (igual que antes)\nconst needle = 'guidde';\nconst loaders = Array.isArray(guiddeStore.loaders) ? guiddeStore.loaders : [];\nconst guiddeLoaders = loaders.filter(l => \n  String(l.loaderName || '').toLowerCase().trim().includes(needle)\n);\n\nif (guiddeLoaders.length === 0) {\n  return [{ json: { ok: false, storeId: guiddeStore.id, storeName: guiddeStore.name, error: `No loaders \"${needle}\"` } }];\n}\n\nreturn guiddeLoaders.map(l => ({\n  json: {\n    ok: true,\n    storeId: guiddeStore.id,\n    storeName: guiddeStore.name,\n    docId: l.id,\n    loaderName: l.loaderName,\n    prefix: l.loaderConfig?.prefix,\n    bucketName: l.loaderConfig?.bucketName,\n    status: l.status,\n    totalChunks: l.totalChunks,\n    totalChars: l.totalChars\n  }\n}));\n\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        176,
+        -336
+      ],
+      "id": "c43b475e-4a4d-4721-afa0-4c9d71656fe7",
+      "name": "filtro_guidde_id"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.flowiseUrl }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer BEuSR5XAgcUToj5rjGV1LnCZstS7GxuEfRK72eStn7M"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n        \"docId\": \"{{ $json.docId }}\",\n        \"metadata\": \"{}\",\n        \"replaceExisting\": true,\n        \"createNewDocStore\": false,\n        \"loaderName\": \"{{ $json.payload.loaderName }}\"\n  }",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        752,
+        -336
+      ],
+      "id": "570308aa-3ff4-44ae-9936-f212040f9146",
+      "name": "Flowise_Upsert",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "jsCode": "// Config_Upsert CORREGIDO\nconst STORE_ID = 'ddbcfeaa-7c71-4220-90d4-f2d09eed642f'; // kb_guidde_s3\nconst API_HOST = 'https://mobilvendor-ai.com';\n\nreturn $input.all().map(({ json }) => {\n  const metadataObj = {\n    loaderName: json.loaderName,\n    prefix: json.prefix,\n    bucketName: json.bucketName,\n    source: 'Guidde-S3',\n    updatedAt: new Date().toISOString(),\n  };\n\n  // Usa el credential del loader original, si existe\n  const credentialId = json.credential || '8e97fc05-3f3a-4e12-8f4d-3f8b27b4f7b1';\n\n  return {\n    json: {\n      ...json,\n      flowiseUrl: `${API_HOST}/api/v1/document-store/upsert/${STORE_ID}`,\n      payload: {\n        docId: json.docId,          // loader.id\n        loaderName: json.loaderName,\n        replaceExisting: true,\n        metadata: metadataObj,\n        loader: {\n          id: 's3Directory',        // tipo de loader\n          config: {\n            bucketName: json.bucketName,\n            prefix: json.prefix,\n            region: 'us-east-1',\n            FLOWISE_CREDENTIAL_ID: credentialId,   // ← CLAVE\n            pdfUsage: 'perFile'\n          }\n        },\n        splitter: {\n          config: {\n            encodingName: 'gpt2',\n            chunkSize: 7500,\n            chunkOverlap: 250\n          }\n        }\n      }\n    }\n  };\n});\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        -336
+      ],
+      "id": "132b451b-fd2d-4719-bf99-9ba3bfc33889",
+      "name": "Config_Upsert",
+      "executeOnce": true
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-02-11T20:52:52.567Z",
+      "createdAt": "2026-02-11T20:52:52.567Z",
+      "role": "workflow:owner",
+      "workflowId": "WjCj2L9ohET60KbmOAeqZ",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-02-13T20:00:17.528Z",
+  "versionId": "7f2bfc2a-5e7a-4ae4-a3a1-f034f999fe94"
+}
