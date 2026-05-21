@@ -1,0 +1,3263 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-05-21T16:21:22.000Z",
+    "createdAt": "2026-05-21T16:21:02.654Z",
+    "versionId": "1120fb71-e786-436a-8a00-2590a64489a7",
+    "workflowId": "MsSDs2Tsv4IYX_V6Mc5vn",
+    "nodes": [
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1yOx84dLgBTW9D0A4npkB2pf2T-CjnllowxIdvaiCsTg",
+            "mode": "list",
+            "cachedResultName": "MQL LeadFormMeta",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yOx84dLgBTW9D0A4npkB2pf2T-CjnllowxIdvaiCsTg/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1361762216,
+            "mode": "list",
+            "cachedResultName": "Lead Principal",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yOx84dLgBTW9D0A4npkB2pf2T-CjnllowxIdvaiCsTg/edit#gid=1361762216"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "número_de_teléfono",
+                "lookupValue": "={{ $json['número_de_teléfono'] }}"
+              }
+            ]
+          },
+          "options": {
+            "returnFirstMatch": true
+          }
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          448,
+          624
+        ],
+        "id": "bd71d401-6790-4bec-9fd4-96b8a56b7453",
+        "name": "Sheets: Buscar Duplicado por Teléfono",
+        "alwaysOutputData": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "UH4CavyWfnclTTef",
+            "name": "MKT"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "1yOx84dLgBTW9D0A4npkB2pf2T-CjnllowxIdvaiCsTg",
+            "mode": "list",
+            "cachedResultName": "MQL LeadFormMeta"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1361762216,
+            "mode": "list",
+            "cachedResultName": "Lead Principal",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yOx84dLgBTW9D0A4npkB2pf2T-CjnllowxIdvaiCsTg/edit#gid=1361762216"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "id": "={{ $('Code: Normalizar Datos Meta1').item.json.leadgen_id }}",
+              "created_time": "={{ $('Code: Normalizar Datos Meta1').item.json.created_time }}",
+              "ad_id": "={{ $('Code: Normalizar Datos Meta1').item.json.ad_id }}",
+              "ad_name": "={{ $('Code: Normalizar Datos Meta1').item.json.ad_name }}",
+              "adset_id": "={{ $('Code: Normalizar Datos Meta1').item.json.adset_id }}",
+              "adset_name": "={{ $('Code: Normalizar Datos Meta1').item.json.adset_name }}",
+              "campaign_id": "={{ $('Code: Normalizar Datos Meta1').item.json.campaign_id }}",
+              "campaign_name": "={{ $('Code: Normalizar Datos Meta1').item.json.campaign_name }}",
+              "form_name": "={{ $('Code: Normalizar Datos Meta1').item.json.form_name }}",
+              "is_organic": "={{ $('Code: Normalizar Datos Meta1').item.json.is_organic }}",
+              "platform": "={{ $('Code: Normalizar Datos Meta1').item.json.platform }}",
+              "mayor_dolor": "={{ $('Code: Normalizar Datos Meta1').item.json.mayor_dolor }}",
+              "tamaño_de_operación": "={{ $('Code: Normalizar Datos Meta1').item.json['tamaño_de_operación'] }}",
+              "nombre_completo": "={{ $('Code: Normalizar Datos Meta1').item.json.nombre_completo }}",
+              "número_de_teléfono": "={{ $('Code: Normalizar Datos Meta1').item.json['número_de_teléfono'] }}",
+              "work_email": "={{ $('Code: Normalizar Datos Meta1').item.json.work_email }}",
+              "nombre_de_la_empresa": "={{ $('Code: Normalizar Datos Meta1').item.json.nombre_de_la_empresa }}",
+              "status_lead": "EN_VALIDACION",
+              "wa_estado": "={{ $('Code: Normalizar Datos Meta1').item.json.wa_estado }}",
+              "wa_attempt": "={{ $('Code: Normalizar Datos Meta1').item.json.wa_attempt }}",
+              "wa_fase": "={{ $('Code: Normalizar Datos Meta1').item.json.wa_fase }}",
+              "pais_codigo": "={{ $('Code: Normalizar Datos Meta1').item.json.pais_codigo }}",
+              "prioridad": "={{ $('Code: Normalizar Datos Meta1').item.json.prioridad }}",
+              "mql_score": "={{ $('Code: Normalizar Datos Meta1').item.json.mql_score }}",
+              "es_email_corporativo": "={{ $('Code: Normalizar Datos Meta1').item.json.es_email_corporativo }}",
+              "mql_result": "={{ $('Code: Normalizar Datos Meta1').item.json.mql_result }}",
+              "lead_status": "={{ $('Code: Normalizar Datos Meta1').item.json.lead_status }}",
+              "form_id": "={{ $('Webhook Meta Lead1').item.json.body.entry[0].changes[0].value.form_id }}"
+            },
+            "matchingColumns": [
+              "id"
+            ],
+            "schema": [
+              {
+                "id": "id",
+                "displayName": "id",
+                "required": false,
+                "defaultMatch": true,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "created_time",
+                "displayName": "created_time",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "ad_id",
+                "displayName": "ad_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "ad_name",
+                "displayName": "ad_name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "adset_id",
+                "displayName": "adset_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "adset_name",
+                "displayName": "adset_name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "campaign_id",
+                "displayName": "campaign_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "campaign_name",
+                "displayName": "campaign_name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "form_id",
+                "displayName": "form_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "form_name",
+                "displayName": "form_name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "is_organic",
+                "displayName": "is_organic",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "platform",
+                "displayName": "platform",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "nombre_completo",
+                "displayName": "nombre_completo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "número_de_teléfono",
+                "displayName": "número_de_teléfono",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "work_email",
+                "displayName": "work_email",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "nombre_de_la_empresa",
+                "displayName": "nombre_de_la_empresa",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "tamaño_de_operación",
+                "displayName": "tamaño_de_operación",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "mayor_dolor",
+                "displayName": "mayor_dolor",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "pais_codigo",
+                "displayName": "pais_codigo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "ruc_candidato",
+                "displayName": "ruc_candidato",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "ruc_estado",
+                "displayName": "ruc_estado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "industria_validada",
+                "displayName": "industria_validada",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "numero_usuarios",
+                "displayName": "numero_usuarios",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "facturacion_anual",
+                "displayName": "facturacion_anual",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "es_email_corporativo",
+                "displayName": "es_email_corporativo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "bitrix_lead_id",
+                "displayName": "bitrix_lead_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "status_lead",
+                "displayName": "status_lead",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "wa_fase",
+                "displayName": "wa_fase",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "wa_attempt",
+                "displayName": "wa_attempt",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "wa_estado",
+                "displayName": "wa_estado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "wa_last_contact",
+                "displayName": "wa_last_contact",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "pending_question",
+                "displayName": "pending_question",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "prioridad",
+                "displayName": "prioridad",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "mql_score",
+                "displayName": "mql_score",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "mql_result",
+                "displayName": "mql_result",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "lead_status",
+                "displayName": "lead_status",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "recontacto_1_fecha",
+                "displayName": "recontacto_1_fecha",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "recontacto_2_fecha",
+                "displayName": "recontacto_2_fecha",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "recontacto_3_fecha",
+                "displayName": "recontacto_3_fecha",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "recontacto_4_fecha",
+                "displayName": "recontacto_4_fecha",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "recontacto_resultado",
+                "displayName": "recontacto_resultado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "nurturing_start",
+                "displayName": "nurturing_start",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "nurturing_msg",
+                "displayName": "nurturing_msg",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "nurturing_last_send",
+                "displayName": "nurturing_last_send",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "nurturing_resultado",
+                "displayName": "nurturing_resultado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "messaging_product",
+                "displayName": "messaging_product",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "contacts",
+                "displayName": "contacts",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "messages",
+                "displayName": "messages",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          832,
+          768
+        ],
+        "id": "81f4240e-2c57-4e9e-bb30-6a4b4f5178ac",
+        "name": "Sheets: Registrar Nuevo Lead",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "UH4CavyWfnclTTef",
+            "name": "MKT"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "e45a286a-e5e4-4b72-b19f-66bebd491377",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -496,
+          464
+        ],
+        "id": "0de87b41-2638-4065-9e91-3e73c76c8187",
+        "name": "Webhook Meta Lead1",
+        "webhookId": "e45a286a-e5e4-4b72-b19f-66bebd491377"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "cond-challenge",
+                "leftValue": "={{ $json.query && $json.query['hub.challenge'] ? 'true' : 'false' }}",
+                "rightValue": "true",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          -208,
+          464
+        ],
+        "id": "61ee629e-2f71-404f-a789-a022b43b4dc8",
+        "name": "¿Es verificación GET?1"
+      },
+      {
+        "parameters": {
+          "jsCode": "const q = $input.item.json.query || {};\nreturn [{ json: { body: q['hub.challenge'] || '' } }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          16,
+          304
+        ],
+        "id": "c65708d7-2e87-44fa-a0ed-e5d3ebb16abc",
+        "name": "Code: Responder Challenge1"
+      },
+      {
+        "parameters": {
+          "respondWith": "text",
+          "responseBody": "={{ $json.body }}",
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          240,
+          304
+        ],
+        "id": "f6e35bee-bd0c-4b15-8710-2f3575a4d35b",
+        "name": "Respond: Challenge Meta1"
+      },
+      {
+        "parameters": {
+          "url": "=https://graph.facebook.com/v20.0/{{ $json.body.entry[0].changes[0].value.leadgen_id }}",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpBearerAuth",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          16,
+          624
+        ],
+        "id": "b546f2d3-5e36-414f-a134-ebc212c3c6d3",
+        "name": "HTTP: Obtener Lead Graph API1",
+        "credentials": {
+          "httpBearerAuth": {
+            "id": "eBNDs0ncvzJHXBKS",
+            "name": "Bearer Auth account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// ══════════════════════════════════════════════════════════════════\n// NODO: Extracción + Pre-Scoring Meta Lead Forms — MOBILVENDOR v1.3\n// ══════════════════════════════════════════════════════════════════\nconst lead      = $input.item.json;\nconst fieldData = lead.field_data || [];\n\n// ── CONVERSIÓN A GMT-5 ─────────────────────────────────────────────\nfunction toGMTMinus5(isoString) {\n  const date  = new Date(isoString || Date.now());\n  const local = new Date(date.getTime() + (-5 * 60 * 60 * 1000));\n  const yyyy  = local.getUTCFullYear();\n  const MM    = String(local.getUTCMonth() + 1).padStart(2, '0');\n  const dd    = String(local.getUTCDate()).padStart(2, '0');\n  const hh    = String(local.getUTCHours()).padStart(2, '0');\n  const mm    = String(local.getUTCMinutes()).padStart(2, '0');\n  const ss    = String(local.getUTCSeconds()).padStart(2, '0');\n  return `${yyyy}-${MM}-${dd} ${hh}:${mm}:${ss}`;\n}\n\n// ── EXTRACTORES ────────────────────────────────────────────────────\nfunction extractValue(field) {\n  if (!field) return '';\n  if (Array.isArray(field.values) && field.values.length > 0)\n    return String(field.values[0] || '').trim();\n  if (typeof field.values === 'string') return field.values.trim();\n  if (typeof field.value  === 'string') return field.value.trim();\n  return '';\n}\n\nfunction getField(names) {\n  for (const name of names) {\n    const f = fieldData.find(f => f.name === name);\n    const v = extractValue(f);\n    if (v) return v;\n  }\n  return '';\n}\n\n// ── CAMPOS META ────────────────────────────────────────────────────\nconst nombre  = getField(['full_name', 'nombre_completo', 'FULL_NAME']);\nconst email   = getField(['email', 'work_email', 'EMAIL', 'correo_electrónico' ]);\nconst empresa = getField(['company_name', 'nombre_de_la_empresa', 'COMPANY']);\n\n// ✅ FIX 3 — nombre exacto del form primero\nconst rutas = getField([\n  'tamaño_de_operación', 'tamano_de_operacion',\n  'tamaño_de_operacion', 'rutas', '¿cuál_es_el_tamaño_de_operación_actual?'\n]);\n\nconst dolor = getField(['mayor_dolor', 'pain', 'DOLOR', '¿cuál_es_el_mayor_dolor_que_afecta_tu_operación?', '¿cuál_es_el_mayor_dolor_que_afecta_tu_opración?']);\n\n// ── TELÉFONO ───────────────────────────────────────────────────────\nconst telefonoLocal = getField([\n  'número_de_teléfono', 'numero_de_telefono',\n  'telefono', 'teléfono', 'PHONE'\n]);\n\nconst telefonoPrefijo = getField([\n  'phone_number', 'codigo_pais', 'country_code', 'prefijo'\n]);\n\nfunction buildPhone(prefijo, numero) {\n  const p = String(prefijo || '').trim();\n  const n = String(numero  || '').trim();\n  if (p && n) {\n    const pClean = p.startsWith('+') ? p : `+${p.replace(/\\D/g, '')}`;\n    const nClean = n.replace(/\\D/g, '');\n    const local  = nClean.startsWith('0') ? nClean.slice(1) : nClean;\n    return `${pClean}${local}`;\n  }\n  return numero || prefijo || '';\n}\n\nconst telefonoRaw = buildPhone(telefonoPrefijo, telefonoLocal);\n\n// ── NORMALIZACIÓN LATAM ────────────────────────────────────────────\nfunction normalizePhone(raw) {\n  let d = (raw || '').replace(/\\D/g, '');\n  if (!d) return '';\n\n  const prefixes = [\n    '593','595','598','591','506','505','504','503',\n    '502','507','1809','1829','1849','57','56','58','54','52','51'\n  ];\n  for (const c of prefixes) {\n    if (d.startsWith(c)) return '+' + d;\n  }\n\n  if (d.startsWith('0')) return '+593' + d.slice(1);\n  if (d.length === 9)    return '+593' + d;\n  if (d.length === 10)   return '+57'  + d;\n  if (d.length === 8)    return '+506' + d;\n  return '+' + d;\n}\n\nfunction detectarPais(tel) {\n  const d = (tel || '').replace(/\\D/g, '');\n  const map = [\n    ['593','EC'],['595','PY'],['598','UY'],['591','BO'],\n    ['506','CR'],['505','NI'],['504','HN'],['503','SV'],\n    ['502','GT'],['507','PA'],['1809','DO'],['1829','DO'],\n    ['1849','DO'],['57','CO'],['56','CL'],['58','VE'],\n    ['54','AR'],['52','MX'],['51','PE']\n  ];\n  for (const [code, p] of map) {\n    if (d.startsWith(code)) return p;\n  }\n  return 'EC';\n}\n\nconst telefono   = normalizePhone(telefonoRaw);\nconst paisCodigo = detectarPais(telefono);\n\n// ══════════════════════════════════════════════════════════════════\n// SCORING FASE 0 — Solo con datos del formulario Meta\n// Máx disponible aquí: 31 pts (rutas 15 + dolor 8 + email pre 8)\n// El resto del score se calcula en FASE 4 tras validación WhatsApp\n// ══════════════════════════════════════════════════════════════════\n\nlet mqlScore = 0;\nlet prioridad = 'BAJA';\n\n// ── SCORE RUTAS ✅ FIX 1 — normaliza en-dash/em-dash Unicode ──────\nconst rutasNorm = (rutas || '')\n  .toLowerCase()\n  .replace(/[\\u2013\\u2014\\u2212]/g, '-')  // en-dash, em-dash, minus\n  .trim();\n\nlet scoreRutas = 0;\nif (rutasNorm.includes('+15') || rutasNorm.includes('mas de 15') || rutasNorm.includes('más de 15')) {\n  scoreRutas = 15;\n  prioridad  = 'ALTA';\n} else if (rutasNorm.includes('6-15') || rutasNorm.includes('6 a 15') || rutasNorm.includes('6–15')) {\n  scoreRutas = 10;\n  prioridad  = 'MEDIA';\n} else if (rutasNorm.includes('1-5') || rutasNorm.includes('1 a 5') || rutasNorm.includes('1–5')) {\n  scoreRutas = 5;\n  prioridad  = 'BAJA';\n}\nmqlScore += scoreRutas;\n\n// ── SCORE DOLOR ───────────────────────────────────────────────────\n// Liquidación / Inventario / Trazabilidad → cada uno +8 pts\nconst dolorNorm = (dolor || '').toLowerCase()\n  .normalize('NFD').replace(/[\\u0300-\\u036f]/g, ''); // quita tildes\n\nlet scoreDolor = 0;\nlet dolorLabel = '';\n\nif (dolorNorm.includes('liquidacion') || dolorNorm.includes('liquidación')) {\n  scoreDolor = 8;\n  dolorLabel = 'Liquidación';\n} else if (dolorNorm.includes('inventario')) {\n  scoreDolor = 8;\n  dolorLabel = 'Inventario';\n} else if (dolorNorm.includes('trazabilidad')) {\n  scoreDolor = 8;\n  dolorLabel = 'Trazabilidad';\n}\nmqlScore += scoreDolor;\n\n// ── SCORE EMAIL (pre-validación) ──────────────────────────────────\n// Corporativo: +15 | Genérico: marcado para verificar con RUC en FASE 4\nconst freeDoms = [\n  'gmail.com','yahoo.com','hotmail.com',\n  'outlook.com','live.com','icloud.com','yahoo.es','hotmail.es'\n];\nconst emailDom          = (email.split('@')[1] || '').toLowerCase();\nconst esEmailCorporativo = !!emailDom && emailDom.includes('.') && !freeDoms.includes(emailDom);\n\n// Solo suma puntos de email si es corporativo (genérico espera validación RUC en FASE 4)\nconst scoreEmail = esEmailCorporativo ? 15 : 0;\nmqlScore += scoreEmail;\n\n// ── PRE-PRIORIDAD REFINADA ─────────────────────────────────────────\n// Si rutas son medias/altas + dolor definido + email corporativo → reforzar\nif (prioridad === 'ALTA'  && scoreDolor > 0 && esEmailCorporativo) prioridad = 'ALTA';\nif (prioridad === 'MEDIA' && scoreDolor > 0 && esEmailCorporativo) prioridad = 'MEDIA_PLUS';\n\n// ── VALIDACIÓN BÁSICA EMAIL ───────────────────────────────────────\nconst freeDomsList = freeDoms;\n\n// ── RETURN ────────────────────────────────────────────────────────\nreturn [\n  {\n    json: {\n      // Metadatos del lead\n      leadgen_id:    lead.id,\n      created_time:  toGMTMinus5(lead.created_time),\n      ad_id:         lead.ad_id         || '',\n      ad_name:       lead.ad_name       || '',\n      adset_id:      lead.adset_id      || '',\n      adset_name:    lead.adset_name    || '',\n      campaign_id:   lead.campaign_id   || '',\n      campaign_name: lead.campaign_name || '',\n      form_id:       lead.form_id       || '',\n      form_name:     lead.form_name     || '',\n      is_organic:    lead.is_organic    || false,\n      platform:      lead.platform      || 'fb',\n\n      // Datos del lead\n      nombre_completo:       nombre,\n      'número_de_teléfono':  telefono,\n      work_email:            email,\n      nombre_de_la_empresa:  empresa,\n      'tamaño_de_operación': rutas,\n      mayor_dolor:           dolorLabel || dolor,   // normalizado\n      pais_codigo:           paisCodigo,\n\n      // Scoring parcial (solo datos form Meta — FASE 0)\n      // El score final se calcula en FASE 4 tras WhatsApp\n      prioridad,\n      mql_score_parcial: mqlScore,   // puntos disponibles: rutas+dolor+email\n      score_rutas:        scoreRutas,\n      score_dolor:        scoreDolor,\n      score_email:        scoreEmail,\n\n      // Flags para FASE 4\n      es_email_corporativo: esEmailCorporativo,\n      email_tipo:           esEmailCorporativo ? 'CORPORATIVO' : 'GENERICO',\n\n      // Campos que FASE 4 completará tras WhatsApp\n      score_ruc:          0,   // +20 si activo\n      score_empresa:      0,   // +5 si nombre real\n      score_industria:    0,   // +10 core / +5 otro\n      score_telefono:     0,   // +5 prefijo correcto\n      score_usuarios:     0,   // +5/+10/+15\n      score_facturacion:  0,   // +0/+5/+7/+8\n      score_dominio:      0,   // +5 MX válido\n      score_empresa_cal:  0,   // +5 nombre claro\n      mql_score:          mqlScore,   // se actualiza en FASE 4\n\n      // Estado WhatsApp\n      wa_fase:         0,\n      wa_attempt:      0,\n      wa_estado:       'PENDIENTE',\n      wa_last_contact: toGMTMinus5(new Date().toISOString()),\n\n      // Estado del pipeline\n      mql_result:  'EN_PROCESO',\n      ruc_estado:  'PENDIENTE_VALIDACION',\n      lead_status: 'EN_VALIDACION'\n    }\n  }\n];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          240,
+          624
+        ],
+        "id": "8670db57-ade4-4384-97b1-fe7ebdb2e5f2",
+        "name": "Code: Normalizar Datos Meta1"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "cond-dup",
+                "leftValue": "={{ $json['número_de_teléfono'] }}",
+                "rightValue": "=0",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          672,
+          624
+        ],
+        "id": "4a4ca836-4567-4afd-a54e-722060d660a0",
+        "name": "¿Es duplicado?1"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={ \"status\": \"duplicate_ignored\" }",
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          896,
+          464
+        ],
+        "id": "989eaac5-ca1c-47aa-b1c8-1a031725f0a9",
+        "name": "Respond: Duplicado ignorado1"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "1yOx84dLgBTW9D0A4npkB2pf2T-CjnllowxIdvaiCsTg",
+            "mode": "list",
+            "cachedResultName": "MQL LeadFormMeta"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1361762216,
+            "mode": "list",
+            "cachedResultName": "Lead Principal",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yOx84dLgBTW9D0A4npkB2pf2T-CjnllowxIdvaiCsTg/edit#gid=1361762216"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "wa_fase": "0",
+              "id": "={{ $('Sheets: Registrar Nuevo Lead').item.json.id }}"
+            },
+            "matchingColumns": [
+              "id"
+            ],
+            "schema": [
+              {
+                "id": "id",
+                "displayName": "id",
+                "required": false,
+                "defaultMatch": true,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "created_time",
+                "displayName": "created_time",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "ad_id",
+                "displayName": "ad_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "ad_name",
+                "displayName": "ad_name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "adset_id",
+                "displayName": "adset_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "adset_name",
+                "displayName": "adset_name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "campaign_id",
+                "displayName": "campaign_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "campaign_name",
+                "displayName": "campaign_name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "form_id",
+                "displayName": "form_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "form_name",
+                "displayName": "form_name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "is_organic",
+                "displayName": "is_organic",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "platform",
+                "displayName": "platform",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "nombre_completo",
+                "displayName": "nombre_completo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "número_de_teléfono",
+                "displayName": "número_de_teléfono",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "work_email",
+                "displayName": "work_email",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "nombre_de_la_empresa",
+                "displayName": "nombre_de_la_empresa",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "tamaño_de_operación",
+                "displayName": "tamaño_de_operación",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "mayor_dolor",
+                "displayName": "mayor_dolor",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "pais_codigo",
+                "displayName": "pais_codigo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "ruc_candidato",
+                "displayName": "ruc_candidato",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "ruc_estado",
+                "displayName": "ruc_estado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "industria_validada",
+                "displayName": "industria_validada",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "numero_usuarios",
+                "displayName": "numero_usuarios",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "facturacion_anual",
+                "displayName": "facturacion_anual",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "es_email_corporativo",
+                "displayName": "es_email_corporativo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "bitrix_lead_id",
+                "displayName": "bitrix_lead_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "status_lead",
+                "displayName": "status_lead",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "wa_fase",
+                "displayName": "wa_fase",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "wa_attempt",
+                "displayName": "wa_attempt",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "wa_estado",
+                "displayName": "wa_estado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "wa_last_contact",
+                "displayName": "wa_last_contact",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "pending_question",
+                "displayName": "pending_question",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "prioridad",
+                "displayName": "prioridad",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "mql_score",
+                "displayName": "mql_score",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "mql_result",
+                "displayName": "mql_result",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "lead_status",
+                "displayName": "lead_status",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "recontacto_1_fecha",
+                "displayName": "recontacto_1_fecha",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "recontacto_2_fecha",
+                "displayName": "recontacto_2_fecha",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "recontacto_3_fecha",
+                "displayName": "recontacto_3_fecha",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "recontacto_resultado",
+                "displayName": "recontacto_resultado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "nurturing_start",
+                "displayName": "nurturing_start",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "nurturing_msg",
+                "displayName": "nurturing_msg",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "nurturing_last_send",
+                "displayName": "nurturing_last_send",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "nurturing_resultado",
+                "displayName": "nurturing_resultado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "messaging_product",
+                "displayName": "messaging_product",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "contacts",
+                "displayName": "contacts",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "messages",
+                "displayName": "messages",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "row_number",
+                "displayName": "row_number",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "readOnly": true,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          1488,
+          752
+        ],
+        "id": "9d507278-bc78-46fe-8467-b1f1e2c3c674",
+        "name": "Sheets: Actualizar Estado WA1",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "UH4CavyWfnclTTef",
+            "name": "MKT"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={ \"status\": \"ok\" }",
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5,
+        "position": [
+          1712,
+          752
+        ],
+        "id": "9fbdf507-c657-4134-9afc-a04db49ba652",
+        "name": "Respond: 200 OK a Meta1"
+      },
+      {
+        "parameters": {
+          "content": "## META_01 · Captura y Apertura\n\n⚠️ **Este flujo NO crea leads en Bitrix24.**\nEl lead se crea en Bitrix después de completar\nla validación WhatsApp (META_02, Fase 4).\n\n**Flujo:**\n1. Recibe webhook Meta (POST/GET challenge)\n2. Obtiene datos completos via Graph API\n3. Normaliza teléfono → E.164 (17 países LATAM)\n4. Detecta país por prefijo → `pais_codigo`\n5. Verifica duplicado en Google Sheets (por teléfono)\n6. Si nuevo → registra en Sheets\n7. Envía FASE_0 de apertura por WhatsApp\n\n⚙️ **Antes de activar:**\n- Crear plantilla WA `mv_apertura_meta_lead`\n  con variables: {{1}}=nombre, {{2}}=rutas, {{3}}=dolor\n- Verificar ID de hoja en Google Sheets",
+          "height": 432,
+          "width": 400,
+          "color": 6
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          -496,
+          16
+        ],
+        "id": "37cb3d90-6411-4a87-9781-4efb4740bfa9",
+        "name": "Nota META_"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://graph.facebook.com/v25.0/865315756662811/messages ",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer EAAVBcjUijs8BReVlIgpGkSCFF96R2puapam65mYpYmIrymo34jw6sS5dHEZB4lf4ebKzdTZCvg3yyw0EzK9Tg8O6fri8Gct3HGCTIf1GOGnUfioRdjqw9VYqcOmy2tFQH7HBWwmX02MLVaPqn2R3ElA3wOFeuG4c2YiP380sT2cT8u1kOUkjeNuqxs"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"to\": \"{{ $json[\"número_de_teléfono\"] }}\",\n  \"type\": \"template\",\n  \"template\": {\n    \"name\": \"plantilla_lead_form_automatizacion__con_parametros_spanish_ecu\",\n    \"language\": { \"code\": \"es_EC\" },\n    \"components\": [\n       {\n        \"type\": \"header\",\n        \"parameters\": [\n          {\n            \"type\": \"text\",\n            \"parameter_name\": \"nombre\",\n            \"text\": \"{{ $json.nombre_completo.split(' ')[0] }}\"\n          }\n        ]\n      },\n      {\n        \"type\": \"body\",\n        \"parameters\": [\n          {\n            \"type\": \"text\",\n            \"parameter_name\": \"rutas\",\n            \"text\": \"{{ $json['tamaño_de_operación'] }}\"\n          },\n          {\n            \"type\": \"text\",\n            \"parameter_name\": \"dolor\",\n            \"text\": \"{{ $json['mayor_dolor'] }}\"\n          }\n        ]\n      }\n    ]\n  }\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.3,
+        "position": [
+          1248,
+          752
+        ],
+        "id": "05515240-41e5-4204-9594-4415e5137486",
+        "name": "Whastapp Template Incluido Parámetros"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "e85cc8bd-1818-43d1-8c0d-00ee66c4cb53",
+                "leftValue": "={{ $json.pais_codigo }}",
+                "rightValue": "EC",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          992,
+          768
+        ],
+        "id": "8ea98a52-fc4a-48ca-93ee-5dbe116bf739",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "phoneNumberId": "865315756662811",
+          "recipientPhoneNumber": "={{ $json[\"número_de_teléfono\"] }}",
+          "template": "platilla_marketing_n8n_nov_25|es"
+        },
+        "type": "n8n-nodes-base.whatsApp",
+        "typeVersion": 1.1,
+        "position": [
+          1248,
+          976
+        ],
+        "id": "551e68ec-b80f-4f15-8798-32efbe5db32a",
+        "name": "Send template",
+        "webhookId": "c8af4715-9618-4a35-a563-2968f622d0f0",
+        "credentials": {
+          "whatsAppApi": {
+            "id": "iJtDoyn2qJjzpWd5",
+            "name": "WhatsApp account_TEST"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Sheets: Buscar Duplicado por Teléfono": {
+        "main": [
+          [
+            {
+              "node": "¿Es duplicado?1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sheets: Registrar Nuevo Lead": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook Meta Lead1": {
+        "main": [
+          [
+            {
+              "node": "¿Es verificación GET?1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "¿Es verificación GET?1": {
+        "main": [
+          [
+            {
+              "node": "Code: Responder Challenge1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "HTTP: Obtener Lead Graph API1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code: Responder Challenge1": {
+        "main": [
+          [
+            {
+              "node": "Respond: Challenge Meta1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP: Obtener Lead Graph API1": {
+        "main": [
+          [
+            {
+              "node": "Code: Normalizar Datos Meta1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code: Normalizar Datos Meta1": {
+        "main": [
+          [
+            {
+              "node": "Sheets: Buscar Duplicado por Teléfono",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "¿Es duplicado?1": {
+        "main": [
+          [
+            {
+              "node": "Respond: Duplicado ignorado1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Sheets: Registrar Nuevo Lead",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Sheets: Actualizar Estado WA1": {
+        "main": [
+          [
+            {
+              "node": "Respond: 200 OK a Meta1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Whastapp Template Incluido Parámetros": {
+        "main": [
+          [
+            {
+              "node": "Sheets: Actualizar Estado WA1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Whastapp Template Incluido Parámetros",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Send template",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send template": {
+        "main": [
+          [
+            {
+              "node": "Sheets: Actualizar Estado WA1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "ZEI MOBILVENDOR",
+    "name": "Version 7.7",
+    "description": "",
+    "autosaved": true
+  },
+  "activeVersionId": "1120fb71-e786-436a-8a00-2590a64489a7",
+  "connections": {
+    "Sheets: Buscar Duplicado por Teléfono": {
+      "main": [
+        [
+          {
+            "node": "¿Es duplicado?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets: Registrar Nuevo Lead": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Meta Lead1": {
+      "main": [
+        [
+          {
+            "node": "¿Es verificación GET?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Es verificación GET?1": {
+      "main": [
+        [
+          {
+            "node": "Code: Responder Challenge1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP: Obtener Lead Graph API1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Responder Challenge1": {
+      "main": [
+        [
+          {
+            "node": "Respond: Challenge Meta1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP: Obtener Lead Graph API1": {
+      "main": [
+        [
+          {
+            "node": "Code: Normalizar Datos Meta1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Normalizar Datos Meta1": {
+      "main": [
+        [
+          {
+            "node": "Sheets: Buscar Duplicado por Teléfono",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Es duplicado?1": {
+      "main": [
+        [
+          {
+            "node": "Respond: Duplicado ignorado1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sheets: Registrar Nuevo Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets: Actualizar Estado WA1": {
+      "main": [
+        [
+          {
+            "node": "Respond: 200 OK a Meta1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Whastapp Template Incluido Parámetros": {
+      "main": [
+        [
+          {
+            "node": "Sheets: Actualizar Estado WA1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Whastapp Template Incluido Parámetros",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send template": {
+      "main": [
+        [
+          {
+            "node": "Sheets: Actualizar Estado WA1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-04-09T13:26:22.838Z",
+  "id": "MsSDs2Tsv4IYX_V6Mc5vn",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "META_01_WA_Validacion",
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1yOx84dLgBTW9D0A4npkB2pf2T-CjnllowxIdvaiCsTg",
+          "mode": "list",
+          "cachedResultName": "MQL LeadFormMeta",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yOx84dLgBTW9D0A4npkB2pf2T-CjnllowxIdvaiCsTg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1361762216,
+          "mode": "list",
+          "cachedResultName": "Lead Principal",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yOx84dLgBTW9D0A4npkB2pf2T-CjnllowxIdvaiCsTg/edit#gid=1361762216"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "número_de_teléfono",
+              "lookupValue": "={{ $json['número_de_teléfono'] }}"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        624
+      ],
+      "id": "bd71d401-6790-4bec-9fd4-96b8a56b7453",
+      "name": "Sheets: Buscar Duplicado por Teléfono",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "UH4CavyWfnclTTef",
+          "name": "MKT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1yOx84dLgBTW9D0A4npkB2pf2T-CjnllowxIdvaiCsTg",
+          "mode": "list",
+          "cachedResultName": "MQL LeadFormMeta"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1361762216,
+          "mode": "list",
+          "cachedResultName": "Lead Principal",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yOx84dLgBTW9D0A4npkB2pf2T-CjnllowxIdvaiCsTg/edit#gid=1361762216"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Code: Normalizar Datos Meta1').item.json.leadgen_id }}",
+            "created_time": "={{ $('Code: Normalizar Datos Meta1').item.json.created_time }}",
+            "ad_id": "={{ $('Code: Normalizar Datos Meta1').item.json.ad_id }}",
+            "ad_name": "={{ $('Code: Normalizar Datos Meta1').item.json.ad_name }}",
+            "adset_id": "={{ $('Code: Normalizar Datos Meta1').item.json.adset_id }}",
+            "adset_name": "={{ $('Code: Normalizar Datos Meta1').item.json.adset_name }}",
+            "campaign_id": "={{ $('Code: Normalizar Datos Meta1').item.json.campaign_id }}",
+            "campaign_name": "={{ $('Code: Normalizar Datos Meta1').item.json.campaign_name }}",
+            "form_name": "={{ $('Code: Normalizar Datos Meta1').item.json.form_name }}",
+            "is_organic": "={{ $('Code: Normalizar Datos Meta1').item.json.is_organic }}",
+            "platform": "={{ $('Code: Normalizar Datos Meta1').item.json.platform }}",
+            "mayor_dolor": "={{ $('Code: Normalizar Datos Meta1').item.json.mayor_dolor }}",
+            "tamaño_de_operación": "={{ $('Code: Normalizar Datos Meta1').item.json['tamaño_de_operación'] }}",
+            "nombre_completo": "={{ $('Code: Normalizar Datos Meta1').item.json.nombre_completo }}",
+            "número_de_teléfono": "={{ $('Code: Normalizar Datos Meta1').item.json['número_de_teléfono'] }}",
+            "work_email": "={{ $('Code: Normalizar Datos Meta1').item.json.work_email }}",
+            "nombre_de_la_empresa": "={{ $('Code: Normalizar Datos Meta1').item.json.nombre_de_la_empresa }}",
+            "status_lead": "EN_VALIDACION",
+            "wa_estado": "={{ $('Code: Normalizar Datos Meta1').item.json.wa_estado }}",
+            "wa_attempt": "={{ $('Code: Normalizar Datos Meta1').item.json.wa_attempt }}",
+            "wa_fase": "={{ $('Code: Normalizar Datos Meta1').item.json.wa_fase }}",
+            "pais_codigo": "={{ $('Code: Normalizar Datos Meta1').item.json.pais_codigo }}",
+            "prioridad": "={{ $('Code: Normalizar Datos Meta1').item.json.prioridad }}",
+            "mql_score": "={{ $('Code: Normalizar Datos Meta1').item.json.mql_score }}",
+            "es_email_corporativo": "={{ $('Code: Normalizar Datos Meta1').item.json.es_email_corporativo }}",
+            "mql_result": "={{ $('Code: Normalizar Datos Meta1').item.json.mql_result }}",
+            "lead_status": "={{ $('Code: Normalizar Datos Meta1').item.json.lead_status }}",
+            "form_id": "={{ $('Webhook Meta Lead1').item.json.body.entry[0].changes[0].value.form_id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_time",
+              "displayName": "created_time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ad_id",
+              "displayName": "ad_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ad_name",
+              "displayName": "ad_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "adset_id",
+              "displayName": "adset_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "adset_name",
+              "displayName": "adset_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "campaign_id",
+              "displayName": "campaign_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "campaign_name",
+              "displayName": "campaign_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "form_id",
+              "displayName": "form_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "form_name",
+              "displayName": "form_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "is_organic",
+              "displayName": "is_organic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "platform",
+              "displayName": "platform",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre_completo",
+              "displayName": "nombre_completo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "número_de_teléfono",
+              "displayName": "número_de_teléfono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "work_email",
+              "displayName": "work_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre_de_la_empresa",
+              "displayName": "nombre_de_la_empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tamaño_de_operación",
+              "displayName": "tamaño_de_operación",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "mayor_dolor",
+              "displayName": "mayor_dolor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "pais_codigo",
+              "displayName": "pais_codigo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ruc_candidato",
+              "displayName": "ruc_candidato",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ruc_estado",
+              "displayName": "ruc_estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "industria_validada",
+              "displayName": "industria_validada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "numero_usuarios",
+              "displayName": "numero_usuarios",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "facturacion_anual",
+              "displayName": "facturacion_anual",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "es_email_corporativo",
+              "displayName": "es_email_corporativo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "bitrix_lead_id",
+              "displayName": "bitrix_lead_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status_lead",
+              "displayName": "status_lead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "wa_fase",
+              "displayName": "wa_fase",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "wa_attempt",
+              "displayName": "wa_attempt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "wa_estado",
+              "displayName": "wa_estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "wa_last_contact",
+              "displayName": "wa_last_contact",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "pending_question",
+              "displayName": "pending_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "prioridad",
+              "displayName": "prioridad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "mql_score",
+              "displayName": "mql_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "mql_result",
+              "displayName": "mql_result",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "lead_status",
+              "displayName": "lead_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "recontacto_1_fecha",
+              "displayName": "recontacto_1_fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "recontacto_2_fecha",
+              "displayName": "recontacto_2_fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "recontacto_3_fecha",
+              "displayName": "recontacto_3_fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "recontacto_4_fecha",
+              "displayName": "recontacto_4_fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "recontacto_resultado",
+              "displayName": "recontacto_resultado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nurturing_start",
+              "displayName": "nurturing_start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nurturing_msg",
+              "displayName": "nurturing_msg",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nurturing_last_send",
+              "displayName": "nurturing_last_send",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nurturing_resultado",
+              "displayName": "nurturing_resultado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "messaging_product",
+              "displayName": "messaging_product",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "contacts",
+              "displayName": "contacts",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "messages",
+              "displayName": "messages",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        832,
+        768
+      ],
+      "id": "81f4240e-2c57-4e9e-bb30-6a4b4f5178ac",
+      "name": "Sheets: Registrar Nuevo Lead",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "UH4CavyWfnclTTef",
+          "name": "MKT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "e45a286a-e5e4-4b72-b19f-66bebd491377",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -496,
+        464
+      ],
+      "id": "0de87b41-2638-4065-9e91-3e73c76c8187",
+      "name": "Webhook Meta Lead1",
+      "webhookId": "e45a286a-e5e4-4b72-b19f-66bebd491377"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond-challenge",
+              "leftValue": "={{ $json.query && $json.query['hub.challenge'] ? 'true' : 'false' }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -208,
+        464
+      ],
+      "id": "61ee629e-2f71-404f-a789-a022b43b4dc8",
+      "name": "¿Es verificación GET?1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const q = $input.item.json.query || {};\nreturn [{ json: { body: q['hub.challenge'] || '' } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16,
+        304
+      ],
+      "id": "c65708d7-2e87-44fa-a0ed-e5d3ebb16abc",
+      "name": "Code: Responder Challenge1"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.body }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        240,
+        304
+      ],
+      "id": "f6e35bee-bd0c-4b15-8710-2f3575a4d35b",
+      "name": "Respond: Challenge Meta1"
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.facebook.com/v20.0/{{ $json.body.entry[0].changes[0].value.leadgen_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        16,
+        624
+      ],
+      "id": "b546f2d3-5e36-414f-a134-ebc212c3c6d3",
+      "name": "HTTP: Obtener Lead Graph API1",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "eBNDs0ncvzJHXBKS",
+          "name": "Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ══════════════════════════════════════════════════════════════════\n// NODO: Extracción + Pre-Scoring Meta Lead Forms — MOBILVENDOR v1.3\n// ══════════════════════════════════════════════════════════════════\nconst lead      = $input.item.json;\nconst fieldData = lead.field_data || [];\n\n// ── CONVERSIÓN A GMT-5 ─────────────────────────────────────────────\nfunction toGMTMinus5(isoString) {\n  const date  = new Date(isoString || Date.now());\n  const local = new Date(date.getTime() + (-5 * 60 * 60 * 1000));\n  const yyyy  = local.getUTCFullYear();\n  const MM    = String(local.getUTCMonth() + 1).padStart(2, '0');\n  const dd    = String(local.getUTCDate()).padStart(2, '0');\n  const hh    = String(local.getUTCHours()).padStart(2, '0');\n  const mm    = String(local.getUTCMinutes()).padStart(2, '0');\n  const ss    = String(local.getUTCSeconds()).padStart(2, '0');\n  return `${yyyy}-${MM}-${dd} ${hh}:${mm}:${ss}`;\n}\n\n// ── EXTRACTORES ────────────────────────────────────────────────────\nfunction extractValue(field) {\n  if (!field) return '';\n  if (Array.isArray(field.values) && field.values.length > 0)\n    return String(field.values[0] || '').trim();\n  if (typeof field.values === 'string') return field.values.trim();\n  if (typeof field.value  === 'string') return field.value.trim();\n  return '';\n}\n\nfunction getField(names) {\n  for (const name of names) {\n    const f = fieldData.find(f => f.name === name);\n    const v = extractValue(f);\n    if (v) return v;\n  }\n  return '';\n}\n\n// ── CAMPOS META ────────────────────────────────────────────────────\nconst nombre  = getField(['full_name', 'nombre_completo', 'FULL_NAME']);\nconst email   = getField(['email', 'work_email', 'EMAIL', 'correo_electrónico' ]);\nconst empresa = getField(['company_name', 'nombre_de_la_empresa', 'COMPANY']);\n\n// ✅ FIX 3 — nombre exacto del form primero\nconst rutas = getField([\n  'tamaño_de_operación', 'tamano_de_operacion',\n  'tamaño_de_operacion', 'rutas', '¿cuál_es_el_tamaño_de_operación_actual?'\n]);\n\nconst dolor = getField(['mayor_dolor', 'pain', 'DOLOR', '¿cuál_es_el_mayor_dolor_que_afecta_tu_operación?', '¿cuál_es_el_mayor_dolor_que_afecta_tu_opración?']);\n\n// ── TELÉFONO ───────────────────────────────────────────────────────\nconst telefonoLocal = getField([\n  'número_de_teléfono', 'numero_de_telefono',\n  'telefono', 'teléfono', 'PHONE'\n]);\n\nconst telefonoPrefijo = getField([\n  'phone_number', 'codigo_pais', 'country_code', 'prefijo'\n]);\n\nfunction buildPhone(prefijo, numero) {\n  const p = String(prefijo || '').trim();\n  const n = String(numero  || '').trim();\n  if (p && n) {\n    const pClean = p.startsWith('+') ? p : `+${p.replace(/\\D/g, '')}`;\n    const nClean = n.replace(/\\D/g, '');\n    const local  = nClean.startsWith('0') ? nClean.slice(1) : nClean;\n    return `${pClean}${local}`;\n  }\n  return numero || prefijo || '';\n}\n\nconst telefonoRaw = buildPhone(telefonoPrefijo, telefonoLocal);\n\n// ── NORMALIZACIÓN LATAM ────────────────────────────────────────────\nfunction normalizePhone(raw) {\n  let d = (raw || '').replace(/\\D/g, '');\n  if (!d) return '';\n\n  const prefixes = [\n    '593','595','598','591','506','505','504','503',\n    '502','507','1809','1829','1849','57','56','58','54','52','51'\n  ];\n  for (const c of prefixes) {\n    if (d.startsWith(c)) return '+' + d;\n  }\n\n  if (d.startsWith('0')) return '+593' + d.slice(1);\n  if (d.length === 9)    return '+593' + d;\n  if (d.length === 10)   return '+57'  + d;\n  if (d.length === 8)    return '+506' + d;\n  return '+' + d;\n}\n\nfunction detectarPais(tel) {\n  const d = (tel || '').replace(/\\D/g, '');\n  const map = [\n    ['593','EC'],['595','PY'],['598','UY'],['591','BO'],\n    ['506','CR'],['505','NI'],['504','HN'],['503','SV'],\n    ['502','GT'],['507','PA'],['1809','DO'],['1829','DO'],\n    ['1849','DO'],['57','CO'],['56','CL'],['58','VE'],\n    ['54','AR'],['52','MX'],['51','PE']\n  ];\n  for (const [code, p] of map) {\n    if (d.startsWith(code)) return p;\n  }\n  return 'EC';\n}\n\nconst telefono   = normalizePhone(telefonoRaw);\nconst paisCodigo = detectarPais(telefono);\n\n// ══════════════════════════════════════════════════════════════════\n// SCORING FASE 0 — Solo con datos del formulario Meta\n// Máx disponible aquí: 31 pts (rutas 15 + dolor 8 + email pre 8)\n// El resto del score se calcula en FASE 4 tras validación WhatsApp\n// ══════════════════════════════════════════════════════════════════\n\nlet mqlScore = 0;\nlet prioridad = 'BAJA';\n\n// ── SCORE RUTAS ✅ FIX 1 — normaliza en-dash/em-dash Unicode ──────\nconst rutasNorm = (rutas || '')\n  .toLowerCase()\n  .replace(/[\\u2013\\u2014\\u2212]/g, '-')  // en-dash, em-dash, minus\n  .trim();\n\nlet scoreRutas = 0;\nif (rutasNorm.includes('+15') || rutasNorm.includes('mas de 15') || rutasNorm.includes('más de 15')) {\n  scoreRutas = 15;\n  prioridad  = 'ALTA';\n} else if (rutasNorm.includes('6-15') || rutasNorm.includes('6 a 15') || rutasNorm.includes('6–15')) {\n  scoreRutas = 10;\n  prioridad  = 'MEDIA';\n} else if (rutasNorm.includes('1-5') || rutasNorm.includes('1 a 5') || rutasNorm.includes('1–5')) {\n  scoreRutas = 5;\n  prioridad  = 'BAJA';\n}\nmqlScore += scoreRutas;\n\n// ── SCORE DOLOR ───────────────────────────────────────────────────\n// Liquidación / Inventario / Trazabilidad → cada uno +8 pts\nconst dolorNorm = (dolor || '').toLowerCase()\n  .normalize('NFD').replace(/[\\u0300-\\u036f]/g, ''); // quita tildes\n\nlet scoreDolor = 0;\nlet dolorLabel = '';\n\nif (dolorNorm.includes('liquidacion') || dolorNorm.includes('liquidación')) {\n  scoreDolor = 8;\n  dolorLabel = 'Liquidación';\n} else if (dolorNorm.includes('inventario')) {\n  scoreDolor = 8;\n  dolorLabel = 'Inventario';\n} else if (dolorNorm.includes('trazabilidad')) {\n  scoreDolor = 8;\n  dolorLabel = 'Trazabilidad';\n}\nmqlScore += scoreDolor;\n\n// ── SCORE EMAIL (pre-validación) ──────────────────────────────────\n// Corporativo: +15 | Genérico: marcado para verificar con RUC en FASE 4\nconst freeDoms = [\n  'gmail.com','yahoo.com','hotmail.com',\n  'outlook.com','live.com','icloud.com','yahoo.es','hotmail.es'\n];\nconst emailDom          = (email.split('@')[1] || '').toLowerCase();\nconst esEmailCorporativo = !!emailDom && emailDom.includes('.') && !freeDoms.includes(emailDom);\n\n// Solo suma puntos de email si es corporativo (genérico espera validación RUC en FASE 4)\nconst scoreEmail = esEmailCorporativo ? 15 : 0;\nmqlScore += scoreEmail;\n\n// ── PRE-PRIORIDAD REFINADA ─────────────────────────────────────────\n// Si rutas son medias/altas + dolor definido + email corporativo → reforzar\nif (prioridad === 'ALTA'  && scoreDolor > 0 && esEmailCorporativo) prioridad = 'ALTA';\nif (prioridad === 'MEDIA' && scoreDolor > 0 && esEmailCorporativo) prioridad = 'MEDIA_PLUS';\n\n// ── VALIDACIÓN BÁSICA EMAIL ───────────────────────────────────────\nconst freeDomsList = freeDoms;\n\n// ── RETURN ────────────────────────────────────────────────────────\nreturn [\n  {\n    json: {\n      // Metadatos del lead\n      leadgen_id:    lead.id,\n      created_time:  toGMTMinus5(lead.created_time),\n      ad_id:         lead.ad_id         || '',\n      ad_name:       lead.ad_name       || '',\n      adset_id:      lead.adset_id      || '',\n      adset_name:    lead.adset_name    || '',\n      campaign_id:   lead.campaign_id   || '',\n      campaign_name: lead.campaign_name || '',\n      form_id:       lead.form_id       || '',\n      form_name:     lead.form_name     || '',\n      is_organic:    lead.is_organic    || false,\n      platform:      lead.platform      || 'fb',\n\n      // Datos del lead\n      nombre_completo:       nombre,\n      'número_de_teléfono':  telefono,\n      work_email:            email,\n      nombre_de_la_empresa:  empresa,\n      'tamaño_de_operación': rutas,\n      mayor_dolor:           dolorLabel || dolor,   // normalizado\n      pais_codigo:           paisCodigo,\n\n      // Scoring parcial (solo datos form Meta — FASE 0)\n      // El score final se calcula en FASE 4 tras WhatsApp\n      prioridad,\n      mql_score_parcial: mqlScore,   // puntos disponibles: rutas+dolor+email\n      score_rutas:        scoreRutas,\n      score_dolor:        scoreDolor,\n      score_email:        scoreEmail,\n\n      // Flags para FASE 4\n      es_email_corporativo: esEmailCorporativo,\n      email_tipo:           esEmailCorporativo ? 'CORPORATIVO' : 'GENERICO',\n\n      // Campos que FASE 4 completará tras WhatsApp\n      score_ruc:          0,   // +20 si activo\n      score_empresa:      0,   // +5 si nombre real\n      score_industria:    0,   // +10 core / +5 otro\n      score_telefono:     0,   // +5 prefijo correcto\n      score_usuarios:     0,   // +5/+10/+15\n      score_facturacion:  0,   // +0/+5/+7/+8\n      score_dominio:      0,   // +5 MX válido\n      score_empresa_cal:  0,   // +5 nombre claro\n      mql_score:          mqlScore,   // se actualiza en FASE 4\n\n      // Estado WhatsApp\n      wa_fase:         0,\n      wa_attempt:      0,\n      wa_estado:       'PENDIENTE',\n      wa_last_contact: toGMTMinus5(new Date().toISOString()),\n\n      // Estado del pipeline\n      mql_result:  'EN_PROCESO',\n      ruc_estado:  'PENDIENTE_VALIDACION',\n      lead_status: 'EN_VALIDACION'\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        624
+      ],
+      "id": "8670db57-ade4-4384-97b1-fe7ebdb2e5f2",
+      "name": "Code: Normalizar Datos Meta1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond-dup",
+              "leftValue": "={{ $json['número_de_teléfono'] }}",
+              "rightValue": "=0",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        624
+      ],
+      "id": "4a4ca836-4567-4afd-a54e-722060d660a0",
+      "name": "¿Es duplicado?1"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"status\": \"duplicate_ignored\" }",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        896,
+        464
+      ],
+      "id": "989eaac5-ca1c-47aa-b1c8-1a031725f0a9",
+      "name": "Respond: Duplicado ignorado1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1yOx84dLgBTW9D0A4npkB2pf2T-CjnllowxIdvaiCsTg",
+          "mode": "list",
+          "cachedResultName": "MQL LeadFormMeta"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1361762216,
+          "mode": "list",
+          "cachedResultName": "Lead Principal",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yOx84dLgBTW9D0A4npkB2pf2T-CjnllowxIdvaiCsTg/edit#gid=1361762216"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "wa_fase": "0",
+            "id": "={{ $('Sheets: Registrar Nuevo Lead').item.json.id }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_time",
+              "displayName": "created_time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ad_id",
+              "displayName": "ad_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ad_name",
+              "displayName": "ad_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "adset_id",
+              "displayName": "adset_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "adset_name",
+              "displayName": "adset_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "campaign_id",
+              "displayName": "campaign_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "campaign_name",
+              "displayName": "campaign_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "form_id",
+              "displayName": "form_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "form_name",
+              "displayName": "form_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "is_organic",
+              "displayName": "is_organic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "platform",
+              "displayName": "platform",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "nombre_completo",
+              "displayName": "nombre_completo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "número_de_teléfono",
+              "displayName": "número_de_teléfono",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "work_email",
+              "displayName": "work_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "nombre_de_la_empresa",
+              "displayName": "nombre_de_la_empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "tamaño_de_operación",
+              "displayName": "tamaño_de_operación",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "mayor_dolor",
+              "displayName": "mayor_dolor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "pais_codigo",
+              "displayName": "pais_codigo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ruc_candidato",
+              "displayName": "ruc_candidato",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ruc_estado",
+              "displayName": "ruc_estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "industria_validada",
+              "displayName": "industria_validada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "numero_usuarios",
+              "displayName": "numero_usuarios",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "facturacion_anual",
+              "displayName": "facturacion_anual",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "es_email_corporativo",
+              "displayName": "es_email_corporativo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "bitrix_lead_id",
+              "displayName": "bitrix_lead_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "status_lead",
+              "displayName": "status_lead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "wa_fase",
+              "displayName": "wa_fase",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "wa_attempt",
+              "displayName": "wa_attempt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "wa_estado",
+              "displayName": "wa_estado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "wa_last_contact",
+              "displayName": "wa_last_contact",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "pending_question",
+              "displayName": "pending_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "prioridad",
+              "displayName": "prioridad",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "mql_score",
+              "displayName": "mql_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "mql_result",
+              "displayName": "mql_result",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "lead_status",
+              "displayName": "lead_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "recontacto_1_fecha",
+              "displayName": "recontacto_1_fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "recontacto_2_fecha",
+              "displayName": "recontacto_2_fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "recontacto_3_fecha",
+              "displayName": "recontacto_3_fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "recontacto_resultado",
+              "displayName": "recontacto_resultado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "nurturing_start",
+              "displayName": "nurturing_start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "nurturing_msg",
+              "displayName": "nurturing_msg",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "nurturing_last_send",
+              "displayName": "nurturing_last_send",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "nurturing_resultado",
+              "displayName": "nurturing_resultado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "messaging_product",
+              "displayName": "messaging_product",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "contacts",
+              "displayName": "contacts",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "messages",
+              "displayName": "messages",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1488,
+        752
+      ],
+      "id": "9d507278-bc78-46fe-8467-b1f1e2c3c674",
+      "name": "Sheets: Actualizar Estado WA1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "UH4CavyWfnclTTef",
+          "name": "MKT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"status\": \"ok\" }",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1712,
+        752
+      ],
+      "id": "9fbdf507-c657-4134-9afc-a04db49ba652",
+      "name": "Respond: 200 OK a Meta1"
+    },
+    {
+      "parameters": {
+        "content": "## META_01 · Captura y Apertura\n\n⚠️ **Este flujo NO crea leads en Bitrix24.**\nEl lead se crea en Bitrix después de completar\nla validación WhatsApp (META_02, Fase 4).\n\n**Flujo:**\n1. Recibe webhook Meta (POST/GET challenge)\n2. Obtiene datos completos via Graph API\n3. Normaliza teléfono → E.164 (17 países LATAM)\n4. Detecta país por prefijo → `pais_codigo`\n5. Verifica duplicado en Google Sheets (por teléfono)\n6. Si nuevo → registra en Sheets\n7. Envía FASE_0 de apertura por WhatsApp\n\n⚙️ **Antes de activar:**\n- Crear plantilla WA `mv_apertura_meta_lead`\n  con variables: {{1}}=nombre, {{2}}=rutas, {{3}}=dolor\n- Verificar ID de hoja en Google Sheets",
+        "height": 432,
+        "width": 400,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -496,
+        16
+      ],
+      "id": "37cb3d90-6411-4a87-9781-4efb4740bfa9",
+      "name": "Nota META_"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v25.0/865315756662811/messages ",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer EAAVBcjUijs8BReVlIgpGkSCFF96R2puapam65mYpYmIrymo34jw6sS5dHEZB4lf4ebKzdTZCvg3yyw0EzK9Tg8O6fri8Gct3HGCTIf1GOGnUfioRdjqw9VYqcOmy2tFQH7HBWwmX02MLVaPqn2R3ElA3wOFeuG4c2YiP380sT2cT8u1kOUkjeNuqxs"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"to\": \"{{ $json[\"número_de_teléfono\"] }}\",\n  \"type\": \"template\",\n  \"template\": {\n    \"name\": \"plantilla_lead_form_automatizacion__con_parametros_spanish_ecu\",\n    \"language\": { \"code\": \"es_EC\" },\n    \"components\": [\n       {\n        \"type\": \"header\",\n        \"parameters\": [\n          {\n            \"type\": \"text\",\n            \"parameter_name\": \"nombre\",\n            \"text\": \"{{ $json.nombre_completo.split(' ')[0] }}\"\n          }\n        ]\n      },\n      {\n        \"type\": \"body\",\n        \"parameters\": [\n          {\n            \"type\": \"text\",\n            \"parameter_name\": \"rutas\",\n            \"text\": \"{{ $json['tamaño_de_operación'] }}\"\n          },\n          {\n            \"type\": \"text\",\n            \"parameter_name\": \"dolor\",\n            \"text\": \"{{ $json['mayor_dolor'] }}\"\n          }\n        ]\n      }\n    ]\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1248,
+        752
+      ],
+      "id": "05515240-41e5-4204-9594-4415e5137486",
+      "name": "Whastapp Template Incluido Parámetros"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e85cc8bd-1818-43d1-8c0d-00ee66c4cb53",
+              "leftValue": "={{ $json.pais_codigo }}",
+              "rightValue": "EC",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        992,
+        768
+      ],
+      "id": "8ea98a52-fc4a-48ca-93ee-5dbe116bf739",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "phoneNumberId": "865315756662811",
+        "recipientPhoneNumber": "={{ $json[\"número_de_teléfono\"] }}",
+        "template": "platilla_marketing_n8n_nov_25|es"
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        1248,
+        976
+      ],
+      "id": "551e68ec-b80f-4f15-8798-32efbe5db32a",
+      "name": "Send template",
+      "webhookId": "c8af4715-9618-4a35-a563-2968f622d0f0",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "iJtDoyn2qJjzpWd5",
+          "name": "WhatsApp account_TEST"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Webhook Meta Lead1": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mobilvendor.com",
+            "user-agent": "Webhooks/1.0 (https://fb.me/webhooks)",
+            "content-length": "313",
+            "accept": "*/*",
+            "content-type": "application/json",
+            "x-forwarded-for": "10.0.0.2",
+            "x-forwarded-host": "n8n.mobilvendor.com",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "936a8da302ec",
+            "x-hub-signature": "sha1=0855f9ee33b8336ab70a219bb2ddb2ef11990d3b",
+            "x-hub-signature-256": "sha256=f3486707686863a791ad8cb01ccd0f3601ca5295f9666d002262a2238d43ad22",
+            "x-real-ip": "10.0.0.2",
+            "accept-encoding": "gzip"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "entry": [
+              {
+                "id": "502834303106052",
+                "time": 1779379945,
+                "changes": [
+                  {
+                    "value": {
+                      "adgroup_id": "120247538584740206",
+                      "ad_id": "120247538584740206",
+                      "created_time": 1779379939,
+                      "leadgen_id": "35579569878358045",
+                      "page_id": "502834303106052",
+                      "form_id": "2198935233995157"
+                    },
+                    "field": "leadgen"
+                  }
+                ]
+              }
+            ],
+            "object": "page"
+          },
+          "webhookUrl": "https://n8n.mobilvendor.com/webhook/e45a286a-e5e4-4b72-b19f-66bebd491377",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Sheets: Registrar Nuevo Lead": [
+      {
+        "json": {
+          "id": "35579569878358045",
+          "created_time": "2026-05-21 11:12:19",
+          "ad_id": "",
+          "ad_name": "",
+          "adset_id": "",
+          "adset_name": "",
+          "campaign_id": "",
+          "campaign_name": "",
+          "form_name": "",
+          "is_organic": false,
+          "platform": "fb",
+          "mayor_dolor": "",
+          "tamaño_de_operación": "",
+          "nombre_completo": "Oskar Legaria Cahuantzi",
+          "número_de_teléfono": "+522461068483",
+          "work_email": "oskar_caos9@hotmail.com",
+          "nombre_de_la_empresa": "comercializadora la avenida",
+          "status_lead": "EN_VALIDACION",
+          "wa_estado": "PENDIENTE",
+          "wa_attempt": 0,
+          "wa_fase": 0,
+          "pais_codigo": "MX",
+          "prioridad": "BAJA",
+          "mql_score": 0,
+          "es_email_corporativo": false,
+          "mql_result": "EN_PROCESO",
+          "lead_status": "EN_VALIDACION",
+          "form_id": "2198935233995157"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "binaryMode": "separate"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-04-09T13:26:22.865Z",
+      "createdAt": "2026-04-09T13:26:22.865Z",
+      "role": "workflow:owner",
+      "workflowId": "MsSDs2Tsv4IYX_V6Mc5vn",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [
+    {
+      "updatedAt": "2026-04-10T21:29:34.882Z",
+      "createdAt": "2026-04-10T21:29:34.882Z",
+      "id": "B0OMG364OCwRMUBt",
+      "name": "recontacto"
+    },
+    {
+      "updatedAt": "2026-04-10T20:52:51.005Z",
+      "createdAt": "2026-04-10T20:52:51.005Z",
+      "id": "EYQsr0QD91Hc5qDt",
+      "name": "fase-1"
+    },
+    {
+      "updatedAt": "2026-04-10T20:52:51.010Z",
+      "createdAt": "2026-04-10T20:52:51.010Z",
+      "id": "JmKjoDs1VmEL90OO",
+      "name": "meta-leads"
+    },
+    {
+      "updatedAt": "2026-04-10T21:30:09.539Z",
+      "createdAt": "2026-04-10T21:30:09.539Z",
+      "id": "LInNR6TyboS9jDGN",
+      "name": "nurturing"
+    },
+    {
+      "updatedAt": "2026-04-13T16:45:57.467Z",
+      "createdAt": "2026-04-13T16:45:57.467Z",
+      "id": "PIcFhPgsRHjmVZ1f",
+      "name": "captura"
+    },
+    {
+      "updatedAt": "2026-04-10T21:25:24.693Z",
+      "createdAt": "2026-04-10T21:25:24.693Z",
+      "id": "ROqyP2liHayUKUM0",
+      "name": "whatsapp-agent"
+    },
+    {
+      "updatedAt": "2026-04-13T19:46:16.757Z",
+      "createdAt": "2026-04-13T19:46:16.757Z",
+      "id": "qedgODa9C8mpeCM3",
+      "name": "validacion-wa"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2026-05-21T16:21:02.650Z",
+  "versionId": "1120fb71-e786-436a-8a00-2590a64489a7"
+}
