@@ -1,0 +1,815 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upload to Llama Cloud",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to Llama Cloud": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Check Parsing Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Parsing Status": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Extract Markdown from Llama Cloud",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Check Parsing Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Markdown from Llama Cloud": {
+      "main": [
+        [
+          {
+            "node": "Clean Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader1": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter1": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader1",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store1": {
+      "main": [
+        [
+          {
+            "node": "Track Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Track Success": {
+      "main": [
+        [
+          {
+            "node": "Final Success Counter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Final Success Counter": {
+      "main": [
+        [
+          {
+            "node": "Statistics Collector",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Text": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Statistics Collector": {
+      "main": [
+        [
+          {
+            "node": "Generate CSV Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate CSV Report": {
+      "main": [
+        [
+          {
+            "node": "Upload CSV to Reportes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:45.794Z",
+  "id": "VIDmRgX9vItd7rZQ",
+  "isArchived": false,
+  "meta": null,
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        496,
+        432
+      ],
+      "id": "17ef2d20-6037-429d-993c-d4c67ef74d42",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "nS2jCbjxOoaDloUK",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "brochure",
+          "mode": "list",
+          "cachedResultName": "brochure"
+        },
+        "options": {
+          "pineconeNamespace": "brochure info"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        2432,
+        208
+      ],
+      "id": "babd3318-b52f-4ad2-a4cc-7b09bf44c032",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "bqNx5oAwXmTYQGz2",
+          "name": "PineconeApi account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2416,
+        432
+      ],
+      "id": "7061442e-b915-4bc4-9c8c-54617d710af2",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        2576,
+        416
+      ],
+      "id": "b914730e-eef8-4819-9749-5fd5edb174ef",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        2576,
+        576
+      ],
+      "id": "36273adf-43ec-4cfa-a6fe-e521a135d0c6",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "content": "## INDEX BROCHURE",
+        "height": 592,
+        "width": 1808,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        816,
+        144
+      ],
+      "typeVersion": 1,
+      "id": "6b8dceda-406c-4fe7-bcef-0140c4cc6339",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1280,
+        1056
+      ],
+      "id": "43099ba1-25b0-41e4-9c1f-d3451da92c56",
+      "name": "Wait",
+      "webhookId": "650aed56-944b-47c4-ab90-847d1a482edf"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cloud.llamaindex.ai/api/v1/parsing/upload",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer llx-7gl0VrHRB8dzykWVlgsnafemTct2O1L0aNt1JMEJy3crv7eS"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1072,
+        1056
+      ],
+      "id": "fd850fb7-0a1f-481c-ab80-96f1fdd41e6f",
+      "name": "Upload to Llama Cloud"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.cloud.llamaindex.ai/api/v1/parsing/job/{{ $('Upload to Llama Cloud').item.json.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer llx-7gl0VrHRB8dzykWVlgsnafemTct2O1L0aNt1JMEJy3crv7eS"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1488,
+        1056
+      ],
+      "id": "fb6a5182-06cb-42c9-8dcd-6a7eeba0c657",
+      "name": "Check Parsing Status"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0954cab1-6f2c-4dc9-9a46-2c0ac8784614",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "SUCCESS",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1696,
+        1056
+      ],
+      "id": "6b142c20-8986-443a-b8d1-f4bb58bcda14",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1968,
+        1264
+      ],
+      "id": "0d19673a-d763-471b-82b1-f4fdc7f3d03d",
+      "name": "Wait1",
+      "webhookId": "3ceb46c8-52a4-49a1-b3c7-f5196c768ff6"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.cloud.llamaindex.ai/api/v1/parsing/job/{{ $json.id }}/result/markdown",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer llx-7gl0VrHRB8dzykWVlgsnafemTct2O1L0aNt1JMEJy3crv7eS"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1968,
+        960
+      ],
+      "id": "606ea252-afb5-41e6-a977-13e04291d209",
+      "name": "Extract Markdown from Llama Cloud"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "brochure-llama",
+          "mode": "list",
+          "cachedResultName": "brochure-llama"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        2448,
+        960
+      ],
+      "id": "f9566c2f-feed-4094-b72e-0c3df1bc7691",
+      "name": "Pinecone Vector Store1",
+      "credentials": {
+        "pineconeApi": {
+          "id": "bqNx5oAwXmTYQGz2",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2448,
+        1168
+      ],
+      "id": "0b74a324-8b62-408a-ae74-c5bbd8586b01",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        2592,
+        1168
+      ],
+      "id": "8c9b9fe5-da34-468c-9e99-9597e0b88694",
+      "name": "Default Data Loader1"
+    },
+    {
+      "parameters": {
+        "chunkOverlap": 200,
+        "options": {
+          "splitCode": "markdown"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        2688,
+        1376
+      ],
+      "id": "c0d10103-e944-4746-bfda-e2fb3660b2b1",
+      "name": "Recursive Character Text Splitter1"
+    },
+    {
+      "parameters": {
+        "content": "## LLAMA INDEX",
+        "height": 736,
+        "width": 1824
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        816,
+        848
+      ],
+      "typeVersion": 1,
+      "id": "d81b4294-4e01-48ce-bd03-067800249c0c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## 📊 PROCESAMIENTO DE BROCHURES CON CONTEO\n\n### Flujo:\n1. **Google Drive Trigger** → Detecta nuevos archivos\n2. **Download + Initialize Counter** → Descarga e inicia tracking\n3. **Dual Processing:**\n   - **Ruta Básica**: Vectorización directa con Pinecone\n   - **Ruta LlamaIndex**: Procesamiento avanzado con LlamaCloud\n4. **Success Tracking** → Registro de cada éxito\n5. **Statistics** → Consolidación de métricas\n\n### Métricas Disponibles:\n- ✅ Archivos procesados exitosamente\n- ⏱️ Tiempo promedio de procesamiento  \n- 📊 Estadísticas por tipo de vectorización\n- 📝 Cantidad de texto procesado\n- 📈 Eficiencia del sistema",
+        "height": 592,
+        "width": 976,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -224,
+        144
+      ],
+      "typeVersion": 1,
+      "id": "cc8ede5a-a105-4585-8324-82429e83cd71",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "jsCode": "// TRACKING ÉXITO PROCESAMIENTO LLAMA\nconst currentTime = new Date().toISOString();\nconst fileName = $json.file_name || 'desconocido';\nconst textLength = $json.text_length || 0;\n\nconsole.log(`✅ LLAMA completado: ${fileName}, ${textLength} chars`);\n\nreturn {\n  json: {\n    ...items[0].json,\n    llama_processing_completed: currentTime,\n    llama_processing_status: 'exitoso',\n    processed_text_length: textLength,\n    step: 'vectorizacion_llama_completada'\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2928,
+        960
+      ],
+      "id": "d8138b73-681f-42aa-8138-0492892f262c",
+      "name": "Track Success"
+    },
+    {
+      "parameters": {
+        "jsCode": "// CONTADOR FINAL DE ARCHIVOS PROCESADOS\nconst currentTime = new Date().toISOString();\nconst fileName = $json.file_name || 'desconocido';\n\n// Calcular tiempo total de procesamiento\nconst startTime = new Date($json.processing_start || currentTime);\nconst endTime = new Date(currentTime);\nconst processingTimeMs = endTime - startTime;\nconst processingTimeSeconds = Math.round(processingTimeMs / 1000);\n\n// Determinar qué rutas se completaron\nconst basicCompleted = $json.basic_processing_status === 'exitoso';\nconst llamaCompleted = $json.llama_processing_status === 'exitoso';\n\n// Crear registro de éxito completo\nconst successRecord = {\n  file_name: fileName,\n  file_id: $json.file_id,\n  processing_start: $json.processing_start,\n  processing_end: currentTime,\n  processing_time_seconds: processingTimeSeconds,\n  basic_vectorization: basicCompleted,\n  llama_vectorization: llamaCompleted,\n  both_completed: basicCompleted && llamaCompleted,\n  processed_text_length: $json.processed_text_length || 0,\n  status: 'completado_exitosamente'\n};\n\n// Log detallado para monitoreo\nconsole.log('🎉 ======= ARCHIVO PROCESADO EXITOSAMENTE =======');\nconsole.log(`📄 Archivo: ${fileName}`);\nconsole.log(`⏱️  Tiempo: ${processingTimeSeconds}s`);\nconsole.log(`📊 Básico: ${basicCompleted ? '✅' : '❌'} | LlamaIndex: ${llamaCompleted ? '✅' : '❌'}`);\nif (llamaCompleted) {\n  console.log(`📝 Texto procesado: ${successRecord.processed_text_length} caracteres`);\n}\nconsole.log('===============================================');\n\nreturn { json: successRecord };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3136,
+        960
+      ],
+      "id": "b9f5a8dc-35db-432b-927b-3a6126684407",
+      "name": "Final Success Counter"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtener el texto del nodo anterior (Markdown de LlamaIndex)\nconst input = $json.markdown || $json.text || \"\";\n\n// Copia de trabajo\nlet text = input;\n\n// --- Limpieza básica para español ---\n\n// Quitar encabezados de documentos tipo \"Página 3\" o \"Página: 4\"\ntext = text.replace(/Página\\s*\\d+/gi, \"\");\n\n// Quitar líneas con solo números de página\ntext = text.replace(/^\\s*\\d+\\s*$/gm, \"\");\n\n// Reemplazar separadores largos (---, ===, ___)\ntext = text.replace(/[-=_]{3,}/g, \"\\n\");\n\n// Normalizar entidades HTML comunes\ntext = text.replace(/&#x26;/g, \"&\");\ntext = text.replace(/&nbsp;/g, \" \");\n\n// Quitar caracteres extraños usados como viñetas (●, ■, ♦, ▪, ✓, etc.)\ntext = text.replace(/[●■♦▪✓•–—]/g, \"-\");\n\n// Quitar espacios dobles y tabulaciones\ntext = text.replace(/[ \\t]+/g, \" \");\n\n// Reducir saltos de línea múltiples a uno solo\ntext = text.replace(/\\n{2,}/g, \"\\n\\n\");\n\n// Eliminar espacios al inicio y fin\ntext = text.trim();\n\n// Devolver texto limpio para el siguiente nodo\nreturn { json: { normalizedText: text } };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        960
+      ],
+      "id": "00245bdd-d23c-4058-b243-48333b39cac2",
+      "name": "Clean Text"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ESTADÍSTICAS CONSOLIDADAS\nconst allItems = items || [];\nconst currentDate = new Date().toISOString().split('T')[0];\nconst currentTime = new Date().toISOString();\n\nif (allItems.length === 0) {\n  console.log('⚠️ No hay elementos para procesar estadísticas');\n  return { json: { error: 'No items to process' } };\n}\n\n// Filtrar solo los registros exitosos\nconst successful = allItems.filter(item => \n  item.json.status === 'completado_exitosamente'\n);\n\nconst totalProcessed = successful.length;\n\n// Calcular estadísticas\nlet avgProcessingTime = 0;\nlet bothCompleted = 0;\nlet onlyBasic = 0;\nlet onlyLlama = 0;\nlet totalTextProcessed = 0;\n\nif (successful.length > 0) {\n  // Tiempo promedio\n  const totalTime = successful.reduce((sum, item) => {\n    return sum + (item.json.processing_time_seconds || 0);\n  }, 0);\n  avgProcessingTime = Math.round(totalTime / successful.length);\n  \n  // Estadísticas de vectorización\n  successful.forEach(item => {\n    const basic = item.json.basic_vectorization;\n    const llama = item.json.llama_vectorization;\n    \n    if (basic && llama) {\n      bothCompleted++;\n    } else if (basic && !llama) {\n      onlyBasic++;\n    } else if (!basic && llama) {\n      onlyLlama++;\n    }\n    \n    totalTextProcessed += item.json.processed_text_length || 0;\n  });\n}\n\nconst statistics = {\n  date: currentDate,\n  timestamp: currentTime,\n  total_files_processed: totalProcessed,\n  successful_files: totalProcessed,\n  failed_files: 0, // En esta versión solo contamos éxitos\n  success_rate_percentage: 100, // 100% de los que llegan aquí son éxitos\n  average_processing_time_seconds: avgProcessingTime,\n  total_text_characters_processed: totalTextProcessed,\n  vectorization_stats: {\n    both_methods_completed: bothCompleted,\n    only_basic_completed: onlyBasic,\n    only_llama_completed: onlyLlama\n  },\n  processing_efficiency: {\n    avg_chars_per_second: avgProcessingTime > 0 ? Math.round(totalTextProcessed / (totalProcessed * avgProcessingTime)) : 0,\n    files_per_minute: avgProcessingTime > 0 ? Math.round(60 / avgProcessingTime) : 0\n  },\n  last_updated: currentTime\n};\n\n// Log de estadísticas detalladas\nconsole.log('📊 ======= ESTADÍSTICAS DE PROCESAMIENTO =======');\nconsole.log(`📅 Fecha: ${currentDate}`);\nconsole.log(`📋 Total procesados: ${totalProcessed}`);\nconsole.log(`⏱️  Tiempo promedio: ${avgProcessingTime}s`);\nconsole.log(`📝 Total caracteres: ${totalTextProcessed.toLocaleString()}`);\nconsole.log(`🔄 Vectorización completa (ambos): ${bothCompleted}`);\nconsole.log(`📈 Eficiencia: ${statistics.processing_efficiency.files_per_minute} archivos/min`);\nconsole.log('=============================================');\n\nreturn { json: statistics };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3344,
+        960
+      ],
+      "id": "182fa33d-e3d9-4b3b-bd33-ed929be08e24",
+      "name": "Statistics Collector"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Consolidar todos los resultados en CSV\nconst allItems = items.map(i => i.json);\nconst headers = [\n  \"file_name\",\n  \"status\",\n  \"processing_time_seconds\",\n  \"processed_text_length\",\n  \"processing_start\",\n  \"processing_end\"\n];\n\nconst rows = allItems.map(item => [\n  item.file_name || \"\",\n  item.status || \"\",\n  item.processing_time_seconds || \"\",\n  item.processed_text_length || \"\",\n  item.processing_start || \"\",\n  item.processing_end || \"\"\n].join(\",\"));\n\nconst csvContent = [headers.join(\",\"), ...rows].join(\"\\n\");\n\nreturn [{\n  json: { fileName: `reporte_procesamiento_${new Date().toISOString().split(\"T\")[0]}.csv` },\n  binary: {\n    data: {\n      data: Buffer.from(csvContent, \"utf-8\"),\n      mimeType: \"text/csv\"\n    }\n  }\n}];"
+      },
+      "id": "f24809fc-26a1-4bd4-b5a6-db35e02bda89",
+      "name": "Generate CSV Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3600,
+        960
+      ]
+    },
+    {
+      "parameters": {
+        "name": "index",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "id": "4c68a49a-8b16-4f86-847c-4d2eff8d181c",
+      "name": "Upload CSV to Reportes",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        3808,
+        960
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "nS2jCbjxOoaDloUK",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "returnAll": true,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1TW1dAn5k6Qfv5j618EKlf3FStaklHN8V",
+            "mode": "list",
+            "cachedResultName": "brochure_mobilvendor",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1TW1dAn5k6Qfv5j618EKlf3FStaklHN8V"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        304,
+        432
+      ],
+      "id": "2df6d790-40ba-4db7-86b1-086bf5b2926f",
+      "name": "Search files and folders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "nS2jCbjxOoaDloUK",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1TW1dAn5k6Qfv5j618EKlf3FStaklHN8V",
+          "mode": "list",
+          "cachedResultName": "brochure_mobilvendor",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1TW1dAn5k6Qfv5j618EKlf3FStaklHN8V"
+        },
+        "event": "watchFolderUpdated"
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        112,
+        432
+      ],
+      "id": "0e70e3e9-df70-4f1c-baff-02fa04fce51b",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "nS2jCbjxOoaDloUK",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:46.033Z",
+      "createdAt": "2026-01-13T02:49:46.033Z",
+      "role": "workflow:owner",
+      "workflowId": "VIDmRgX9vItd7rZQ",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T02:49:45.794Z",
+  "versionId": "7bb62b82-a7c9-4061-9cc0-f0bcacf98f86"
+}
