@@ -1,0 +1,575 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-01-13T15:12:07.000Z",
+    "createdAt": "2026-01-13T02:49:48.170Z",
+    "versionId": "5f4d25c0-e802-4d18-8947-16bcd04f342e",
+    "workflowId": "xfJgzlVM0uc6kS5V",
+    "nodes": [
+      {
+        "parameters": {
+          "url": "https://srienlinea.sri.gob.ec/sri-catastro-sujeto-servicio-internet/rest/ConsolidadoContribuyente/existePorNumeroRuc",
+          "sendQuery": true,
+          "specifyQuery": "json",
+          "jsonQuery": "={\n  \"numeroRuc\":\"{{ $json.ruc }}\"\n}",
+          "options": {
+            "timeout": 10000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -352,
+          672
+        ],
+        "id": "173781b8-0a9d-49e4-b1ea-c2bc8f915c64",
+        "name": "SRI existe RUC",
+        "alwaysOutputData": false,
+        "notesInFlow": false,
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "url": "https://srienlinea.sri.gob.ec/sri-catastro-sujeto-servicio-internet/rest/ConsolidadoContribuyente/obtenerPorNumerosRuc",
+          "sendQuery": true,
+          "specifyQuery": "json",
+          "jsonQuery": "={\n  \"ruc\":\"{{ $('If').item.json.ruc }}\"\n}",
+          "options": {
+            "timeout": 10000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -128,
+          672
+        ],
+        "id": "4870f398-56e5-4caf-b3a3-2ae1c06c5d93",
+        "name": "SRI datos RUC",
+        "alwaysOutputData": false,
+        "notesInFlow": false,
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "url": "https://srienlinea.sri.gob.ec/sri-catastro-sujeto-servicio-internet/rest/Establecimiento/consultarPorNumeroRuc",
+          "sendQuery": true,
+          "specifyQuery": "json",
+          "jsonQuery": "={\n  \"numeroRuc\":\"{{ $('If').item.json.ruc }}\"\n}",
+          "options": {
+            "timeout": 10000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          80,
+          672
+        ],
+        "id": "214465ac-76bc-45ae-828e-66c38b82d84f",
+        "name": "SRI datos establecimiento",
+        "alwaysOutputData": false,
+        "notesInFlow": false,
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "/api/sri/consulta",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -1248,
+          688
+        ],
+        "id": "b8b25746-fac6-4fb8-9682-ab57448b3397",
+        "name": "Webhook",
+        "webhookId": "fd80411a-2ba9-48a9-a4c4-c8ef58b49484"
+      },
+      {
+        "parameters": {
+          "jsCode": "const body = $input.first().json.body || {};\n\n// Normalizador (quita tildes, espacios y pasa a minúsculas)\nconst normalize = (str = \"\") =>\n  str\n    .toString()\n    .normalize(\"NFD\")\n    .replace(/[\\u0300-\\u036f]/g, \"\")\n    .trim()\n    .toLowerCase();\n\nconst paisRaw = body.pais ?? \"\";\nconst rucRaw  = body.ruc ?? \"\";\n\nconst pais = normalize(paisRaw);\nconst ruc  = String(rucRaw).trim();\n\nif (!pais || !ruc) {\n  return [{\n    json: {\n      success: false,\n      error: \"pais y ruc son obligatorios\"\n    }\n  }];\n}\n\n// Ecuador en cualquier variante\nconst esEcuador = pais === \"ecuador\";\n\n// RUC Ecuador: 13 dígitos numéricos\nconst rucValidoFormato = /^\\d{13}$/.test(ruc);\n\nreturn [{\n  json: {\n    success: true,\n    paisOriginal: paisRaw,\n    paisNormalizado: pais,\n    ruc,\n    esEcuador,\n    rucValidoFormato,\n    aplicaSRI: esEcuador && rucValidoFormato,\n    incluirDatos: body.incluirDatos === true,\n    incluirEstablecimientos: body.incluirEstablecimientos === true\n  }\n}];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -960,
+          688
+        ],
+        "id": "be9de00b-70ad-4088-ba6d-f135b69dbd3c",
+        "name": "Code"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "04990e56-c174-474d-a795-d558eade98c8",
+                "leftValue": "={{ $json.success }}",
+                "rightValue": "true",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          -704,
+          688
+        ],
+        "id": "7627e397-3ce1-4cbd-b3d2-c0377ac23dce",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4,
+        "position": [
+          512,
+          912
+        ],
+        "id": "599584f4-b433-4d15-90b8-9f96a89709fb",
+        "name": "Respond to Webhook"
+      },
+      {
+        "parameters": {
+          "jsCode": "// 1️⃣ Existe RUC (boolean real)\nconst existeRuc = $items(\"SRI existe RUC\")[0]?.json === true;\n\n// 2️⃣ Si el RUC NO existe → responder limpio y salir\nif (!existeRuc) {\n  return [{\n    json: {\n      success: false,\n      rucExiste: false,\n      contribuyente: {},\n      establecimientoPrincipal: null\n    }\n  }];\n}\n\n// 3️⃣ Datos del contribuyente (puede venir vacío, pero ya existeRuc=true)\nconst datosRuc = $items(\"SRI datos RUC\")[0]?.json || {};\n\n// 4️⃣ Raw establecimientos\nconst estRaw = $items(\"SRI datos establecimiento\")[0]?.json;\n\n// 5️⃣ Normalizar a array SIEMPRE\nfunction toArrayEstablecimientos(raw) {\n  if (!raw) return [];\n\n  if (Array.isArray(raw)) return raw;\n\n  const candidates = [\n    raw.establecimientos,\n    raw.data,\n    raw.result,\n    raw.items,\n    raw.content,\n  ];\n\n  for (const c of candidates) {\n    if (Array.isArray(c)) return c;\n  }\n\n  if (typeof raw === \"object\" && raw.numeroEstablecimiento) {\n    return [raw];\n  }\n\n  return [];\n}\n\nconst establecimientos = toArrayEstablecimientos(estRaw);\n\n// 6️⃣ Buscar establecimiento principal\nlet establecimientoPrincipal = null;\n\nconst normNum = (n) => String(n ?? \"\").trim().padStart(3, \"0\");\n\nif (establecimientos.length > 0) {\n  establecimientoPrincipal =\n    establecimientos.find(e => normNum(e.numeroEstablecimiento) === \"001\") ||\n    establecimientos.find(e => String(e.matriz || \"\").toUpperCase() === \"SI\") ||\n    establecimientos.find(e => String(e.tipoEstablecimiento || \"\").toUpperCase() === \"MAT\") ||\n    establecimientos[0];\n}\n\n// 7️⃣ Respuesta FINAL de la API\nreturn [{\n  json: {\n    success: true,\n    rucExiste: true,\n    contribuyente: datosRuc,\n    establecimientoPrincipal\n  }\n}];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          256,
+          672
+        ],
+        "id": "15157c7d-5aed-46b8-88da-a6700e80f649",
+        "name": "Code1"
+      },
+      {
+        "parameters": {
+          "jsCode": "return [{\n  json: {\n    success: false,\n    rucExiste: false,\n    contribuyente: {},\n    establecimientoPrincipal: null\n  }\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          112,
+          1264
+        ],
+        "id": "a61bf3de-0c31-4eda-81fa-358bd8028409",
+        "name": "Code2"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Code",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "SRI existe RUC",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Code2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SRI existe RUC": {
+        "main": [
+          [
+            {
+              "node": "SRI datos RUC",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SRI datos RUC": {
+        "main": [
+          [
+            {
+              "node": "SRI datos establecimiento",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SRI datos establecimiento": {
+        "main": [
+          [
+            {
+              "node": "Code1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code1": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code2": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "ZEI MOBILVENDOR",
+    "name": "Version 1",
+    "description": "Sin cambios en flujo.\nCambio de version de n8n.\n",
+    "autosaved": false
+  },
+  "activeVersionId": "5f4d25c0-e802-4d18-8947-16bcd04f342e",
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "SRI existe RUC",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SRI existe RUC": {
+      "main": [
+        [
+          {
+            "node": "SRI datos RUC",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SRI datos RUC": {
+      "main": [
+        [
+          {
+            "node": "SRI datos establecimiento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SRI datos establecimiento": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:47.082Z",
+  "id": "xfJgzlVM0uc6kS5V",
+  "isArchived": false,
+  "meta": null,
+  "name": "SRI",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://srienlinea.sri.gob.ec/sri-catastro-sujeto-servicio-internet/rest/ConsolidadoContribuyente/existePorNumeroRuc",
+        "sendQuery": true,
+        "specifyQuery": "json",
+        "jsonQuery": "={\n  \"numeroRuc\":\"{{ $json.ruc }}\"\n}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -352,
+        672
+      ],
+      "id": "173781b8-0a9d-49e4-b1ea-c2bc8f915c64",
+      "name": "SRI existe RUC",
+      "alwaysOutputData": false,
+      "notesInFlow": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://srienlinea.sri.gob.ec/sri-catastro-sujeto-servicio-internet/rest/ConsolidadoContribuyente/obtenerPorNumerosRuc",
+        "sendQuery": true,
+        "specifyQuery": "json",
+        "jsonQuery": "={\n  \"ruc\":\"{{ $('If').item.json.ruc }}\"\n}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -128,
+        672
+      ],
+      "id": "4870f398-56e5-4caf-b3a3-2ae1c06c5d93",
+      "name": "SRI datos RUC",
+      "alwaysOutputData": false,
+      "notesInFlow": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://srienlinea.sri.gob.ec/sri-catastro-sujeto-servicio-internet/rest/Establecimiento/consultarPorNumeroRuc",
+        "sendQuery": true,
+        "specifyQuery": "json",
+        "jsonQuery": "={\n  \"numeroRuc\":\"{{ $('If').item.json.ruc }}\"\n}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        80,
+        672
+      ],
+      "id": "214465ac-76bc-45ae-828e-66c38b82d84f",
+      "name": "SRI datos establecimiento",
+      "alwaysOutputData": false,
+      "notesInFlow": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/api/sri/consulta",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1248,
+        688
+      ],
+      "id": "b8b25746-fac6-4fb8-9682-ab57448b3397",
+      "name": "Webhook",
+      "webhookId": "fd80411a-2ba9-48a9-a4c4-c8ef58b49484"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || {};\n\n// Normalizador (quita tildes, espacios y pasa a minúsculas)\nconst normalize = (str = \"\") =>\n  str\n    .toString()\n    .normalize(\"NFD\")\n    .replace(/[\\u0300-\\u036f]/g, \"\")\n    .trim()\n    .toLowerCase();\n\nconst paisRaw = body.pais ?? \"\";\nconst rucRaw  = body.ruc ?? \"\";\n\nconst pais = normalize(paisRaw);\nconst ruc  = String(rucRaw).trim();\n\nif (!pais || !ruc) {\n  return [{\n    json: {\n      success: false,\n      error: \"pais y ruc son obligatorios\"\n    }\n  }];\n}\n\n// Ecuador en cualquier variante\nconst esEcuador = pais === \"ecuador\";\n\n// RUC Ecuador: 13 dígitos numéricos\nconst rucValidoFormato = /^\\d{13}$/.test(ruc);\n\nreturn [{\n  json: {\n    success: true,\n    paisOriginal: paisRaw,\n    paisNormalizado: pais,\n    ruc,\n    esEcuador,\n    rucValidoFormato,\n    aplicaSRI: esEcuador && rucValidoFormato,\n    incluirDatos: body.incluirDatos === true,\n    incluirEstablecimientos: body.incluirEstablecimientos === true\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -960,
+        688
+      ],
+      "id": "be9de00b-70ad-4088-ba6d-f135b69dbd3c",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "04990e56-c174-474d-a795-d558eade98c8",
+              "leftValue": "={{ $json.success }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -704,
+        688
+      ],
+      "id": "7627e397-3ce1-4cbd-b3d2-c0377ac23dce",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        512,
+        912
+      ],
+      "id": "599584f4-b433-4d15-90b8-9f96a89709fb",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1️⃣ Existe RUC (boolean real)\nconst existeRuc = $items(\"SRI existe RUC\")[0]?.json === true;\n\n// 2️⃣ Si el RUC NO existe → responder limpio y salir\nif (!existeRuc) {\n  return [{\n    json: {\n      success: false,\n      rucExiste: false,\n      contribuyente: {},\n      establecimientoPrincipal: null\n    }\n  }];\n}\n\n// 3️⃣ Datos del contribuyente (puede venir vacío, pero ya existeRuc=true)\nconst datosRuc = $items(\"SRI datos RUC\")[0]?.json || {};\n\n// 4️⃣ Raw establecimientos\nconst estRaw = $items(\"SRI datos establecimiento\")[0]?.json;\n\n// 5️⃣ Normalizar a array SIEMPRE\nfunction toArrayEstablecimientos(raw) {\n  if (!raw) return [];\n\n  if (Array.isArray(raw)) return raw;\n\n  const candidates = [\n    raw.establecimientos,\n    raw.data,\n    raw.result,\n    raw.items,\n    raw.content,\n  ];\n\n  for (const c of candidates) {\n    if (Array.isArray(c)) return c;\n  }\n\n  if (typeof raw === \"object\" && raw.numeroEstablecimiento) {\n    return [raw];\n  }\n\n  return [];\n}\n\nconst establecimientos = toArrayEstablecimientos(estRaw);\n\n// 6️⃣ Buscar establecimiento principal\nlet establecimientoPrincipal = null;\n\nconst normNum = (n) => String(n ?? \"\").trim().padStart(3, \"0\");\n\nif (establecimientos.length > 0) {\n  establecimientoPrincipal =\n    establecimientos.find(e => normNum(e.numeroEstablecimiento) === \"001\") ||\n    establecimientos.find(e => String(e.matriz || \"\").toUpperCase() === \"SI\") ||\n    establecimientos.find(e => String(e.tipoEstablecimiento || \"\").toUpperCase() === \"MAT\") ||\n    establecimientos[0];\n}\n\n// 7️⃣ Respuesta FINAL de la API\nreturn [{\n  json: {\n    success: true,\n    rucExiste: true,\n    contribuyente: datosRuc,\n    establecimientoPrincipal\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        256,
+        672
+      ],
+      "id": "15157c7d-5aed-46b8-88da-a6700e80f649",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    success: false,\n    rucExiste: false,\n    contribuyente: {},\n    establecimientoPrincipal: null\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        112,
+        1264
+      ],
+      "id": "a61bf3de-0c31-4eda-81fa-358bd8028409",
+      "name": "Code2"
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:47.242Z",
+      "createdAt": "2026-01-13T02:49:47.242Z",
+      "role": "workflow:owner",
+      "workflowId": "xfJgzlVM0uc6kS5V",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-01-13T15:06:53.555Z",
+  "versionId": "5f4d25c0-e802-4d18-8947-16bcd04f342e"
+}
