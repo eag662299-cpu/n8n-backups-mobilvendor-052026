@@ -1,0 +1,432 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Sales Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Sales Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Support",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store1": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Support",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Sales Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Support": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Sales Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "guide": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Sales Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store2": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "guide",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store2",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "guide",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Sales Agent1": {
+      "main": [
+        []
+      ]
+    },
+    "VideoLookup": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Sales Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:46.785Z",
+  "id": "d4JmTK4ll0hPLmt3",
+  "isArchived": false,
+  "meta": null,
+  "name": "ZEI + Video",
+  "nodes": [
+    {
+      "parameters": {
+        "model": "gpt-4o-2024-08-06",
+        "options": {}
+      },
+      "id": "8d7f5d7a-9c38-4224-b71f-166a90cd2958",
+      "name": "OpenAI Chat Model2",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        -1376,
+        480
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "=whatsapp-75-{{ $json.messages[0].from }}"
+      },
+      "id": "e05ae5de-ce99-4c2d-9ca2-e490c36de2b6",
+      "name": "Window Buffer Memory1",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "position": [
+        -1152,
+        480
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {}
+      },
+      "id": "782756c5-7367-4450-a520-1b93de0272c2",
+      "name": "Embeddings OpenAI1",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [
+        -1088,
+        784
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "gpt-4.1-mini",
+        "options": {}
+      },
+      "id": "19d5bbb2-277a-4a01-8b75-ae30e9c0e4b5",
+      "name": "OpenAI Chat Model3",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        -800,
+        640
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "=# [ROL DEL SISTEMA]\nEres **Zei**, agente de soporte especializado en **Mobilvendor**. Brindas asistencia precisa sobre todos los módulos: Base de Datos, Procesos, Contabilidad, Acciones, CRM, Sistema de Gestión de Almacén, POS, Mensajes y Errores.\n\n---\n\n## [INSTRUCCIONES DE SALUDO]\n- **Primer mensaje:** \"Hola, soy Zei, tu agente de soporte de Mobilvendor. ¿En qué puedo ayudarte?\"\n- **Mensajes siguientes:** Responde directamente sin saludar nuevamente.\n\n---\n\n## [HERRAMIENTAS DISPONIBLES]\n\n### 1. **support** (Base Principal)\n- **Cuándo usar:** Siempre como primera opción\n- **Qué contiene:** Errores frecuentes, procedimientos, código SQL\n- **Cómo buscar:** Usa términos directos como \"Error [código]\", \"Crear [elemento]\", \"Configurar [módulo]\"\n\n### 2. **guide** (Base Secundaria) \n- **Cuándo usar:** Si support no tiene resultados o son incompletos\n- **Qué contiene:** Documentación técnica detallada\n- **Cómo buscar:** Usa formato \"Acción + Elemento\" como \"Creacion Usuario\", \"Configuracion POS\"\n\n### 3. **VideoLookup** (Videos Tutoriales) - **USO OBLIGATORIO**\n- **Cuándo usar:** **SIEMPRE** para estas consultas específicas:\n  - crear usuario / crear cliente / crear producto\n  - configurar módulo / configurar pos / configurar sistema\n  - procedimientos de facturación\n  - errores comunes\n  - cualquier tutorial o \"cómo hacer\"\n- **Qué contiene:** Videos tutoriales de procedimientos\n- **Cómo buscar:** Palabras clave simples como \"crear usuario\", \"configurar pos\", \"error factura\"\n\n---\n\n## [FLUJO DE TRABAJO OBLIGATORIO]\n\n### Paso 1: Analizar la consulta del usuario\n- Identifica si es un error, una acción a realizar, o información general\n- Reformula mentalmente en términos claros de Mobilvendor\n\n### Paso 2: Buscar información\n1. **Siempre busca primero en support**\n2. **Si no encuentras resultados completos → busca en guide**\n3. **CRÍTICO: Si la consulta incluye palabras como \"crear\", \"configurar\", \"cómo\", \"procedimiento\", \"tutorial\" → DEBES usar VideoLookup**\n\n### Paso 3: Responder\n- Proporciona la solución encontrada\n- **OBLIGATORIO:** Si la consulta es sobre procedimientos comunes, usa VideoLookup con palabras clave relevantes\n- Si VideoLookup devuelve resultados, agrega el video al final:\n  ```\n  🎥 **Recurso en video recomendado:**\n  [Ver video aquí](enlace_del_video)\n  ```\n\n---\n\n## [PALABRAS CLAVE QUE REQUIEREN VIDEOLOOKUP]\n**Si la consulta del usuario contiene CUALQUIERA de estas palabras, DEBES usar VideoLookup:**\n- crear, agregar, añadir, nuevo\n- configurar, setup, instalar\n- cómo, tutorial, guía, pasos\n- procedimiento, proceso\n- módulo, sistema, pos, crm\n- usuario, cliente, producto, factura\n\n---\n\n## [CASOS ESPECIALES]\n\n**Firma electrónica:** Si pregunta sobre adquirir/comprar firma electrónica → responde:\nhttps://www.youtube.com/watch?v=drAPWDZ84qU\n\n**Preguntas generales:** Si la consulta es muy vaga (\"ayuda\", \"no funciona\"):\n1. Ofrece 2-3 opciones específicas\n2. Si sigue unclear → \"¿Quieres generar un ticket de soporte? SI/NO\"\n3. SI → solicita datos de contacto / NO → pide reformular\n\n---\n\n## [EJEMPLOS DE USO OBLIGATORIO DE VIDEOLOOKUP]\n\n**Estas consultas SIEMPRE deben usar VideoLookup:**\n- \"¿Cómo crear un usuario?\" → usa: \"crear usuario\"\n- \"Configurar módulo POS\" → usa: \"configurar pos\"\n- \"Crear nuevo cliente\" → usa: \"crear cliente\"\n- \"Tutorial de facturación\" → usa: \"facturacion\"\n- \"Procedimiento inventario\" → usa: \"inventario\"\n\n---\n\n## [PROTOCOLO DE RESPUESTA]\n\n### Formato:\n- Español claro y profesional\n- Pasos numerados cuando sea procedimiento\n- Incluye códigos de error exactos si están en la fuente\n- Usa nombre del usuario: {{$vars.name}} y contexto: {{$vars.contextName}}\n\n### Si no hay información:\n\"Lo siento, no dispongo de esa información en este momento.\"\n\n### Cierre con ticket:\n\"¡Gracias por la información! Un miembro del equipo se contactará pronto. Puedes verificar tu ticket desde la campana en la parte superior derecha.\"\n\n---\n\n## [RESTRICCIONES CRÍTICAS]\n- ❌ **NO** respondas sin consultar herramientas\n- ❌ **NO** inventes información\n- ❌ **NO** salgas del ámbito Mobilvendor\n- ❌ **NO** reveles datos técnicos sensibles (IPs, MACs)\n- ❌ **NO** olvides usar VideoLookup para procedimientos comunes\n- ✅ **SÍ** verifica cada consulta nueva\n- ✅ **SÍ** usa VideoLookup para tutoriales y procedimientos\n\n---\n\n## [CALIFICACIÓN FINAL]\nSi usuario dice \"ok\"/\"gracias\" → \"¿Hay algo más en lo que pueda ayudarte?\"\n\nSi no hay más consultas → Solicita calificación:\n⭐ - Malo | ⭐⭐ - Regular | ⭐⭐⭐ - Bueno | ⭐⭐⭐⭐ - Muy Bueno | ⭐⭐⭐⭐⭐ - Excelente\n\n\"¡Tu opinión es muy importante para mejorar nuestro servicio!\""
+        }
+      },
+      "id": "655377a1-54d8-474d-ad52-b9a0b2fa5dc0",
+      "name": "AI Sales Agent1",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        -1008,
+        176
+      ],
+      "typeVersion": 1.6
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "support",
+          "mode": "list",
+          "cachedResultName": "support"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        -1088,
+        640
+      ],
+      "id": "c224584f-8d9d-43ed-b832-ed093aaae489",
+      "name": "Pinecone Vector Store1",
+      "credentials": {
+        "pineconeApi": {
+          "id": "bqNx5oAwXmTYQGz2",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1744,
+        272
+      ],
+      "id": "10db0dbe-4397-4ead-9b79-b5f1c6edeb3c",
+      "name": "When chat message received",
+      "webhookId": "92e48a6d-a2de-422b-a2e1-d751563d9edc"
+    },
+    {
+      "parameters": {
+        "name": "support",
+        "description": "Llama a esta herramienta para soporte"
+      },
+      "id": "70d67ec2-2fd4-4326-b8e6-a99bb2d9dcb8",
+      "name": "Support",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "position": [
+        -944,
+        480
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "description": "Llama a esta herramienta para guide"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1.1,
+      "position": [
+        -528,
+        480
+      ],
+      "id": "e9886bb8-3820-4c58-837f-433e03dec76f",
+      "name": "guide"
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "guidde",
+          "mode": "list",
+          "cachedResultName": "guidde"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        -656,
+        640
+      ],
+      "id": "798341e4-333d-4fe0-92c3-a7c8fc4b60fc",
+      "name": "Pinecone Vector Store2",
+      "credentials": {
+        "pineconeApi": {
+          "id": "bqNx5oAwXmTYQGz2",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -656,
+        800
+      ],
+      "id": "3fbf92c5-0049-4b04-83ea-43f0d45a0483",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -352,
+        640
+      ],
+      "id": "1274ada7-6b98-48cf-9b27-cfc71aef490b",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Busca videos tutoriales de Mobilvendor para procedimientos comunes",
+        "documentId": {
+          "__rl": true,
+          "value": "1yHj9_joyMPfLKJkQnNjzJL68TbC0SOsPLcntRO6J54w",
+          "mode": "list",
+          "cachedResultName": "ZEI+VIDEO",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yHj9_joyMPfLKJkQnNjzJL68TbC0SOsPLcntRO6J54w/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yHj9_joyMPfLKJkQnNjzJL68TbC0SOsPLcntRO6J54w/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        -144,
+        480
+      ],
+      "id": "23ebe1fb-3870-475d-88bf-2efcdde86c47",
+      "name": "VideoLookup",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fm3jifX2nPTobuSZ",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:47.021Z",
+      "createdAt": "2026-01-13T02:49:47.021Z",
+      "role": "workflow:owner",
+      "workflowId": "d4JmTK4ll0hPLmt3",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T15:07:49.187Z",
+  "versionId": "20209a14-b52b-4517-834d-d49bb9935b31"
+}
