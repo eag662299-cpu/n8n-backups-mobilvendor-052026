@@ -1,0 +1,137 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Cron": {
+      "main": [
+        [
+          {
+            "node": "List SharePoint Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List SharePoint Files": {
+      "main": [
+        [
+          {
+            "node": "Prepare Binary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Binary": {
+      "main": [
+        [
+          {
+            "node": "Upload to S3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:45.892Z",
+  "id": "29SshuG0DW1at11w",
+  "isArchived": false,
+  "meta": null,
+  "name": "My workflow 20",
+  "nodes": [
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "hour": 0
+            }
+          ]
+        }
+      },
+      "name": "Cron",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "3a0d9fc0-0ec2-4231-acb9-0076c0beffef"
+    },
+    {
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "url": "https://graph.microsoft.com/v1.0/sites/zei-mobilvendor/drive/root:/Documentos:/children",
+        "options": {}
+      },
+      "name": "List SharePoint Files",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [
+        256,
+        0
+      ],
+      "id": "d2fadcb1-289b-4d77-8c0e-bf6561ff45ce",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "rtxDh1vSk3F4bb0q",
+          "name": "Conexion SharePoint"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "return items.map(item => {\n  return {\n    json: item.json,\n    binary: { data: item.json['@microsoft.graph.downloadUrl'] }\n  };\n});"
+      },
+      "name": "Prepare Binary",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        512,
+        0
+      ],
+      "id": "62572145-3307-4b64-b2a6-3e319e442a73"
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "bucketName": "<TU_BUCKET_S3>",
+        "fileName": "={{$json['name']}}",
+        "additionalFields": {}
+      },
+      "name": "Upload to S3",
+      "type": "n8n-nodes-base.s3",
+      "typeVersion": 1,
+      "position": [
+        752,
+        0
+      ],
+      "id": "123dae3f-a26c-4d02-a241-798923df5546"
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:46.153Z",
+      "createdAt": "2026-01-13T02:49:46.153Z",
+      "role": "workflow:owner",
+      "workflowId": "29SshuG0DW1at11w",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T02:49:45.892Z",
+  "versionId": "7226c9fa-8b5b-47f3-ad3c-8b5ad3cf05e4"
+}
