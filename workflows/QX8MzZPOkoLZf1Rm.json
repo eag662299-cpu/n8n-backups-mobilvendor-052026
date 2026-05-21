@@ -1,0 +1,393 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Webhook: Meta Community Manager": {
+      "main": [
+        [
+          {
+            "node": "¿Es verificación GET?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Es verificación GET?": {
+      "main": [
+        [
+          {
+            "node": "Code: Extraer Challenge",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Parsear Evento Meta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Extraer Challenge": {
+      "main": [
+        [
+          {
+            "node": "Respond: Challenge OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Parsear Evento Meta": {
+      "main": [
+        [
+          {
+            "node": "¿Ignorar evento?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Ignorar evento?": {
+      "main": [
+        [
+          {
+            "node": "Respond: OK (skip)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch: ¿Comentario o DM?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch: ¿Comentario o DM?": {
+      "main": [
+        [
+          {
+            "node": "Code: Preparar Respuesta Comentario",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Preparar Apertura DM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Preparar Respuesta Comentario": {
+      "main": [
+        [
+          {
+            "node": "Respond: OK Meta (200)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Preparar Apertura DM": {
+      "main": [
+        [
+          {
+            "node": "Respond: OK Meta (200)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-05-14T15:54:35.272Z",
+  "id": "QX8MzZPOkoLZf1Rm",
+  "isArchived": false,
+  "meta": null,
+  "name": "Community Manager: Comentarios y DMs Meta",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "meta-community-manager",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -224,
+        16
+      ],
+      "id": "79e61c3b-7855-411f-86e7-f269ec5a787a",
+      "name": "Webhook: Meta Community Manager",
+      "webhookId": "189769f0-9082-447c-8415-58d51311030d"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond-challenge",
+              "leftValue": "={{ $json.query && $json.query['hub.challenge'] ? 'true' : 'false' }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        16,
+        16
+      ],
+      "id": "df6b5b39-3e72-4893-93b6-4852dab9320a",
+      "name": "¿Es verificación GET?"
+    },
+    {
+      "parameters": {
+        "jsCode": "const q = $input.item.json.query || {};\nreturn [{ json: { challenge: q['hub.challenge'] || '' } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        -144
+      ],
+      "id": "d65530c7-d10c-4f3b-b12d-0dc175cf761d",
+      "name": "Code: Extraer Challenge"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.challenge }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        448,
+        -144
+      ],
+      "id": "abdd1543-ba63-421b-a924-a3f2247b785d",
+      "name": "Respond: Challenge OK"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ════════════════════════════════════════════════════════\n// PARSER UNIVERSAL — Facebook Page + Instagram\n// Detecta: comentarios (feed), DMs Messenger, DMs IG Direct\n// ════════════════════════════════════════════════════════\n\nconst body  = $input.item.json.body;\nconst object = body?.object; // 'page' o 'instagram'\nconst entry  = body?.entry?.[0];\n\nif (!entry) return [{ json: { _skip: true, motivo: 'Sin entry' } }];\n\n// ── CASO 1: Comentario en publicación/anuncio (field: feed)\nconst changes = entry.changes || [];\nconst feedChange = changes.find(c => c.field === 'feed');\n\nif (feedChange) {\n  const val = feedChange.value;\n  // Solo nos interesan comentarios nuevos (no likes, no posts)\n  if (val.item !== 'comment' || val.verb !== 'add') {\n    return [{ json: { _skip: true, motivo: 'Feed event no es comentario nuevo' } }];\n  }\n  return [{ json: {\n    _skip:        false,\n    evento_tipo:  'COMENTARIO',\n    canal:        object === 'instagram' ? 'IG_COMENTARIO' : 'FB_COMENTARIO',\n    sender_id:    val.from?.id    || '',\n    sender_name:  val.from?.name  || '',\n    texto:        val.message     || '',\n    comment_id:   val.comment_id  || '',\n    post_id:      val.post_id     || '',\n    page_id:      entry.id        || '',\n    timestamp:    val.created_time\n  }}];\n}\n\n// ── CASO 2: DM Messenger o Instagram Direct (messaging array)\nconst messagingArr = entry.messaging || [];\nif (messagingArr.length > 0) {\n  const msg = messagingArr[0];\n  // Ignorar echo de mensajes enviados por la Page\n  if (msg.message?.is_echo) {\n    return [{ json: { _skip: true, motivo: 'Echo message ignorado' } }];\n  }\n  // Ignorar read/delivery receipts\n  if (msg.read || msg.delivery) {\n    return [{ json: { _skip: true, motivo: 'Read/delivery receipt ignorado' } }];\n  }\n  return [{ json: {\n    _skip:        false,\n    evento_tipo:  'DM',\n    canal:        object === 'instagram' ? 'IG_DM' : 'FB_DM',\n    sender_id:    msg.sender?.id    || '',\n    page_id:      msg.recipient?.id || '',\n    mid:          msg.message?.mid  || '',\n    texto:        msg.message?.text || '',\n    timestamp:    msg.timestamp,\n    // Attachments (imagen, audio, sticker)\n    attachments:  msg.message?.attachments || [],\n    // Respuesta a botón quick_reply\n    quick_reply:  msg.message?.quick_reply?.payload || null,\n    // Postback de botón (menú persistente)\n    postback_payload: msg.postback?.payload || null,\n    postback_title:   msg.postback?.title   || null\n  }}];\n}\n\nreturn [{ json: { _skip: true, motivo: 'Evento no manejado: ' + JSON.stringify(body).slice(0,200) } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        96
+      ],
+      "id": "0e41c4d6-35f1-47f7-9314-190da0faa7cb",
+      "name": "Code: Parsear Evento Meta"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond-skip",
+              "leftValue": "={{ $json._skip }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        448,
+        96
+      ],
+      "id": "544f79ed-d88a-4f12-9a20-36aa8dab849a",
+      "name": "¿Ignorar evento?"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"status\": \"ok\" }",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        672,
+        -48
+      ],
+      "id": "94bb7fab-8329-4a85-927a-33e85fe3a406",
+      "name": "Respond: OK (skip)"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.evento_tipo }}",
+                    "rightValue": "COMENTARIO",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "comentario"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.evento_tipo }}",
+                    "rightValue": "DM",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "dm"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        672,
+        176
+      ],
+      "id": "d26eea1c-4434-4f12-9471-eaf931ffa71d",
+      "name": "Switch: ¿Comentario o DM?"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Respuesta pública al comentario (según doc sección 4.1)\nconst senderName = $input.item.json.sender_name || '';\nconst nombre = senderName.split(' ')[0] || 'estimado/a';\nreturn [{\n  json: {\n    ...$input.item.json,\n    respuesta_publica: `¡Hola ${nombre}! Gracias por tu comentario 👋 Te escribimos por privado para darte información personalizada según la operación de tu empresa. ¡En un momento te contactamos!`,\n    dm_apertura: `Hola ${nombre}, te escribo desde Mobilvendor 👋\\n\\nVi tu comentario. Centralizamos y automatizamos tus procesos para ganar eficiencia ⚙️ y visibilidad total 👀. Para ver si podemos ayudarte, ¿cuál es tu nombre completo y a qué empresa perteneces?`\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        80
+      ],
+      "id": "9ea12ef3-6df3-4fc6-a7d0-59b3ce84bbc7",
+      "name": "Code: Preparar Respuesta Comentario"
+    },
+    {
+      "parameters": {
+        "jsCode": "// DM directo — apertura según doc sección 4.3\nconst texto = $input.item.json.texto || '';\nreturn [{\n  json: {\n    ...$input.item.json,\n    dm_apertura: `¡Hola! Gracias por escribirnos 👋\\n\\nSoy del equipo de Mobilvendor. Ayudamos a empresas a ganar control y visibilidad en su operación de ventas y distribución.\\n\\nPara orientarte mejor, ¿cuál es tu nombre completo y a qué empresa perteneces?`,\n    primer_mensaje: texto\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        288
+      ],
+      "id": "488cc7fd-56f6-42fc-b5b4-dd86819c3759",
+      "name": "Code: Preparar Apertura DM"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"status\": \"ok\" }",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1104,
+        176
+      ],
+      "id": "aa4101f7-da29-4c2e-bfbd-9544d7e4cf9d",
+      "name": "Respond: OK Meta (200)"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-05-14T15:54:35.285Z",
+      "createdAt": "2026-05-14T15:54:35.285Z",
+      "role": "workflow:owner",
+      "workflowId": "QX8MzZPOkoLZf1Rm",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-05-20T00:58:29.810Z",
+  "versionId": "f39f8882-0810-4936-bb64-eb1fe40ea0c0"
+}
