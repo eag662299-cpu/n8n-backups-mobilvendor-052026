@@ -1,0 +1,214 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Cron": {
+      "main": [
+        [
+          {
+            "node": "Meta Insights",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "GA4 RunReport",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Meta Insights": {
+      "main": [
+        [
+          {
+            "node": "Merge Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Data": {
+      "main": [
+        [
+          {
+            "node": "Generate HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate HTML": {
+      "main": [
+        [
+          {
+            "node": "HTML → PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML → PDF": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:46.473Z",
+  "id": "MyUbZtxPto6JAMcC",
+  "isArchived": false,
+  "meta": null,
+  "name": "Informe_Redes",
+  "nodes": [
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "hour": 8
+            }
+          ]
+        }
+      },
+      "id": "cc04f30a-de9f-44a0-8437-38aca12f605b",
+      "name": "Cron",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://graph.facebook.com/v18.0/act_YOUR_AD_ACCOUNT_ID/insights",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth1Api",
+        "options": {}
+      },
+      "id": "05ade8d6-de8e-4b42-8476-a27bf509c035",
+      "name": "Meta Insights",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -160,
+        80
+      ],
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "cXfuuFU017weIOiT",
+          "name": "Unnamed credential"
+        },
+        "oAuth2Api": {
+          "id": "rtxDh1vSk3F4bb0q",
+          "name": "Conexion SharePoint"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://analyticsdata.googleapis.com/v1beta/properties/YOUR_GA4_PROPERTY_ID:runReport",
+        "authentication": "oAuth2",
+        "options": {}
+      },
+      "id": "6eb07d22-00fd-4017-b9d1-47f76b3ac54d",
+      "name": "GA4 RunReport",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -160,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const meta = $items(\"Meta Insights\")[0].json.data;\nconst ga4 = $items(\"GA4 RunReport\")[0].json.rows;\n\nreturn [{ json: { meta, ga4 } }];"
+      },
+      "id": "d9b40670-5572-47cb-bc18-3f551bb98d45",
+      "name": "Merge Data",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        144,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const { meta, ga4 } = $json;\n\nlet html = `\n<h1>Informe Automático – Meta Ads + GA4</h1>\n\n<h2>Meta Ads</h2>\n<table border=\"1\" cellspacing=\"0\" cellpadding=\"4\">\n<tr>\n<th>Campaña</th><th>Impresiones</th><th>Alcance</th><th>Clics</th><th>CTR</th><th>CPC</th><th>Gasto</th>\n</tr>`;\n\nmeta.forEach(c => {\n  html += `\n  <tr>\n  <td>${c.campaign_name}</td>\n  <td>${c.impressions}</td>\n  <td>${c.reach}</td>\n  <td>${c.clicks}</td>\n  <td>${c.ctr}</td>\n  <td>${c.cpc}</td>\n  <td>${c.spend}</td>\n  </tr>`;\n});\n\nhtml += `</table>`;\n\nhtml += `\n<h2>Google Analytics 4</h2>\n<table border=\"1\" cellspacing=\"0\" cellpadding=\"4\">\n<tr>\n<th>Fecha</th><th>Canal</th><th>Sesiones</th><th>Usuarios</th><th>Nuevos Usuarios</th><th>Eventos</th>\n</tr>`;\n\nga4.forEach(r => {\n  html += `\n  <tr>\n  <td>${r.dimensionValues[0].value}</td>\n  <td>${r.dimensionValues[1].value}</td>\n  <td>${r.metricValues[0].value}</td>\n  <td>${r.metricValues[1].value}</td>\n  <td>${r.metricValues[2].value}</td>\n  <td>${r.metricValues[4].value}</td>\n  </tr>`;\n});\n\nhtml += `</table>`;\n\nreturn [{ json: { html } }];"
+      },
+      "id": "14779ffe-9b74-4876-ac8f-0892b5f04630",
+      "name": "Generate HTML",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        448,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.html2pdf.app/v1/generate",
+        "options": {}
+      },
+      "id": "a0667706-e773-4da3-902e-5383a32a1111",
+      "name": "HTML → PDF",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        752,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "reporte@tudominio.com",
+        "toEmail": "destino@correo.com",
+        "subject": "Informe Automático Meta + GA4",
+        "text": "Adjunto el informe automático en PDF.",
+        "options": {}
+      },
+      "id": "160af9ff-60f3-43be-bc04-eb359c90d85d",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        192
+      ],
+      "webhookId": "4891820a-cbbd-4988-8e97-322826b86062"
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:46.785Z",
+      "createdAt": "2026-01-13T02:49:46.785Z",
+      "role": "workflow:owner",
+      "workflowId": "MyUbZtxPto6JAMcC",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T15:21:05.247Z",
+  "versionId": "de45d2e5-6092-4731-be42-8fc7b96169f7"
+}
