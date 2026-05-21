@@ -1,0 +1,130 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Cron": {
+      "main": [
+        [
+          {
+            "node": "List SharePoint Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List SharePoint Files": {
+      "main": [
+        [
+          {
+            "node": "Prepare Binary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Binary": {
+      "main": [
+        [
+          {
+            "node": "Upload to S3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:40.826Z",
+  "id": "1WmPcJgdsDKbZ9VR",
+  "isArchived": false,
+  "meta": null,
+  "name": "My workflow 19",
+  "nodes": [
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "hour": 0
+            }
+          ]
+        }
+      },
+      "name": "Cron",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "20162566-752c-4b70-9ede-dc6b2e21c240"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "url": "https://graph.microsoft.com/v1.0/sites/<SITE_ID>/drive/root:/Documentos:/children",
+        "options": {}
+      },
+      "name": "List SharePoint Files",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [
+        256,
+        0
+      ],
+      "id": "81d57783-09ef-4d8f-a3ea-8d199fa04f7d"
+    },
+    {
+      "parameters": {
+        "functionCode": "return items.map(item => {\n  return {\n    json: item.json,\n    binary: { data: item.json['@microsoft.graph.downloadUrl'] }\n  };\n});"
+      },
+      "name": "Prepare Binary",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        512,
+        0
+      ],
+      "id": "f8ef3439-4dab-4015-934f-11e4739a87b8"
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "bucketName": "<TU_BUCKET_S3>",
+        "fileName": "={{$json['name']}}",
+        "additionalFields": {}
+      },
+      "name": "Upload to S3",
+      "type": "n8n-nodes-base.s3",
+      "typeVersion": 1,
+      "position": [
+        752,
+        0
+      ],
+      "id": "27fdce1d-fe93-4d67-96c5-5e2ab4a24a3a"
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:41.076Z",
+      "createdAt": "2026-01-13T02:49:41.076Z",
+      "role": "workflow:owner",
+      "workflowId": "1WmPcJgdsDKbZ9VR",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T02:49:40.826Z",
+  "versionId": "84cd50fd-c011-48fa-a461-69e51b538125"
+}
