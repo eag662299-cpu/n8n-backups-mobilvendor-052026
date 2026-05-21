@@ -1,0 +1,977 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "carpeta_app1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Es Archivo?2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "carpeta_app1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatear Archivo1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tiene Contenido?1": {
+      "main": [
+        [
+          {
+            "node": "Listar Subcarpeta2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Es Archivo?2": {
+      "main": [
+        [
+          {
+            "node": "Formatear Archivo1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Tiene Contenido?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listar Subcarpeta2": {
+      "main": [
+        [
+          {
+            "node": "Split Subcarpeta2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Subcarpeta2": {
+      "main": [
+        [
+          {
+            "node": "Es Archivo?2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "mp4",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "pdf",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mp4": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "pdf": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-21T16:25:15.348Z",
+  "id": "2k_8KT-YikowuTJ8MIbJY",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "AGENTE",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/sites/mobilvendorcom-my.sharepoint.com:/personal/d_hernandez_mobilvendor_com:?$select=id,webUrl",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -400,
+        -208
+      ],
+      "id": "faa5f5a3-1686-4461-8433-126eee97b66c",
+      "name": "Obtener Site ID",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "RG10kjbUr62FvezS",
+          "name": "Conexion SharePoint"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 1.\n",
+        "height": 224,
+        "width": 336
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -512,
+        -256
+      ],
+      "typeVersion": 1,
+      "id": "24021856-8227-4558-9441-a690e59fa21b",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 2. \nhttps://graph.microsoft.com/v1.0/sites/{site-id}/drives",
+        "height": 224,
+        "width": 336
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -512,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "cf02eec0-7d97-45e4-85cb-67b09a375e45",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/sites/mobilvendorcom-my.sharepoint.com,7bba41da-0860-42cb-9de2-347b91fdb398,1655af63-918f-4b98-a232-7507e306df9d/drives",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -400,
+        80
+      ],
+      "id": "167ae0bf-cc97-423a-a142-f010a12b8f94",
+      "name": "Obtener driveID",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "RG10kjbUr62FvezS",
+          "name": "Conexion SharePoint"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 3. \nhttps://graph.microsoft.com/v1.0/drives/{driveId}/root:/Documents/MANUALES-CAPACITACIONES",
+        "height": 272,
+        "width": 336
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -512,
+        272
+      ],
+      "typeVersion": 1,
+      "id": "cb20a4d0-e0bb-48ae-b1e8-bbc148aa16f0",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/drives/b!2kG6e2AIy0Kd4jR7kf2zmGOvVRaPkZhLojJ1B-MG353qmQVc9AtZRLP3S5zL_N1h/root/children",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -400,
+        400
+      ],
+      "id": "810e034f-5848-49e0-aa67-be0a386a73af",
+      "name": "Obtener item carpeta id",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "RG10kjbUr62FvezS",
+          "name": "Conexion SharePoint"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/sites/mobilvendorcom-my.sharepoint.com,7bba41da-0860-42cb-9de2-347b91fdb398,1655af63-918f-4b98-a232-7507e306df9d/drive/items/0153CGZZD26GEHGBYB4ZAL6CATI7XN4SC6/children?$select=id,name,webUrl,file,folder",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -256,
+        864
+      ],
+      "id": "b1d0b413-3330-4919-a9e6-d308027c47eb",
+      "name": "carpeta_app1",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "RG10kjbUr62FvezS",
+          "name": "Conexion SharePoint"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst folders = [];\n\nitems.forEach(item => {\n  const data = item.json.value || [item.json];\n  \n  data.forEach(doc => {\n    folders.push({\n      id: doc.id,\n      nombre: doc.name,\n      url: doc.webUrl,\n      tipo: doc.folder ? 'Carpeta' : 'Archivo',\n      cantidadHijos: doc.folder?.childCount || 0,\n      tamaño: doc.size || 0,\n      fechaCreacion: doc.createdDateTime,\n      fechaModificacion: doc.lastModifiedDateTime\n    });\n  });\n});\n\nreturn folders.map(f => ({ json: f }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -48,
+        864
+      ],
+      "id": "e0b5e4a8-7d26-4353-b49c-5864b545912f",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {},
+      "name": "Start",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        864
+      ],
+      "id": "fcc06350-795b-4021-b552-98e063b3f931"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "nombre",
+              "name": "nombre",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "ruta",
+              "name": "ruta_carpeta",
+              "value": "={{ $json.parentReference?.path?.split(':').pop() || '/' }}",
+              "type": "string"
+            },
+            {
+              "id": "url",
+              "name": "url",
+              "value": "={{ $json.webUrl }}",
+              "type": "string"
+            },
+            {
+              "id": "tamaño_mb",
+              "name": "tamaño_mb",
+              "value": "={{ ($json.size / 1048576).toFixed(2) }}",
+              "type": "string"
+            },
+            {
+              "id": "extension",
+              "name": "extension",
+              "value": "=",
+              "type": "string"
+            },
+            {
+              "id": "fecha",
+              "name": "fecha_modificacion",
+              "value": "={{ $json.lastModifiedDateTime }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        432,
+        736
+      ],
+      "name": "Formatear Archivo1",
+      "id": "6103bec2-5d76-4619-84d5-6abad4a76222"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.cantidadHijos }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              },
+              "id": "83bed2c3-9279-4589-800b-4c30a8b804b3"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        432,
+        976
+      ],
+      "name": "Tiene Contenido?1",
+      "id": "b091f10c-da77-4f7d-be31-91422c10f5c7"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1o5NL-oPKxw53vVew63JgrgEQZB_ugns8b5jWmSddT-s",
+          "mode": "list",
+          "cachedResultName": "KB_OPERACIONES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1o5NL-oPKxw53vVew63JgrgEQZB_ugns8b5jWmSddT-s/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1o5NL-oPKxw53vVew63JgrgEQZB_ugns8b5jWmSddT-s/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "doc_id": "={{ $json.id }}",
+            "name": "={{ $json.nombre }}",
+            "path": "={{ $json.ruta_carpeta }}",
+            "source_url": "={{ $json.url }}",
+            "type": "={{ $json.extension }}",
+            "modified_at": "={{ $json.fecha_modificacion }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "doc_id",
+              "displayName": "doc_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "path",
+              "displayName": "path",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "source_url",
+              "displayName": "source_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "version",
+              "displayName": "version",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "modified_at",
+              "displayName": "modified_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "owner",
+              "displayName": "owner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "module",
+              "displayName": "module",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tags",
+              "displayName": "tags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        656,
+        736
+      ],
+      "name": "Google Sheets1",
+      "id": "581e3b40-8e82-402c-9ab3-7b0ccbd98c51",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.tipo }}",
+              "rightValue": "Carpeta",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              },
+              "id": "373e07dc-83cf-476d-9262-856951f0e582"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        208,
+        864
+      ],
+      "name": "Es Archivo?2",
+      "id": "9a2f28ea-cd76-4320-8476-299bbe96e969"
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.microsoft.com/v1.0/sites/mobilvendorcom-my.sharepoint.com,7bba41da-0860-42cb-9de2-347b91fdb398,1655af63-918f-4b98-a232-7507e306df9d/drive/items/{{ $json.id }}/children?$select=id,name,webUrl,file,folder,size,lastModifiedDateTime,parentReference",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        656,
+        944
+      ],
+      "name": "Listar Subcarpeta2",
+      "id": "c4ce3c6a-aa22-489c-a512-390f84db70d9",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "RG10kjbUr62FvezS",
+          "name": "Conexion SharePoint"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "value",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        880,
+        944
+      ],
+      "name": "Split Subcarpeta2",
+      "id": "82f7cfc5-ce55-40d7-9eb6-2d7bb931c7b8"
+    },
+    {
+      "parameters": {
+        "content": "## EXTRAER INFORMACION SHAREPOINT\n",
+        "height": 640,
+        "width": 1792,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -544,
+        624
+      ],
+      "typeVersion": 1,
+      "id": "66d9b9b2-00a0-42bd-837d-51b680db9636",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1o5NL-oPKxw53vVew63JgrgEQZB_ugns8b5jWmSddT-s",
+          "mode": "list",
+          "cachedResultName": "KB_OPERACIONES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1o5NL-oPKxw53vVew63JgrgEQZB_ugns8b5jWmSddT-s/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1o5NL-oPKxw53vVew63JgrgEQZB_ugns8b5jWmSddT-s/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -112,
+        1504
+      ],
+      "id": "8fa42c3a-9960-409d-b731-00d0f196c5df",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "23f91166-6090-4576-9575-a66837e48fae",
+              "leftValue": "={{ $json.source_url }}",
+              "rightValue": "mp4",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        1328
+      ],
+      "id": "5178fe4c-247b-4f46-b3fc-347ae512ba88",
+      "name": "mp4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "23f91166-6090-4576-9575-a66837e48fae",
+              "leftValue": "={{ $json.source_url }}",
+              "rightValue": "pdf",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        1504
+      ],
+      "id": "dd4c0d5e-2246-4c97-8811-4b7f2f49ff7d",
+      "name": "pdf"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1o5NL-oPKxw53vVew63JgrgEQZB_ugns8b5jWmSddT-s",
+          "mode": "list",
+          "cachedResultName": "KB_OPERACIONES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1o5NL-oPKxw53vVew63JgrgEQZB_ugns8b5jWmSddT-s/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 976131726,
+          "mode": "list",
+          "cachedResultName": "mp4",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1o5NL-oPKxw53vVew63JgrgEQZB_ugns8b5jWmSddT-s/edit#gid=976131726"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "doc_id": "={{ $json.doc_id }}",
+            "name": "={{ $json.name }}",
+            "path": "={{ $json.path }}",
+            "type": "mp4",
+            "source_url": "={{ $json.source_url }}",
+            "modified_at": "={{ $json.modified_at }}"
+          },
+          "matchingColumns": [
+            "doc_id"
+          ],
+          "schema": [
+            {
+              "id": "doc_id",
+              "displayName": "doc_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "path",
+              "displayName": "path",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "source_url",
+              "displayName": "source_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "modified_at",
+              "displayName": "modified_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        480,
+        1328
+      ],
+      "id": "ea027ef8-9190-4e52-a1a3-73e9c2666a8f",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1o5NL-oPKxw53vVew63JgrgEQZB_ugns8b5jWmSddT-s",
+          "mode": "list",
+          "cachedResultName": "KB_OPERACIONES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1o5NL-oPKxw53vVew63JgrgEQZB_ugns8b5jWmSddT-s/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1698800891,
+          "mode": "list",
+          "cachedResultName": "pdf",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1o5NL-oPKxw53vVew63JgrgEQZB_ugns8b5jWmSddT-s/edit#gid=1698800891"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "doc_id": "={{ $json.doc_id }}",
+            "name": "={{ $json.name }}",
+            "path": "={{ $json.path }}",
+            "type": "pdf",
+            "source_url": "={{ $json.source_url }}",
+            "modified_at": "={{ $json.modified_at }}"
+          },
+          "matchingColumns": [
+            "doc_id"
+          ],
+          "schema": [
+            {
+              "id": "doc_id",
+              "displayName": "doc_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "path",
+              "displayName": "path",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "source_url",
+              "displayName": "source_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "modified_at",
+              "displayName": "modified_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        480,
+        1504
+      ],
+      "id": "66a7c19d-ace1-4854-ab4f-640e67871209",
+      "name": "Append or update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Obtener Site ID": [
+      {
+        "json": {
+          "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#sites(id,webUrl)/$entity",
+          "id": "mobilvendorcom-my.sharepoint.com,7bba41da-0860-42cb-9de2-347b91fdb398,1655af63-918f-4b98-a232-7507e306df9d",
+          "webUrl": "https://mobilvendorcom-my.sharepoint.com/personal/d_hernandez_mobilvendor_com"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-21T16:25:15.358Z",
+      "createdAt": "2026-01-21T16:25:15.358Z",
+      "role": "workflow:owner",
+      "workflowId": "2k_8KT-YikowuTJ8MIbJY",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-02-05T19:34:28.334Z",
+  "versionId": "5717e7f1-1b95-495a-8ba6-5020e231028c"
+}
