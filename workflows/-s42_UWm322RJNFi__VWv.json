@@ -1,0 +1,622 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-01-29T13:41:25.000Z",
+    "createdAt": "2026-01-29T13:40:32.457Z",
+    "versionId": "97eebd9e-52c8-4564-9a32-fbd1f665dc55",
+    "workflowId": "-s42_UWm322RJNFi__VWv",
+    "nodes": [
+      {
+        "parameters": {
+          "path": "learning/videos",
+          "responseMode": "responseNode",
+          "options": {
+            "allowedOrigins": "*"
+          }
+        },
+        "id": "4e1a77d2-76d7-43db-9577-f03ce83b70b8",
+        "name": "Webhook - Get Videos",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1,
+        "position": [
+          224,
+          16
+        ],
+        "webhookId": "fe77da6f-7289-4a47-9671-b9594e4184c9"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1o5NL-oPKxw53vVew63JgrgEQZB_ugns8b5jWmSddT-s",
+            "mode": "list",
+            "cachedResultName": "KB_OPERACIONES",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1o5NL-oPKxw53vVew63JgrgEQZB_ugns8b5jWmSddT-s/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 976131726,
+            "mode": "list",
+            "cachedResultName": "mp4",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1o5NL-oPKxw53vVew63JgrgEQZB_ugns8b5jWmSddT-s/edit#gid=976131726"
+          },
+          "options": {}
+        },
+        "id": "a5db3e15-9727-4adc-a8f5-742c00988e1d",
+        "name": "Google Sheets - Leer Videos",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4,
+        "position": [
+          432,
+          16
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// ============================================\n// CONFIGURACIÓN: Mapeo de videos a misiones\n// ============================================\nconst missionVideoMapping = {\n  'agenda': ['CAPACITACION_CALIDAD_MODULO AGENDA', 'AGENDA'],\n  'catalogo': ['CATALOGO_CREAR', 'CATALOGO_EDITAR', 'CATALOGO'],\n  'inventario': ['INVENTARIO_TIPOS', 'INVENTARIO_AJUSTES', 'INVENTARIO'],\n  'pos': ['POS', 'PUNTO_VENTA', 'FACTURACION'],\n  'clientes': ['CLIENTES', 'CRM'],\n  'reportes': ['REPORTES', 'INFORMES'],\n  'repaso': ['REPASO_', 'REVISION'] // Videos que empiezan con REPASO_\n};\n\n// ============================================\n// FUNCIONES AUXILIARES\n// ============================================\n\nfunction mapVideoToMission(fileName, path) {\n  const name = fileName.toUpperCase();\n  \n  // Buscar en patrones definidos\n  for (const [mission, patterns] of Object.entries(missionVideoMapping)) {\n    for (const pattern of patterns) {\n      if (name.includes(pattern)) {\n        return mission;\n      }\n    }\n  }\n  \n  // Mapeo por path si no se encuentra en nombre\n  if (path) {\n    const pathLower = path.toLowerCase();\n    if (pathLower.includes('agenda')) return 'agenda';\n    if (pathLower.includes('catalogo')) return 'catalogo';\n    if (pathLower.includes('inventario')) return 'inventario';\n    if (pathLower.includes('pos')) return 'pos';\n    if (pathLower.includes('clientes')) return 'clientes';\n    if (pathLower.includes('reportes')) return 'reportes';\n  }\n  \n  return 'general';\n}\n\nfunction cleanTitle(filename) {\n  // Remover extensión y timestamp\n  return filename\n    .replace(/\\.(mp4|avi|mov|mkv|webm)$/i, '')\n    .replace(/-\\d{8}_\\d{6}-Grabación de la reunión/g, '')\n    .replace(/-Grabación de la reunión/g, '')\n    .replace(/CAPACITACION_CALIDAD_MODULO /g, '')\n    .replace(/_/g, ' ')\n    .trim();\n}\n\nfunction extractDuration(filename) {\n  // Aquí podrías extraer duración real si está en el nombre\n  // Por ahora retorna estimado\n  return '10-15 min';\n}\n\nfunction determineContentType(filename, module) {\n  const name = filename.toLowerCase();\n  \n  // Tipos específicos\n  if (name.includes('capacitacion')) return 'capacitacion';\n  if (name.includes('tutorial')) return 'tutorial';\n  if (name.includes('demo')) return 'demo';\n  if (name.includes('repaso')) return 'repaso';\n  if (name.includes('revision')) return 'repaso';\n  \n  // Determinar por módulo\n  if (module) {\n    const moduleLower = module.toLowerCase();\n    if (moduleLower.includes('agenda')) return 'mision';\n    if (moduleLower.includes('catalogo')) return 'mision';\n    if (moduleLower.includes('inventario')) return 'mision';\n    if (moduleLower.includes('pos')) return 'mision';\n  }\n  \n  return 'general';\n}\n\nfunction generateThumbnailUrl(videoUrl, title) {\n  // Genera thumbnail con título del video\n  const encodedTitle = encodeURIComponent(title);\n  return `https://placehold.co/1280x720/4f46e5/ffffff?text=${encodedTitle}`;\n}\n\nfunction estimateSize(type) {\n  // Estimación genérica basada en tipo\n  return '~50-100 MB';\n}\n\nfunction calculatePriority(fileName, modifiedDate) {\n  // Calcular prioridad basada en tipo de contenido y fecha\n  let priority = 50; // Prioridad base\n  \n  const name = fileName.toLowerCase();\n  \n  // Incrementar prioridad para ciertos tipos\n  if (name.includes('capacitacion')) priority += 20;\n  if (name.includes('repaso')) priority += 30;\n  if (name.includes('nuevo') || name.includes('actualizado')) priority += 15;\n  \n  // Incrementar prioridad para videos recientes (últimos 30 días)\n  const daysSinceModified = (Date.now() - new Date(modifiedDate).getTime()) / (1000 * 60 * 60 * 24);\n  if (daysSinceModified < 7) priority += 25;\n  else if (daysSinceModified < 30) priority += 10;\n  \n  return Math.min(priority, 100); // Máximo 100\n}\n\n// ============================================\n// PROCESAMIENTO PRINCIPAL\n// ============================================\n\n// Obtener parámetros de query\nconst query = $input.first().json.query || {};\nconst videoId = query.video_id;\nconst moduleName = query.module;\nconst searchTerm = query.search;\nconst missionType = query.mission; // Nuevo: filtrar por tipo de misión\n\n// Obtener todos los videos de Google Sheets\nconst allVideos = $input.all().map(item => {\n  const data = item.json;\n  \n  // Extraer información del nombre del archivo\n  const fileName = data.name || '';\n  const module = data.path ? data.path.split('/').pop() : 'General';\n  \n  // Crear ID único basado en doc_id\n  const id = data.doc_id;\n  \n  // Limpiar título\n  const cleanedTitle = cleanTitle(fileName);\n  \n  // Mapear a misión\n  const missionCategory = mapVideoToMission(fileName, data.path);\n  \n  // Determinar tipo de contenido\n  const contentType = determineContentType(fileName, module);\n  \n  // Calcular prioridad\n  const priority = calculatePriority(fileName, data.modified_at);\n  \n  return {\n    id: id,\n    doc_id: data.doc_id,\n    title: cleanedTitle,\n    original_filename: fileName,\n    module: module,\n    mission: missionCategory, // Nuevo campo\n    path: data.path,\n    source_url: data.source_url,\n    type: data.type,\n    modified_at: data.modified_at,\n    duration: extractDuration(fileName),\n    content_type: contentType,\n    priority: priority, // Nuevo campo\n    thumbnail: generateThumbnailUrl(data.source_url, cleanedTitle),\n    // Metadata para el frontend\n    metadata: {\n      file_size: estimateSize(data.type),\n      format: data.type.toUpperCase(),\n      quality: 'HD',\n      is_new: (Date.now() - new Date(data.modified_at).getTime()) < (7 * 24 * 60 * 60 * 1000) // Nuevo en últimos 7 días\n    },\n    // Tags para búsqueda mejorada\n    tags: extractTags(fileName, data.path)\n  };\n});\n\nfunction extractTags(fileName, path) {\n  const tags = [];\n  const combined = `${fileName} ${path}`.toLowerCase();\n  \n  // Tags comunes\n  if (combined.includes('capacitacion')) tags.push('capacitacion');\n  if (combined.includes('agenda')) tags.push('agenda');\n  if (combined.includes('catalogo')) tags.push('catalogo');\n  if (combined.includes('inventario')) tags.push('inventario');\n  if (combined.includes('pos')) tags.push('pos');\n  if (combined.includes('reportes')) tags.push('reportes');\n  if (combined.includes('clientes')) tags.push('clientes');\n  if (combined.includes('nuevo')) tags.push('nuevo');\n  if (combined.includes('actualizado')) tags.push('actualizado');\n  \n  return tags;\n}\n\n// ============================================\n// FILTRADO Y BÚSQUEDA\n// ============================================\n\n// Si busca video específico por ID\nif (videoId) {\n  const video = allVideos.find(v => v.id === videoId || v.doc_id === videoId);\n  if (video) {\n    return [{ json: { success: true, data: video } }];\n  } else {\n    return [{ json: { success: false, error: 'Video no encontrado', video_id: videoId } }];\n  }\n}\n\n// Iniciar con todos los videos\nlet filteredVideos = allVideos;\n\n// Filtrar por módulo\nif (moduleName) {\n  filteredVideos = filteredVideos.filter(v => \n    v.module.toLowerCase().includes(moduleName.toLowerCase())\n  );\n}\n\n// Filtrar por tipo de misión (NUEVO)\nif (missionType) {\n  filteredVideos = filteredVideos.filter(v => \n    v.mission.toLowerCase() === missionType.toLowerCase()\n  );\n}\n\n// Búsqueda por texto\nif (searchTerm) {\n  const term = searchTerm.toLowerCase();\n  filteredVideos = filteredVideos.filter(v => \n    v.title.toLowerCase().includes(term) ||\n    v.module.toLowerCase().includes(term) ||\n    v.mission.toLowerCase().includes(term) ||\n    v.tags.some(tag => tag.includes(term))\n  );\n}\n\n// ============================================\n// ORDENAMIENTO\n// ============================================\n\n// Ordenar por prioridad (mayor primero), luego por fecha (más reciente)\nfilteredVideos.sort((a, b) => {\n  // Primero por prioridad\n  if (b.priority !== a.priority) {\n    return b.priority - a.priority;\n  }\n  // Luego por fecha\n  return new Date(b.modified_at) - new Date(a.modified_at);\n});\n\n// ============================================\n// ESTADÍSTICAS ADICIONALES\n// ============================================\n\n// Agrupar por misión para estadísticas\nconst videosByMission = filteredVideos.reduce((acc, video) => {\n  if (!acc[video.mission]) {\n    acc[video.mission] = [];\n  }\n  acc[video.mission].push(video);\n  return acc;\n}, {});\n\nconst stats = {\n  total: allVideos.length,\n  filtered: filteredVideos.length,\n  by_mission: Object.keys(videosByMission).map(mission => ({\n    mission: mission,\n    count: videosByMission[mission].length,\n    latest_update: videosByMission[mission][0]?.modified_at\n  })),\n  by_content_type: filteredVideos.reduce((acc, v) => {\n    acc[v.content_type] = (acc[v.content_type] || 0) + 1;\n    return acc;\n  }, {}),\n  new_videos: filteredVideos.filter(v => v.metadata.is_new).length\n};\n\n// ============================================\n// RETORNAR RESULTADO\n// ============================================\n\nreturn [{ \n  json: { \n    success: true, \n    data: filteredVideos,\n    count: filteredVideos.length,\n    total: allVideos.length,\n    stats: stats,\n    filters: {\n      module: moduleName || null,\n      mission: missionType || null,\n      search: searchTerm || null\n    },\n    timestamp: new Date().toISOString()\n  } \n}];\n"
+        },
+        "id": "bd4a3225-c8f3-4bc8-a63d-bb6368686735",
+        "name": "Procesar y Filtrar Videos",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          624,
+          16
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{$json}}",
+          "options": {
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "name": "Cache-Control",
+                  "value": "max-age=300"
+                }
+              ]
+            }
+          }
+        },
+        "id": "eb0aa8bf-83a5-4afe-90d5-8919daa97d66",
+        "name": "Respond to Webhook",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1,
+        "position": [
+          832,
+          16
+        ]
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "learning/videos/play",
+          "responseMode": "responseNode",
+          "options": {
+            "allowedOrigins": "*"
+          }
+        },
+        "id": "db703f98-7b4e-4cb8-9cb8-d2e823dc703a",
+        "name": "Webhook - Play Video",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1,
+        "position": [
+          128,
+          288
+        ],
+        "webhookId": "228142ba-4546-4446-ade9-afd42573034f"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Obtener video_id del body\nconst body = $input.first().json.body || {};\nconst videoId = body.video_id;\nconst userId = body.user_id || 'anonymous';\n\nif (!videoId) {\n  return [{ \n    json: { \n      success: false, \n      error: 'video_id es requerido' \n    } \n  }];\n}\n\n// Pasar datos al siguiente nodo\nreturn [{ \n  json: { \n    video_id: videoId,\n    user_id: userId,\n    timestamp: new Date().toISOString()\n  } \n}];"
+        },
+        "id": "c87d60f4-5f9e-4951-a5fe-09fe2b04bbd6",
+        "name": "Validar Request",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          336,
+          288
+        ]
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1o5NL-oPKxw53vVew63JgrgEQZB_ugns8b5jWmSddT-s",
+            "mode": "list",
+            "cachedResultName": "KB_OPERACIONES",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1o5NL-oPKxw53vVew63JgrgEQZB_ugns8b5jWmSddT-s/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 976131726,
+            "mode": "list",
+            "cachedResultName": "mp4",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1o5NL-oPKxw53vVew63JgrgEQZB_ugns8b5jWmSddT-s/edit#gid=976131726"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "doc_id",
+                "lookupValue": "={{$json.video_id}}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "905a5029-8743-4d35-ab2f-34bb86c9e7f1",
+        "name": "Google Sheets - Buscar Video",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4,
+        "position": [
+          528,
+          288
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// Obtener datos del video\nconst videoData = $input.first().json;\n\nif (!videoData || !videoData.source_url) {\n  return [{ \n    json: { \n      success: false, \n      error: 'Video no encontrado en Google Sheets' \n    } \n  }];\n}\n\n// Extraer información de la URL de SharePoint\nconst sharePointUrl = videoData.source_url;\nconst fileName = videoData.name;\n\n// Generar URL de embedding de SharePoint\n// SharePoint permite embedding directo con autenticación\nconst embedUrl = convertToEmbedUrl(sharePointUrl);\n\n// Retornar información del video\nreturn [{ \n  json: { \n    success: true,\n    video: {\n      id: videoData.doc_id,\n      title: cleanTitle(fileName),\n      source_url: sharePointUrl,\n      embed_url: embedUrl,\n      download_url: sharePointUrl + '?download=1',\n      type: videoData.type,\n      modified_at: videoData.modified_at,\n      path: videoData.path\n    },\n    playback_options: {\n      // Opciones de reproducción\n      autoplay: false,\n      controls: true,\n      streaming: true\n    }\n  } \n}];\n\nfunction convertToEmbedUrl(url) {\n  // Convertir URL de SharePoint a formato embebible\n  // Ejemplo: agregar ?embed=1 o ?web=1\n  if (url.includes('mobilvendorcom-my.sharepoint.com')) {\n    // Para OneDrive personal\n    return url.replace('/Documents/', '/_layouts/15/embed.aspx?UniqueId=');\n  }\n  return url + '?web=1';\n}\n\nfunction cleanTitle(filename) {\n  return filename\n    .replace(/\\.(mp4|avi|mov|mkv)$/i, '')\n    .replace(/-\\d{8}_\\d{6}-Grabación de la reunión/g, '')\n    .replace(/_/g, ' ')\n    .trim();\n}"
+        },
+        "id": "98753cdd-0b2f-4bef-be11-d97db9015260",
+        "name": "Generar URL de Reproducción",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          736,
+          288
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{$json}}",
+          "options": {
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ]
+            }
+          }
+        },
+        "id": "b25b1943-be1e-4c95-a826-03a27d20fcff",
+        "name": "Respond Playback Info",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1,
+        "position": [
+          928,
+          288
+        ]
+      }
+    ],
+    "connections": {
+      "Webhook - Get Videos": {
+        "main": [
+          [
+            {
+              "node": "Google Sheets - Leer Videos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Sheets - Leer Videos": {
+        "main": [
+          [
+            {
+              "node": "Procesar y Filtrar Videos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Procesar y Filtrar Videos": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook - Play Video": {
+        "main": [
+          [
+            {
+              "node": "Validar Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validar Request": {
+        "main": [
+          [
+            {
+              "node": "Google Sheets - Buscar Video",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Sheets - Buscar Video": {
+        "main": [
+          [
+            {
+              "node": "Generar URL de Reproducción",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Generar URL de Reproducción": {
+        "main": [
+          [
+            {
+              "node": "Respond Playback Info",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "ZEI MOBILVENDOR",
+    "name": "Version 2.3",
+    "description": "",
+    "autosaved": true
+  },
+  "activeVersionId": "97eebd9e-52c8-4564-9a32-fbd1f665dc55",
+  "connections": {
+    "Webhook - Get Videos": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Leer Videos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Leer Videos": {
+      "main": [
+        [
+          {
+            "node": "Procesar y Filtrar Videos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Procesar y Filtrar Videos": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - Play Video": {
+      "main": [
+        [
+          {
+            "node": "Validar Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar Request": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Buscar Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Buscar Video": {
+      "main": [
+        [
+          {
+            "node": "Generar URL de Reproducción",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generar URL de Reproducción": {
+      "main": [
+        [
+          {
+            "node": "Respond Playback Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-28T20:23:53.763Z",
+  "id": "-s42_UWm322RJNFi__VWv",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "MV Learning - Track Progress",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "learning/videos",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "4e1a77d2-76d7-43db-9577-f03ce83b70b8",
+      "name": "Webhook - Get Videos",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        224,
+        16
+      ],
+      "webhookId": "fe77da6f-7289-4a47-9671-b9594e4184c9"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1o5NL-oPKxw53vVew63JgrgEQZB_ugns8b5jWmSddT-s",
+          "mode": "list",
+          "cachedResultName": "KB_OPERACIONES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1o5NL-oPKxw53vVew63JgrgEQZB_ugns8b5jWmSddT-s/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 976131726,
+          "mode": "list",
+          "cachedResultName": "mp4",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1o5NL-oPKxw53vVew63JgrgEQZB_ugns8b5jWmSddT-s/edit#gid=976131726"
+        },
+        "options": {}
+      },
+      "id": "a5db3e15-9727-4adc-a8f5-742c00988e1d",
+      "name": "Google Sheets - Leer Videos",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        432,
+        16
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================\n// CONFIGURACIÓN: Mapeo de videos a misiones\n// ============================================\nconst missionVideoMapping = {\n  'agenda': ['CAPACITACION_CALIDAD_MODULO AGENDA', 'AGENDA'],\n  'catalogo': ['CATALOGO_CREAR', 'CATALOGO_EDITAR', 'CATALOGO'],\n  'inventario': ['INVENTARIO_TIPOS', 'INVENTARIO_AJUSTES', 'INVENTARIO'],\n  'pos': ['POS', 'PUNTO_VENTA', 'FACTURACION'],\n  'clientes': ['CLIENTES', 'CRM'],\n  'reportes': ['REPORTES', 'INFORMES'],\n  'repaso': ['REPASO_', 'REVISION'] // Videos que empiezan con REPASO_\n};\n\n// ============================================\n// FUNCIONES AUXILIARES\n// ============================================\n\nfunction mapVideoToMission(fileName, path) {\n  const name = fileName.toUpperCase();\n  \n  // Buscar en patrones definidos\n  for (const [mission, patterns] of Object.entries(missionVideoMapping)) {\n    for (const pattern of patterns) {\n      if (name.includes(pattern)) {\n        return mission;\n      }\n    }\n  }\n  \n  // Mapeo por path si no se encuentra en nombre\n  if (path) {\n    const pathLower = path.toLowerCase();\n    if (pathLower.includes('agenda')) return 'agenda';\n    if (pathLower.includes('catalogo')) return 'catalogo';\n    if (pathLower.includes('inventario')) return 'inventario';\n    if (pathLower.includes('pos')) return 'pos';\n    if (pathLower.includes('clientes')) return 'clientes';\n    if (pathLower.includes('reportes')) return 'reportes';\n  }\n  \n  return 'general';\n}\n\nfunction cleanTitle(filename) {\n  // Remover extensión y timestamp\n  return filename\n    .replace(/\\.(mp4|avi|mov|mkv|webm)$/i, '')\n    .replace(/-\\d{8}_\\d{6}-Grabación de la reunión/g, '')\n    .replace(/-Grabación de la reunión/g, '')\n    .replace(/CAPACITACION_CALIDAD_MODULO /g, '')\n    .replace(/_/g, ' ')\n    .trim();\n}\n\nfunction extractDuration(filename) {\n  // Aquí podrías extraer duración real si está en el nombre\n  // Por ahora retorna estimado\n  return '10-15 min';\n}\n\nfunction determineContentType(filename, module) {\n  const name = filename.toLowerCase();\n  \n  // Tipos específicos\n  if (name.includes('capacitacion')) return 'capacitacion';\n  if (name.includes('tutorial')) return 'tutorial';\n  if (name.includes('demo')) return 'demo';\n  if (name.includes('repaso')) return 'repaso';\n  if (name.includes('revision')) return 'repaso';\n  \n  // Determinar por módulo\n  if (module) {\n    const moduleLower = module.toLowerCase();\n    if (moduleLower.includes('agenda')) return 'mision';\n    if (moduleLower.includes('catalogo')) return 'mision';\n    if (moduleLower.includes('inventario')) return 'mision';\n    if (moduleLower.includes('pos')) return 'mision';\n  }\n  \n  return 'general';\n}\n\nfunction generateThumbnailUrl(videoUrl, title) {\n  // Genera thumbnail con título del video\n  const encodedTitle = encodeURIComponent(title);\n  return `https://placehold.co/1280x720/4f46e5/ffffff?text=${encodedTitle}`;\n}\n\nfunction estimateSize(type) {\n  // Estimación genérica basada en tipo\n  return '~50-100 MB';\n}\n\nfunction calculatePriority(fileName, modifiedDate) {\n  // Calcular prioridad basada en tipo de contenido y fecha\n  let priority = 50; // Prioridad base\n  \n  const name = fileName.toLowerCase();\n  \n  // Incrementar prioridad para ciertos tipos\n  if (name.includes('capacitacion')) priority += 20;\n  if (name.includes('repaso')) priority += 30;\n  if (name.includes('nuevo') || name.includes('actualizado')) priority += 15;\n  \n  // Incrementar prioridad para videos recientes (últimos 30 días)\n  const daysSinceModified = (Date.now() - new Date(modifiedDate).getTime()) / (1000 * 60 * 60 * 24);\n  if (daysSinceModified < 7) priority += 25;\n  else if (daysSinceModified < 30) priority += 10;\n  \n  return Math.min(priority, 100); // Máximo 100\n}\n\n// ============================================\n// PROCESAMIENTO PRINCIPAL\n// ============================================\n\n// Obtener parámetros de query\nconst query = $input.first().json.query || {};\nconst videoId = query.video_id;\nconst moduleName = query.module;\nconst searchTerm = query.search;\nconst missionType = query.mission; // Nuevo: filtrar por tipo de misión\n\n// Obtener todos los videos de Google Sheets\nconst allVideos = $input.all().map(item => {\n  const data = item.json;\n  \n  // Extraer información del nombre del archivo\n  const fileName = data.name || '';\n  const module = data.path ? data.path.split('/').pop() : 'General';\n  \n  // Crear ID único basado en doc_id\n  const id = data.doc_id;\n  \n  // Limpiar título\n  const cleanedTitle = cleanTitle(fileName);\n  \n  // Mapear a misión\n  const missionCategory = mapVideoToMission(fileName, data.path);\n  \n  // Determinar tipo de contenido\n  const contentType = determineContentType(fileName, module);\n  \n  // Calcular prioridad\n  const priority = calculatePriority(fileName, data.modified_at);\n  \n  return {\n    id: id,\n    doc_id: data.doc_id,\n    title: cleanedTitle,\n    original_filename: fileName,\n    module: module,\n    mission: missionCategory, // Nuevo campo\n    path: data.path,\n    source_url: data.source_url,\n    type: data.type,\n    modified_at: data.modified_at,\n    duration: extractDuration(fileName),\n    content_type: contentType,\n    priority: priority, // Nuevo campo\n    thumbnail: generateThumbnailUrl(data.source_url, cleanedTitle),\n    // Metadata para el frontend\n    metadata: {\n      file_size: estimateSize(data.type),\n      format: data.type.toUpperCase(),\n      quality: 'HD',\n      is_new: (Date.now() - new Date(data.modified_at).getTime()) < (7 * 24 * 60 * 60 * 1000) // Nuevo en últimos 7 días\n    },\n    // Tags para búsqueda mejorada\n    tags: extractTags(fileName, data.path)\n  };\n});\n\nfunction extractTags(fileName, path) {\n  const tags = [];\n  const combined = `${fileName} ${path}`.toLowerCase();\n  \n  // Tags comunes\n  if (combined.includes('capacitacion')) tags.push('capacitacion');\n  if (combined.includes('agenda')) tags.push('agenda');\n  if (combined.includes('catalogo')) tags.push('catalogo');\n  if (combined.includes('inventario')) tags.push('inventario');\n  if (combined.includes('pos')) tags.push('pos');\n  if (combined.includes('reportes')) tags.push('reportes');\n  if (combined.includes('clientes')) tags.push('clientes');\n  if (combined.includes('nuevo')) tags.push('nuevo');\n  if (combined.includes('actualizado')) tags.push('actualizado');\n  \n  return tags;\n}\n\n// ============================================\n// FILTRADO Y BÚSQUEDA\n// ============================================\n\n// Si busca video específico por ID\nif (videoId) {\n  const video = allVideos.find(v => v.id === videoId || v.doc_id === videoId);\n  if (video) {\n    return [{ json: { success: true, data: video } }];\n  } else {\n    return [{ json: { success: false, error: 'Video no encontrado', video_id: videoId } }];\n  }\n}\n\n// Iniciar con todos los videos\nlet filteredVideos = allVideos;\n\n// Filtrar por módulo\nif (moduleName) {\n  filteredVideos = filteredVideos.filter(v => \n    v.module.toLowerCase().includes(moduleName.toLowerCase())\n  );\n}\n\n// Filtrar por tipo de misión (NUEVO)\nif (missionType) {\n  filteredVideos = filteredVideos.filter(v => \n    v.mission.toLowerCase() === missionType.toLowerCase()\n  );\n}\n\n// Búsqueda por texto\nif (searchTerm) {\n  const term = searchTerm.toLowerCase();\n  filteredVideos = filteredVideos.filter(v => \n    v.title.toLowerCase().includes(term) ||\n    v.module.toLowerCase().includes(term) ||\n    v.mission.toLowerCase().includes(term) ||\n    v.tags.some(tag => tag.includes(term))\n  );\n}\n\n// ============================================\n// ORDENAMIENTO\n// ============================================\n\n// Ordenar por prioridad (mayor primero), luego por fecha (más reciente)\nfilteredVideos.sort((a, b) => {\n  // Primero por prioridad\n  if (b.priority !== a.priority) {\n    return b.priority - a.priority;\n  }\n  // Luego por fecha\n  return new Date(b.modified_at) - new Date(a.modified_at);\n});\n\n// ============================================\n// ESTADÍSTICAS ADICIONALES\n// ============================================\n\n// Agrupar por misión para estadísticas\nconst videosByMission = filteredVideos.reduce((acc, video) => {\n  if (!acc[video.mission]) {\n    acc[video.mission] = [];\n  }\n  acc[video.mission].push(video);\n  return acc;\n}, {});\n\nconst stats = {\n  total: allVideos.length,\n  filtered: filteredVideos.length,\n  by_mission: Object.keys(videosByMission).map(mission => ({\n    mission: mission,\n    count: videosByMission[mission].length,\n    latest_update: videosByMission[mission][0]?.modified_at\n  })),\n  by_content_type: filteredVideos.reduce((acc, v) => {\n    acc[v.content_type] = (acc[v.content_type] || 0) + 1;\n    return acc;\n  }, {}),\n  new_videos: filteredVideos.filter(v => v.metadata.is_new).length\n};\n\n// ============================================\n// RETORNAR RESULTADO\n// ============================================\n\nreturn [{ \n  json: { \n    success: true, \n    data: filteredVideos,\n    count: filteredVideos.length,\n    total: allVideos.length,\n    stats: stats,\n    filters: {\n      module: moduleName || null,\n      mission: missionType || null,\n      search: searchTerm || null\n    },\n    timestamp: new Date().toISOString()\n  } \n}];\n"
+      },
+      "id": "bd4a3225-c8f3-4bc8-a63d-bb6368686735",
+      "name": "Procesar y Filtrar Videos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{$json}}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Cache-Control",
+                "value": "max-age=300"
+              }
+            ]
+          }
+        }
+      },
+      "id": "eb0aa8bf-83a5-4afe-90d5-8919daa97d66",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        832,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "learning/videos/play",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "db703f98-7b4e-4cb8-9cb8-d2e823dc703a",
+      "name": "Webhook - Play Video",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        128,
+        288
+      ],
+      "webhookId": "228142ba-4546-4446-ade9-afd42573034f"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtener video_id del body\nconst body = $input.first().json.body || {};\nconst videoId = body.video_id;\nconst userId = body.user_id || 'anonymous';\n\nif (!videoId) {\n  return [{ \n    json: { \n      success: false, \n      error: 'video_id es requerido' \n    } \n  }];\n}\n\n// Pasar datos al siguiente nodo\nreturn [{ \n  json: { \n    video_id: videoId,\n    user_id: userId,\n    timestamp: new Date().toISOString()\n  } \n}];"
+      },
+      "id": "c87d60f4-5f9e-4951-a5fe-09fe2b04bbd6",
+      "name": "Validar Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        336,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1o5NL-oPKxw53vVew63JgrgEQZB_ugns8b5jWmSddT-s",
+          "mode": "list",
+          "cachedResultName": "KB_OPERACIONES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1o5NL-oPKxw53vVew63JgrgEQZB_ugns8b5jWmSddT-s/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 976131726,
+          "mode": "list",
+          "cachedResultName": "mp4",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1o5NL-oPKxw53vVew63JgrgEQZB_ugns8b5jWmSddT-s/edit#gid=976131726"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "doc_id",
+              "lookupValue": "={{$json.video_id}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "905a5029-8743-4d35-ab2f-34bb86c9e7f1",
+      "name": "Google Sheets - Buscar Video",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        528,
+        288
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtener datos del video\nconst videoData = $input.first().json;\n\nif (!videoData || !videoData.source_url) {\n  return [{ \n    json: { \n      success: false, \n      error: 'Video no encontrado en Google Sheets' \n    } \n  }];\n}\n\n// Extraer información de la URL de SharePoint\nconst sharePointUrl = videoData.source_url;\nconst fileName = videoData.name;\n\n// Generar URL de embedding de SharePoint\n// SharePoint permite embedding directo con autenticación\nconst embedUrl = convertToEmbedUrl(sharePointUrl);\n\n// Retornar información del video\nreturn [{ \n  json: { \n    success: true,\n    video: {\n      id: videoData.doc_id,\n      title: cleanTitle(fileName),\n      source_url: sharePointUrl,\n      embed_url: embedUrl,\n      download_url: sharePointUrl + '?download=1',\n      type: videoData.type,\n      modified_at: videoData.modified_at,\n      path: videoData.path\n    },\n    playback_options: {\n      // Opciones de reproducción\n      autoplay: false,\n      controls: true,\n      streaming: true\n    }\n  } \n}];\n\nfunction convertToEmbedUrl(url) {\n  // Convertir URL de SharePoint a formato embebible\n  // Ejemplo: agregar ?embed=1 o ?web=1\n  if (url.includes('mobilvendorcom-my.sharepoint.com')) {\n    // Para OneDrive personal\n    return url.replace('/Documents/', '/_layouts/15/embed.aspx?UniqueId=');\n  }\n  return url + '?web=1';\n}\n\nfunction cleanTitle(filename) {\n  return filename\n    .replace(/\\.(mp4|avi|mov|mkv)$/i, '')\n    .replace(/-\\d{8}_\\d{6}-Grabación de la reunión/g, '')\n    .replace(/_/g, ' ')\n    .trim();\n}"
+      },
+      "id": "98753cdd-0b2f-4bef-be11-d97db9015260",
+      "name": "Generar URL de Reproducción",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        736,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{$json}}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "b25b1943-be1e-4c95-a826-03a27d20fcff",
+      "name": "Respond Playback Info",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        928,
+        288
+      ]
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-28T20:23:53.775Z",
+      "createdAt": "2026-01-28T20:23:53.775Z",
+      "role": "workflow:owner",
+      "workflowId": "-s42_UWm322RJNFi__VWv",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 2,
+  "updatedAt": "2026-01-29T13:40:32.455Z",
+  "versionId": "97eebd9e-52c8-4564-9a32-fbd1f665dc55"
+}
