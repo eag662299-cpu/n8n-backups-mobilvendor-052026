@@ -1,0 +1,4301 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Read Areas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Areas": {
+      "main": [
+        [
+          {
+            "node": "Read Modulos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Modulos": {
+      "main": [
+        [
+          {
+            "node": "Read Topics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Topics": {
+      "main": [
+        [
+          {
+            "node": "Read Recursos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Recursos": {
+      "main": [
+        [
+          {
+            "node": "Merge and Format Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge and Format Data": {
+      "main": [
+        [
+          {
+            "node": "Respond with Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - Create Employee": {
+      "main": [
+        [
+          {
+            "node": "YepCode",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Append Empleados": {
+      "main": [
+        [
+          {
+            "node": "Read Areas1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Append Empleado_Area": {
+      "main": [
+        [
+          {
+            "node": "Read Modulos1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - Admin List Employees": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets: Read Empleados",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Sheets: Read Empleado_Area",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Sheets: Read Empleado_Modulo_Progreso",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Sheets: Read Bitacora",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets: Read Empleados": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets: Read Empleado_Area": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets: Read Empleado_Modulo_Progreso": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets: Read Bitacora": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - Delete Employee Soft": {
+      "main": [
+        [
+          {
+            "node": "Code - Normalize Delete Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Normalize Delete Payload": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Read Empleados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Read Empleados": {
+      "main": [
+        [
+          {
+            "node": "Code - Validate Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Validate Exists": {
+      "main": [
+        [
+          {
+            "node": "IF - Employee Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Employee Exists": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Soft Delete Empleado",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Sheets - Disable Empleado_Area",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond 404",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Soft Delete Empleado": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Append Bitacora1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Disable Empleado_Area": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Append Bitacora1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Append Bitacora1": {
+      "main": [
+        [
+          {
+            "node": "Respond Delete OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - Update Employee": {
+      "main": [
+        [
+          {
+            "node": "Code - Normalize Update Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Normalize Update Payload": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Read Empleados2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Update Empleados": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Read Empleado_Area",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Read Empleado_Area": {
+      "main": [
+        [
+          {
+            "node": "Code - Check Perm Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Check Perm Exists": {
+      "main": [
+        [
+          {
+            "node": "IF - Perm Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Perm Exists": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Update Empleado_Area",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Sheets - Append Empleado_Area2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Update Empleado_Area": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Append Bitacora2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Read Empleados2": {
+      "main": [
+        [
+          {
+            "node": "Code - Validate Exists1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Validate Exists1": {
+      "main": [
+        [
+          {
+            "node": "IF - Employee Exists1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Employee Exists1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Update Empleados",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Append Empleado_Area2": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Append Bitacora2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Append Bitacora2": {
+      "main": [
+        [
+          {
+            "node": "Respond Update OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - Employee Progress": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Read Empleado_Modulo_Progreso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Read Empleado_Modulo_Progreso": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Read Bitacora",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Read Bitacora": {
+      "main": [
+        [
+          {
+            "node": "Code - Build Employee Progress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Build Employee Progress": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - Admin Modules Progress": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Read Empleado_Modulo_Progreso1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Group Modules Progress": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Read Empleado_Modulo_Progreso1": {
+      "main": [
+        [
+          {
+            "node": "Code - Group Modules Progress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - Update Topic Progress": {
+      "main": [
+        [
+          {
+            "node": "Code - Normalize Topic Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Normalize Topic Payload": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Read Empleado_Topic_Progreso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Read Empleado_Topic_Progreso": {
+      "main": [
+        [
+          {
+            "node": "Code - Check Topic Progress Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Check Topic Progress Exists": {
+      "main": [
+        [
+          {
+            "node": "IF - Topic Row Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Topic Row Exists": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Update Empleado_Topic_Progreso",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Sheets - Append Empleado_Topic_Progreso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Update Empleado_Topic_Progreso": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Read Empleado_Topic_Progreso (Recalc)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Append Empleado_Topic_Progreso": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Read Empleado_Topic_Progreso (Recalc)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Read Empleado_Topic_Progreso (Recalc)": {
+      "main": [
+        [
+          {
+            "node": "Code - Recalculate Module Progress",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Recalculate Module Progress": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Read Empleado_Modulo_Progreso2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Check Module Progress Exists": {
+      "main": [
+        [
+          {
+            "node": "IF - Module Row Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Module Row Exists": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Update Empleado_Modulo_Progreso",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Sheets - Append Empleado_Modulo_Progreso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Update Empleado_Modulo_Progreso": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Append Bitacora3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Append Empleado_Modulo_Progreso": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Append Bitacora3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Read Empleado_Modulo_Progreso2": {
+      "main": [
+        [
+          {
+            "node": "Code - Check Module Progress Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Append Bitacora3": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YepCode": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Append Empleados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - Login": {
+      "main": [
+        [
+          {
+            "node": "Code - Parse + Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Parse + Token": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Read Empleados3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Read Empleados3": {
+      "main": [
+        [
+          {
+            "node": "Code - Validate + Role + Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Validate + Role + Token": {
+      "main": [
+        [
+          {
+            "node": "YepCode1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - OK?": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Update Token",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond - Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Update Token": {
+      "main": [
+        [
+          {
+            "node": "Respond - OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YepCode1": {
+      "main": [
+        [
+          {
+            "node": "IF - OK?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Append Empleado_Modulo_Progreso1": {
+      "main": [
+        [
+          {
+            "node": "Read Topics1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Append Empleado_Topic_Progreso1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Loop Topics1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Modulos1": {
+      "main": [
+        [
+          {
+            "node": "Loop Modulos1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Modulos1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Google Sheets - Append Empleado_Modulo_Progreso1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Topics1": {
+      "main": [
+        [
+          {
+            "node": "Loop Topics1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Topics1": {
+      "main": [
+        [
+          {
+            "node": "Loop Modulos1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Sheets - Append Empleado_Topic_Progreso1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Areas1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Append Empleado_Area",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-05T00:47:18.190Z",
+  "id": "zpOcWMjjWOTVhAdAhfntR",
+  "isArchived": true,
+  "meta": null,
+  "name": "SERVICIOS",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mvlearning-area-mod-topics-recursos",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "b913dc39-1f6a-4c65-94d4-e7eeb8a6073e",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        656,
+        -304
+      ],
+      "webhookId": "mvlearning-sync-webhook"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1505033244,
+          "mode": "list",
+          "cachedResultName": "Areas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=1505033244"
+        },
+        "options": {}
+      },
+      "id": "5405a34f-cdb0-40bb-8dae-7479393a4101",
+      "name": "Read Areas",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        928,
+        -304
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 544330144,
+          "mode": "list",
+          "cachedResultName": "Modulos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=544330144"
+        },
+        "options": {}
+      },
+      "id": "d2cd0cb2-8448-4663-a68e-f8158c419021",
+      "name": "Read Modulos",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        1136,
+        -304
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1581071180,
+          "mode": "list",
+          "cachedResultName": "Topics",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=1581071180"
+        },
+        "options": {}
+      },
+      "id": "5e79f028-bbf1-4680-aec3-a5cfacdedfe7",
+      "name": "Read Topics",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        1312,
+        -304
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1692485401,
+          "mode": "list",
+          "cachedResultName": "Recursos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=1692485401"
+        },
+        "options": {}
+      },
+      "id": "cfa7a34a-cd1b-493c-8eb5-333c32325d18",
+      "name": "Read Recursos",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        1504,
+        -304
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtener todos los datos de las hojas\nconst areasData = $('Read Areas').all();\nconst modulosData = $('Read Modulos').all();\nconst topicsData = $('Read Topics').all();\nconst recursosData = $('Read Recursos').all();\n\n// Extraer JSON de cada fuente\nconst areas = areasData.map(item => item.json);\nconst modulos = modulosData.map(item => item.json);\nconst topics = topicsData.map(item => item.json);\nconst recursos = recursosData.map(item => item.json);\n\n// Función para limpiar y normalizar datos\nconst cleanData = (arr) => {\n  return arr.map(item => {\n    const cleaned = {};\n    for (const [key, value] of Object.entries(item)) {\n      if (value === 'TRUE' || value === 'true') cleaned[key] = true;\n      else if (value === 'FALSE' || value === 'false') cleaned[key] = false;\n      else if (value === '' || value === null || value === undefined) cleaned[key] = null;\n      else if (!isNaN(value) && value !== '') cleaned[key] = Number(value);\n      else cleaned[key] = value;\n    }\n    return cleaned;\n  });\n};\n\nconst cleanedAreas = cleanData(areas);\nconst cleanedModulos = cleanData(modulos);\nconst cleanedTopics = cleanData(topics);\nconst cleanedRecursos = cleanData(recursos);\n\n// Crear el objeto de sincronización completo\nconst syncPayload = {\n  sync_type: 'full',\n  timestamp: new Date().toISOString(),\n  action: 'sync_all',\n  source: 'google_sheets',\n  spreadsheet_id: '15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8',\n  data: {\n    areas: cleanedAreas,\n    modulos: cleanedModulos,\n    topics: cleanedTopics,\n    recursos: cleanedRecursos\n  },\n  statistics: {\n    areas_count: cleanedAreas.length,\n    modulos_count: cleanedModulos.length,\n    topics_count: cleanedTopics.length,\n    recursos_count: cleanedRecursos.length,\n    total_records: cleanedAreas.length + cleanedModulos.length + cleanedTopics.length + cleanedRecursos.length\n  }\n};\n\nreturn [{ json: syncPayload }];\n"
+      },
+      "id": "a4ed20b9-8c15-4f40-9dc7-dd9ecc29ed83",
+      "name": "Merge and Format Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1696,
+        -304
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json, null, 2) }}",
+        "options": {}
+      },
+      "id": "90293081-0170-4919-96e2-915ce68c922f",
+      "name": "Respond with Data",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1936,
+        -304
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## CREAR EMPLEADO\n**POST https://n8n.mobilvendor.com/webhook/mvlearning/employee/create**",
+        "height": 432,
+        "width": 2624
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        576,
+        -32
+      ],
+      "typeVersion": 1,
+      "id": "be877d99-1239-4a3b-8b20-c7de59c4e57a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## OBTENER RECURSOS Y MATERIALES\n**POST https://n8n.mobilvendor.com/webhook/mvlearning-area-mod-topics-recursos**",
+        "height": 352,
+        "width": 1568
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        576,
+        -416
+      ],
+      "typeVersion": 1,
+      "id": "2cb7d1fa-e7d7-4565-88a9-93279386641a",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mvlearning/employee/create",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        656,
+        112
+      ],
+      "id": "e4c760a7-826e-47d2-a762-b068e0850211",
+      "name": "Webhook - Create Employee",
+      "webhookId": "a26cc7d8-03c2-4ba6-994f-c7cbc68e0cdf"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1973427917,
+          "mode": "list",
+          "cachedResultName": "Empleados",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=1973427917"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "empleado_id": "={{ $json.returnValue[0].json.empleado_id }}",
+            "nombre": "={{ $json.returnValue[0].json.nombre }}",
+            "email": "={{ $json.returnValue[0].json.email }}",
+            "rol": "={{ $json.returnValue[0].json.rol }}",
+            "area": "={{ $json.returnValue[0].json.area }}",
+            "fecha_inicio": "={{ $json.returnValue[0].json.fecha_inicio }}",
+            "estado_global": "={{ $json.returnValue[0].json.estado_global }}",
+            "auth_token": "={{ $json.returnValue[0].json.auth_token }}",
+            "token_expires": "={{ $json.returnValue[0].json.token_expires }}",
+            "meta_certificacion_pct": "={{ $json.returnValue[0].json.meta_certificacion_pct }}",
+            "last_activity_at": "={{ $json.returnValue[0].json.last_activity_at }}",
+            "password_hash": "={{ $json.returnValue[0].json.password_hash }}",
+            "password_updated_at": "={{ $json.returnValue[0].json.password_updated_at }}",
+            "must_change_password": "={{ $json.returnValue[0].json.must_change_password }}",
+            "manager_email": "={{ $json.returnValue[0].json.manager_email }}",
+            "evaluacion_url": "={{ $json.returnValue[0].json.test_url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "empleado_id",
+              "displayName": "empleado_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "rol",
+              "displayName": "rol",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "area",
+              "displayName": "area",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha_inicio",
+              "displayName": "fecha_inicio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "manager_email",
+              "displayName": "manager_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado_global",
+              "displayName": "estado_global",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "auth_token",
+              "displayName": "auth_token",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "token_expires",
+              "displayName": "token_expires",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "meta_certificacion_pct",
+              "displayName": "meta_certificacion_pct",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "last_activity_at",
+              "displayName": "last_activity_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "password_hash",
+              "displayName": "password_hash",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "password_updated_at",
+              "displayName": "password_updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "must_change_password",
+              "displayName": "must_change_password",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "evaluacion_url",
+              "displayName": "evaluacion_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1008,
+        112
+      ],
+      "id": "9cce4d11-76db-4ef3-b41b-a37bef3b5c3b",
+      "name": "Google Sheets - Append Empleados",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1665653218,
+          "mode": "list",
+          "cachedResultName": "Empleado_Area",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=1665653218"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "area_id": "={{ $json.area_id }}",
+            "enabled": "={{ $('YepCode').item.json.returnValue[0].json._perm.enabled }}",
+            "employee_id": "={{ $('YepCode').item.json.returnValue[0].json.empleado_id }}",
+            "email": "={{ $('YepCode').item.json.returnValue[0].json.email }}",
+            "role": "={{ $('YepCode').item.json.returnValue[0].json._perm.role }}",
+            "granted_by": "={{ $('YepCode').item.json.returnValue[0].json._perm.granted_by }}",
+            "granted_at": "={{ $('YepCode').item.json.returnValue[0].json._perm.granted_at }}",
+            "notes": "={{ $('YepCode').item.json.returnValue[0].json._perm.notes }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "employee_id",
+              "displayName": "employee_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "area_id",
+              "displayName": "area_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "enabled",
+              "displayName": "enabled",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "role",
+              "displayName": "role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "granted_by",
+              "displayName": "granted_by",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "granted_at",
+              "displayName": "granted_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1392,
+        112
+      ],
+      "id": "9b925264-e3f2-4b4a-a066-b4b95189f8b0",
+      "name": "Google Sheets - Append Empleado_Area",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"status\": \"success\",\n  \"message\": \"Empleado creado correctamente\",\n  \"data\": { }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        2960,
+        128
+      ],
+      "id": "7b238afe-ffef-45ad-97c0-94f0acc616ca",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "content": "## VER EMPLEADOS\n**POST https://n8n.mobilvendor.com/webhook/mvlearning/employee/create**",
+        "height": 672,
+        "width": 1568,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        576,
+        512
+      ],
+      "typeVersion": 1,
+      "id": "2167f0b0-19d9-4c88-8fb4-2f1079974bc8",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "path": "mvlearning/admin/employees",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        832,
+        736
+      ],
+      "id": "5ce318de-5982-4c72-91c2-14dba8885a57",
+      "name": "Webhook - Admin List Employees",
+      "webhookId": "4e6f99a1-9a7f-4b5a-8d12-5cbfc1e5c8aa"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1973427917,
+          "mode": "list",
+          "cachedResultName": "Empleados",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=1973427917"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1232,
+        528
+      ],
+      "id": "e4c91563-0323-45ac-91dd-e844bb35fc4f",
+      "name": "Google Sheets: Read Empleados",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1665653218,
+          "mode": "list",
+          "cachedResultName": "Empleado_Area",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=1665653218"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1232,
+        672
+      ],
+      "id": "61349230-4d74-40f6-af2c-82cd168fc9de",
+      "name": "Google Sheets: Read Empleado_Area",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 876577961,
+          "mode": "list",
+          "cachedResultName": "Empleado_Modulo_Progreso",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=876577961"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "employee_id"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1232,
+        816
+      ],
+      "id": "8faa297f-b0d6-4148-b240-3e3cb078623f",
+      "name": "Google Sheets: Read Empleado_Modulo_Progreso",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1382733302,
+          "mode": "list",
+          "cachedResultName": "Bitacora",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=1382733302"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1232,
+        960
+      ],
+      "id": "a8d52b03-63a4-4119-b7b5-2e0686e0dfa9",
+      "name": "Google Sheets: Read Bitacora",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1856,
+        768
+      ],
+      "id": "bd3b4418-623b-4c22-bfc5-eab61bc2c02a",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "content": "## LOGIN\n**POST https://n8n.mobilvendor.com/webhook/mvlearning/auth/login**",
+        "height": 608,
+        "width": 1760
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        576,
+        1248
+      ],
+      "typeVersion": 1,
+      "id": "82d867b7-ae27-49fa-9ff6-fe1c4fcf5185",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mvlearning/admin/employee/delete",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        688,
+        2208
+      ],
+      "id": "9f6f09bd-98c6-4580-97af-eed181fda08b",
+      "name": "Webhook - Delete Employee Soft",
+      "webhookId": "6baa9833-efa8-484f-87d8-b24c1129bfe9"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $json.body ?? $json;\nconst body = Array.isArray(raw) ? raw[0] : raw;\n\nconst empleado_id = (body.employee_id || '').toString().trim();\nif (!empleado_id) throw new Error('Falta empleado_id');\n\nreturn [{\n  json: {\n    empleado_id,\n    reason: (body.reason || 'Sin motivo').toString().trim(),\n    deleted_at: new Date().toISOString(),\n    token_expires: new Date(Date.now() - 60000).toISOString(),\n    estado_global: 'INACTIVO',\n    enabled: 'false'\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        928,
+        2208
+      ],
+      "id": "cf017e91-0870-42b5-9820-b830cdf7aa4d",
+      "name": "Code - Normalize Delete Payload"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1973427917,
+          "mode": "list",
+          "cachedResultName": "Empleados"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1168,
+        2208
+      ],
+      "id": "80554284-6fab-4b00-823c-343aab299e00",
+      "name": "Google Sheets - Read Empleados",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const target = $node['Code - Normalize Delete Payload'].json.empleado_id;\nconst rows = $items('Google Sheets - Read Empleados').map(i => i.json);\nconst found = rows.find(r => (r.empleado_id || r.employee_id || '') === target);\n\nreturn [{ json: { exists: !!found, email: found?.email || '', nombre: found?.nombre || '', area: found?.area || '', ...$node['Code - Normalize Delete Payload'].json } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1408,
+        2208
+      ],
+      "id": "28a3037f-1bd0-48e0-9308-48c849e5a89c",
+      "name": "Code - Validate Exists"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.exists}}",
+              "value2": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1632,
+        2208
+      ],
+      "id": "1ef8b8cf-0685-40d3-af96-17989f6c4a65",
+      "name": "IF - Employee Exists"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\": false, \"error\": \"Empleado no encontrado\", \"empleado_id\": $node[\"Code - Normalize Delete Payload\"].json.empleado_id}",
+        "options": {
+          "responseCode": 404
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1904,
+        2400
+      ],
+      "id": "a0d48921-59f1-400d-bd1c-8d922470e034",
+      "name": "Respond 404"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1973427917,
+          "mode": "list",
+          "cachedResultName": "Empleados"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "empleado_id": "={{$json.empleado_id}}",
+            "estado_global": "={{$json.estado_global}}",
+            "auth_token": "",
+            "token_expires": "={{$json.token_expires}}",
+            "last_activity_at": "={{$json.deleted_at}}"
+          },
+          "matchingColumns": [
+            "empleado_id"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1904,
+        1968
+      ],
+      "id": "81e43db8-446d-4db1-b870-3acce7d031de",
+      "name": "Google Sheets - Soft Delete Empleado",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1665653218,
+          "mode": "list",
+          "cachedResultName": "Empleado_Area"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "employee_id": "={{$json.empleado_id}}",
+            "enabled": "false",
+            "granted_by": "ADMIN_UI",
+            "granted_at": "={{new Date().toISOString()}}",
+            "notes": "={{'disabled_by_delete|' + $json.reason}}"
+          },
+          "matchingColumns": [
+            "employee_id"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1888,
+        2192
+      ],
+      "id": "22ce72b2-a057-460b-8c04-3f1d96910023",
+      "name": "Google Sheets - Disable Empleado_Area",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        2400,
+        2192
+      ],
+      "id": "7ffb5c8b-2f0e-435a-b34e-4100ff2ae8e5",
+      "name": "Respond Delete OK"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1382733302,
+          "mode": "list",
+          "cachedResultName": "Bitacora"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "event_id": "={{'evt_' + Date.now()}}",
+            "timestamp": "={{new Date().toISOString()}}",
+            "employee_id": "={{$json.empleado_id}}",
+            "email": "={{$json.email || ''}}",
+            "area_id": "={{$json.area || ''}}",
+            "action": "EMPLOYEE_DELETED_SOFT",
+            "resource_type": "EMPLOYEE",
+            "resource_name": "={{$json.nombre || ''}}",
+            "meta_json": "={{JSON.stringify({reason: $json.reason, deleted_at: $json.deleted_at})}}"
+          },
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        2160,
+        2192
+      ],
+      "id": "e2eca98e-b372-4d24-9d49-4a6038eaa4ef",
+      "name": "Google Sheets - Append Bitacora1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## DELETE EMPLEADO\n**POST  https://n8n.mobilvendor.com/webhook/mvlearning/admin/employee/delete**",
+        "height": 624,
+        "width": 2064,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        576,
+        1920
+      ],
+      "typeVersion": 1,
+      "id": "f802196e-d40e-4d65-9c15-51615ab3125d",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mvlearning/admin/employee/update",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        672,
+        2832
+      ],
+      "id": "c55ccdb6-d549-4e12-a0ff-08067bc3dcbd",
+      "name": "Webhook - Update Employee",
+      "webhookId": "e12d24c1-f3f9-4c83-8819-a9d3d337e8b9"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $json.body ?? $json;\nconst body = Array.isArray(raw) ? raw[0] : raw;\n\nconst empleado_id = (body.employee_id || '').toString().trim();\nif (!empleado_id) throw new Error('Falta empleado_id');\n\nconst out = {\n  empleado_id,\n  nombre: body.nombre !== undefined ? String(body.nombre).trim() : undefined,\n  email: body.email !== undefined ? String(body.email).trim().toLowerCase() : undefined,\n  rol: body.rol !== undefined ? String(body.rol).trim() : undefined,\n  area: body.area !== undefined ? String(body.area).trim().toUpperCase() : undefined,\n  fecha_inicio: body.fecha_inicio !== undefined ? String(body.fecha_inicio).trim() : undefined,\n  manager_email: body.manager_email !== undefined ? String(body.manager_email).trim().toLowerCase() : undefined,\n  meta_certificacion_pct: body.meta_certificacion_pct !== undefined ? Number(body.meta_certificacion_pct) : undefined,\n  estado_global: body.estado_global !== undefined ? String(body.estado_global).trim().toUpperCase() : undefined,\n  enabled: body.enabled !== undefined ? !!body.enabled : true,\n  cohort: body.cohort !== undefined ? String(body.cohort).trim() : ''\n};\n\nfor (const k of Object.keys(out)) {\n  if (out[k] === undefined) delete out[k];\n}\n\nout.updated_at = new Date().toISOString();\nout._perm = {\n  employee_id: empleado_id,\n  email: out.email || '',\n  area_id: out.area || '',\n  role: out.rol || '',\n  enabled: out.enabled ? 'true' : 'false',\n  granted_by: 'ADMIN_UI',\n  granted_at: new Date().toISOString(),\n  notes: out.cohort ? `cohort=${out.cohort}` : ''\n};\n\nreturn [{ json: out }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        912,
+        2832
+      ],
+      "id": "f5ccfa2f-ddde-48c4-9d07-5a6b340cb454",
+      "name": "Code - Normalize Update Payload"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1973427917,
+          "mode": "list",
+          "cachedResultName": "Empleados"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "empleado_id": "={{$json.empleado_id}}",
+            "nombre": "={{$json.nombre}}",
+            "email": "={{$json.email}}",
+            "rol": "={{$json.rol}}",
+            "area": "={{$json.area}}",
+            "fecha_inicio": "={{$json.fecha_inicio}}",
+            "manager_email": "={{$json.manager_email}}",
+            "estado_global": "={{$json.estado_global}}",
+            "meta_certificacion_pct": "={{$json.meta_certificacion_pct}}",
+            "last_activity_at": "={{$json.updated_at}}",
+            "row_number": 0
+          },
+          "matchingColumns": [
+            "empleado_id"
+          ],
+          "schema": [
+            {
+              "id": "empleado_id",
+              "displayName": "empleado_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "rol",
+              "displayName": "rol",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "area",
+              "displayName": "area",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fecha_inicio",
+              "displayName": "fecha_inicio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "manager_email",
+              "displayName": "manager_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "estado_global",
+              "displayName": "estado_global",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "auth_token",
+              "displayName": "auth_token",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "token_expires",
+              "displayName": "token_expires",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "meta_certificacion_pct",
+              "displayName": "meta_certificacion_pct",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "last_activity_at",
+              "displayName": "last_activity_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "password_hash",
+              "displayName": "password_hash",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "password_updated_at",
+              "displayName": "password_updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "must_change_password",
+              "displayName": "must_change_password",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1936,
+        2720
+      ],
+      "id": "3ffa2291-9069-4241-8683-7039270f9a75",
+      "name": "Google Sheets - Update Empleados",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1665653218,
+          "mode": "list",
+          "cachedResultName": "Empleado_Area"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1936,
+        2880
+      ],
+      "id": "0326f3f9-0484-42f2-b4a3-86326ee3db6e",
+      "name": "Google Sheets - Read Empleado_Area",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const target = $node['Code - Normalize Update Payload'].json.empleado_id;\nconst rows = $items('Google Sheets - Read Empleado_Area').map(i => i.json);\nconst found = rows.find(r => (r.employee_id || r.empleado_id || '') === target);\nreturn [{ json: { hasPerm: !!found, ...$node['Code - Normalize Update Payload'].json } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2192,
+        2880
+      ],
+      "id": "500dd3b3-6366-427a-ab55-25c053cb225e",
+      "name": "Code - Check Perm Exists"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.hasPerm}}",
+              "value2": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2416,
+        2880
+      ],
+      "id": "43ec8975-0453-4b57-ba04-5cff9c116dfd",
+      "name": "IF - Perm Exists"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1665653218,
+          "mode": "list",
+          "cachedResultName": "Empleado_Area"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "employee_id": "={{$json._perm.employee_id}}",
+            "email": "={{$json._perm.email}}",
+            "area_id": "={{$json._perm.area_id}}",
+            "enabled": "={{$json._perm.enabled}}",
+            "role": "={{$json._perm.role}}",
+            "granted_by": "={{$json._perm.granted_by}}",
+            "granted_at": "={{$json._perm.granted_at}}",
+            "notes": "={{$json._perm.notes}}"
+          },
+          "matchingColumns": [
+            "employee_id"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        2672,
+        2784
+      ],
+      "id": "9fc85237-f4fb-4f94-93a8-6a3763606e4f",
+      "name": "Google Sheets - Update Empleado_Area",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        3152,
+        2880
+      ],
+      "id": "6637d566-584c-4978-909f-7378590f9c93",
+      "name": "Respond Update OK"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1973427917,
+          "mode": "list",
+          "cachedResultName": "Empleados"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1168,
+        2720
+      ],
+      "id": "3c68edc8-c988-4f9a-8231-bffdb4a8e6f7",
+      "name": "Google Sheets - Read Empleados2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const target = $node['Code - Normalize Update Payload'].json.empleado_id;\nconst rows = $items('Google Sheets - Read Empleados2').map(i => i.json);\nconst found = rows.find(r => (r.empleado_id || r.employee_id || '') === target);\nreturn [{ json: { exists: !!found, ...$node['Code - Normalize Update Payload'].json } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1408,
+        2832
+      ],
+      "id": "9f65d3dc-ef20-483d-a4e9-33cd6a93e059",
+      "name": "Code - Validate Exists1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.exists}}",
+              "value2": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1648,
+        2832
+      ],
+      "id": "dd5bb0e9-d62f-41c1-ae90-fa900df16209",
+      "name": "IF - Employee Exists1"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\": false, \"error\": \"Empleado no encontrado\", \"empleado_id\": $node[\"Code - Normalize Update Payload\"].json.empleado_id}",
+        "options": {
+          "responseCode": 404
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1936,
+        3088
+      ],
+      "id": "e5354e68-3e54-4a51-a4ee-60de8bd87a3c",
+      "name": "Respond "
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1665653218,
+          "mode": "list",
+          "cachedResultName": "Empleado_Area"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "employee_id": "={{$json._perm.employee_id}}",
+            "email": "={{$json._perm.email}}",
+            "area_id": "={{$json._perm.area_id}}",
+            "enabled": "={{$json._perm.enabled}}",
+            "role": "={{$json._perm.role}}",
+            "granted_by": "={{$json._perm.granted_by}}",
+            "granted_at": "={{$json._perm.granted_at}}",
+            "notes": "={{$json._perm.notes}}"
+          },
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        2672,
+        2992
+      ],
+      "id": "f6048bbc-b1b1-45e3-b2fd-cf8e6cb8b64c",
+      "name": "Google Sheets - Append Empleado_Area2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1382733302,
+          "mode": "list",
+          "cachedResultName": "Bitacora"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "event_id": "={{'evt_' + Date.now()}}",
+            "timestamp": "={{new Date().toISOString()}}",
+            "employee_id": "={{$node[\"Code - Normalize Update Payload\"].json.empleado_id}}",
+            "email": "={{$node[\"Code - Normalize Update Payload\"].json.email || ''}}",
+            "area_id": "={{$node[\"Code - Normalize Update Payload\"].json.area || ''}}",
+            "action": "EMPLOYEE_UPDATED",
+            "resource_type": "EMPLOYEE",
+            "resource_name": "={{$node[\"Code - Normalize Update Payload\"].json.nombre || ''}}",
+            "meta_json": "={{JSON.stringify($node[\"Code - Normalize Update Payload\"].json)}}"
+          },
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        2912,
+        2880
+      ],
+      "id": "1008f444-9958-4fe3-9f12-914b171f0647",
+      "name": "Google Sheets - Append Bitacora2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## EDIT EMPLEADO\n**POST https://n8n.mobilvendor.com/webhook/mvlearning/admin/employee/update**",
+        "height": 624,
+        "width": 2944
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        576,
+        2592
+      ],
+      "typeVersion": 1,
+      "id": "32c8df87-22eb-4972-85b0-3ce6789d126c",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "path": "mvlearning/employee/progress",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        704,
+        3504
+      ],
+      "id": "bb0e5ea0-30f1-4d51-963f-7c08afd136bf",
+      "name": "Webhook - Employee Progress",
+      "webhookId": "0a196e4e-f49e-4665-9dee-eac07b8bec98"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 876577961,
+          "mode": "list",
+          "cachedResultName": "Empleado_Modulo_Progreso",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=876577961"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        880,
+        3504
+      ],
+      "id": "75e22d16-c05f-4402-b206-cd42b182cf86",
+      "name": "Google Sheets - Read Empleado_Modulo_Progreso",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1382733302,
+          "mode": "list",
+          "cachedResultName": "Bitacora",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=1382733302"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1120,
+        3504
+      ],
+      "id": "2ae96a71-7696-42de-badb-ca34a5cc06fd",
+      "name": "Google Sheets - Read Bitacora",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const query = $node[\"Webhook - Employee Progress\"].json.query || {};\nconst empleado_id = (query.empleado_id || \"\").toString().trim();\n\nif (!empleado_id) {\n  return [{ json: { ok: false, error: \"Falta empleado_id\" } }];\n}\n\nconst rows = $items(\"Google Sheets - Read Empleado_Modulo_Progreso\").map(i => i.json);\nconst bitacora = $items(\"Google Sheets - Read Bitacora\").map(i => i.json);\n\nconst modulos = rows\n  .filter(r => (r.employee_id || r.empleado_id || \"\").toString().trim() === empleado_id)\n  .map(r => ({\n    modulo_id: r.modulo_id || \"\",\n    modulo_nombre: r.modulo_nombre || \"\",\n    area_id: (r.area_id || \"\").toString().toUpperCase(),\n    status: (r.status || \"NO_INICIADO\").toString().toUpperCase(),\n    progreso_pct: Number(r.progreso_pct || 0),\n    topics_total: Number(r.topics_total || 0),\n    topics_completados: Number(r.topics_completados || 0),\n    quiz_score_avg: Number(r.quiz_score_avg || 0),\n    last_activity_at: r.last_activity_at || \"\",\n    next_review_at: r.next_review_at || \"\"\n  }));\n\nconst modulos_total = modulos.length;\nconst modulos_completados = modulos.filter(m => m.status === \"COMPLETADO\").length;\nconst modulos_en_progreso = modulos.filter(m => m.status === \"EN_PROGRESO\").length;\nconst modulos_no_iniciados = modulos.filter(m => m.status === \"NO_INICIADO\").length;\n\nconst progreso_global_pct = modulos_total\n  ? Math.round(modulos.reduce((acc, m) => acc + (Number(m.progreso_pct) || 0), 0) / modulos_total)\n  : 0;\n\nconst employeeEvents = bitacora.filter(e => (e.employee_id || e.empleado_id || \"\") === empleado_id);\nemployeeEvents.sort((a,b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));\nconst last_activity_at = employeeEvents[0]?.timestamp || modulos.map(m => m.last_activity_at).filter(Boolean).sort().reverse()[0] || \"\";\n\nreturn [{\n  json: {\n    ok: true,\n    empleado_id,\n    resumen: {\n      progreso_global_pct,\n      modulos_total,\n      modulos_completados,\n      modulos_en_progreso,\n      modulos_no_iniciados,\n      last_activity_at\n    },\n    modulos: modulos.sort((a,b) => (a.modulo_nombre || \"\").localeCompare(b.modulo_nombre || \"\"))\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1328,
+        3504
+      ],
+      "id": "5d4d274e-cbcb-436b-ad9c-0e767a596149",
+      "name": "Code - Build Employee Progress"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        3504
+      ],
+      "id": "fa3ff9c8-3c94-4095-8791-9c30664c8a40",
+      "name": "Respond to Webhook2"
+    },
+    {
+      "parameters": {
+        "content": "## PROGRESO EMPLEADO\n**GET https://n8n.mobilvendor.com/webhook/mvlearning/employee/progress**",
+        "height": 624,
+        "width": 1328,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        576,
+        3280
+      ],
+      "typeVersion": 1,
+      "id": "e6495138-af64-41fb-a93f-e7e1eb824d53",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "path": "mvlearning/admin/modules/progress",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        720,
+        4224
+      ],
+      "id": "c6876629-3075-471b-9042-e5e207bc5082",
+      "name": "Webhook - Admin Modules Progress",
+      "webhookId": "0a40dcb9-5a3b-4178-92db-b4c2b2fe0ebe"
+    },
+    {
+      "parameters": {
+        "jsCode": "const query = $node[\"Webhook - Admin Modules Progress\"].json.query || {};\nconst areaFilter = (query.area || \"\").toString().trim().toUpperCase();\nconst cohortFilter = (query.cohort || \"\").toString().trim();\n\nlet rows = $items(\"Google Sheets - Read Empleado_Modulo_Progreso1\").map(i => i.json);\n\nif (areaFilter) {\n  rows = rows.filter(r => (r.area_id || \"\").toString().toUpperCase() === areaFilter);\n}\nif (cohortFilter) {\n  rows = rows.filter(r => (r.cohort || \"\") === cohortFilter);\n}\n\nconst byModule = new Map();\n\nfor (const r of rows) {\n  const modulo_id = (r.modulo_id || \"\").toString().trim();\n  if (!modulo_id) continue;\n\n  if (!byModule.has(modulo_id)) {\n    byModule.set(modulo_id, {\n      modulo_id,\n      modulo_nombre: r.modulo_nombre || \"\",\n      area_id: (r.area_id || \"\").toString().toUpperCase(),\n      empleados_asignados: 0,\n      progreso_sum: 0,\n      completados: 0,\n      en_progreso: 0,\n      no_iniciados: 0,\n      en_riesgo: 0\n    });\n  }\n\n  const m = byModule.get(modulo_id);\n  const pct = Number(r.progreso_pct || 0);\n  const status = (r.status || \"NO_INICIADO\").toString().toUpperCase();\n\n  m.empleados_asignados += 1;\n  m.progreso_sum += pct;\n\n  if (status === \"COMPLETADO\") m.completados += 1;\n  else if (status === \"EN_PROGRESO\") m.en_progreso += 1;\n  else if (status === \"EN_RIESGO\") m.en_riesgo += 1;\n  else m.no_iniciados += 1;\n}\n\nconst data = Array.from(byModule.values()).map(m => ({\n  modulo_id: m.modulo_id,\n  modulo_nombre: m.modulo_nombre,\n  area_id: m.area_id,\n  empleados_asignados: m.empleados_asignados,\n  promedio_progreso_pct: m.empleados_asignados ? Math.round(m.progreso_sum / m.empleados_asignados) : 0,\n  completados: m.completados,\n  en_progreso: m.en_progreso,\n  no_iniciados: m.no_iniciados,\n  en_riesgo: m.en_riesgo\n}))\n.sort((a,b) => b.promedio_progreso_pct - a.promedio_progreso_pct);\n\nreturn [{ json: { ok: true, data } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1264,
+        4224
+      ],
+      "id": "4c66508f-9b19-477f-afd8-b78aee3fb3a8",
+      "name": "Code - Group Modules Progress"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 876577961,
+          "mode": "list",
+          "cachedResultName": "Empleado_Modulo_Progreso",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=876577961"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        992,
+        4224
+      ],
+      "id": "f04110ab-023d-420b-a67b-79e122269d1e",
+      "name": "Google Sheets - Read Empleado_Modulo_Progreso1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        4224
+      ],
+      "id": "72747ce9-d953-484c-888d-5abffcaa53e9",
+      "name": "Respond to Webhook3"
+    },
+    {
+      "parameters": {
+        "content": "## PROGRESO POR MODULO\n**GET https://n8n.mobilvendor.com/webhook/mvlearning/admin/modules/progress**",
+        "height": 624,
+        "width": 1328
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        576,
+        3968
+      ],
+      "typeVersion": 1,
+      "id": "2514ca60-6d2a-460a-a522-29b6e55f4143",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mvlearning/progress/topic/update",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        720,
+        4944
+      ],
+      "id": "00579324-3373-4a4d-bf62-a194a8e6e20c",
+      "name": "Webhook - Update Topic Progress",
+      "webhookId": "8c45de39-fa13-4768-bd9c-d93e40384623"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $json.body ?? $json;\nconst body = Array.isArray(raw) ? raw[0] : raw;\n\nconst empleado_id = (body.empleado_id || '').toString().trim();\nconst modulo_id = (body.modulo_id || '').toString().trim();\nconst topic_id = (body.topic_id || '').toString().trim();\n\nif (!empleado_id) throw new Error('Falta empleado_id');\nif (!modulo_id) throw new Error('Falta modulo_id');\nif (!topic_id) throw new Error('Falta topic_id');\n\nconst now = new Date().toISOString();\nconst status = (body.status || 'EN_PROGRESO').toString().trim().toUpperCase();\nconst progress_pct = body.progress_pct !== undefined ? Number(body.progress_pct) : (status === 'COMPLETADO' ? 100 : 0);\nconst quiz_score = body.quiz_score !== undefined && body.quiz_score !== null && body.quiz_score !== '' ? Number(body.quiz_score) : '';\nconst attempts = body.attempts !== undefined ? Number(body.attempts) : 1;\n\nreturn [{\n  json: {\n    employee_id: empleado_id,\n    modulo_id,\n    modulo_nombre: (body.modulo_nombre || '').toString().trim(),\n    area_id: (body.area_id || '').toString().trim().toUpperCase(),\n    topic_id,\n    topic_nombre: (body.topic_nombre || '').toString().trim(),\n    status,\n    progress_pct,\n    quiz_score,\n    attempts,\n    last_activity_at: now,\n    completed_at: status === 'COMPLETADO' ? now : '',\n    event_source: (body.event_source || 'WEB_UI').toString().trim(),\n    updated_at: now\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        992,
+        4944
+      ],
+      "id": "67ecf6f0-7568-42c6-bee3-4f5e087478b4",
+      "name": "Code - Normalize Topic Payload"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1227212104,
+          "mode": "list",
+          "cachedResultName": "Empleado_Topic_Progreso",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=1227212104"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1232,
+        4944
+      ],
+      "id": "096a664c-73e9-4a49-ba7d-31d7f958d79e",
+      "name": "Google Sheets - Read Empleado_Topic_Progreso",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const p = $node['Code - Normalize Topic Payload'].json;\nconst rows = $items('Google Sheets - Read Empleado_Topic_Progreso').map(i => i.json);\nconst found = rows.find(r =>\n  (r.employee_id || r.empleado_id || '') === p.employee_id &&\n  (r.modulo_id || '') === p.modulo_id &&\n  (r.topic_id || '') === p.topic_id\n);\nreturn [{ json: { ...p, topic_exists: !!found } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        4944
+      ],
+      "id": "0d5c7d2f-5245-470a-b21e-4d29dfb83cca",
+      "name": "Code - Check Topic Progress Exists"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.topic_exists}}",
+              "value2": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        4944
+      ],
+      "id": "c7ed0ae2-df5e-4427-9e4f-c020b752bb8d",
+      "name": "IF - Topic Row Exists"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 0,
+          "mode": "list",
+          "cachedResultName": "Empleado_Topic_Progreso"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "employee_id": "={{$json.employee_id}}",
+            "modulo_id": "={{$json.modulo_id}}",
+            "topic_id": "={{$json.topic_id}}",
+            "modulo_nombre": "={{$json.modulo_nombre}}",
+            "area_id": "={{$json.area_id}}",
+            "topic_nombre": "={{$json.topic_nombre}}",
+            "status": "={{$json.status}}",
+            "progress_pct": "={{$json.progress_pct}}",
+            "quiz_score": "={{$json.quiz_score}}",
+            "attempts": "={{$json.attempts}}",
+            "last_activity_at": "={{$json.last_activity_at}}",
+            "completed_at": "={{$json.completed_at}}",
+            "updated_at": "={{$json.updated_at}}"
+          },
+          "matchingColumns": [
+            "employee_id",
+            "modulo_id",
+            "topic_id"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        2016,
+        4848
+      ],
+      "id": "ae250d7f-69af-4c4c-954d-b039145e41da",
+      "name": "Google Sheets - Update Empleado_Topic_Progreso",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 0,
+          "mode": "list",
+          "cachedResultName": "Empleado_Topic_Progreso"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "employee_id": "={{$json.employee_id}}",
+            "modulo_id": "={{$json.modulo_id}}",
+            "topic_id": "={{$json.topic_id}}",
+            "modulo_nombre": "={{$json.modulo_nombre}}",
+            "area_id": "={{$json.area_id}}",
+            "topic_nombre": "={{$json.topic_nombre}}",
+            "status": "={{$json.status}}",
+            "progress_pct": "={{$json.progress_pct}}",
+            "quiz_score": "={{$json.quiz_score}}",
+            "attempts": "={{$json.attempts}}",
+            "last_activity_at": "={{$json.last_activity_at}}",
+            "completed_at": "={{$json.completed_at}}",
+            "updated_at": "={{$json.updated_at}}"
+          },
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        2016,
+        5040
+      ],
+      "id": "9992d7bd-6e99-4cec-8058-0be85c7e1280",
+      "name": "Google Sheets - Append Empleado_Topic_Progreso",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 0,
+          "mode": "list",
+          "cachedResultName": "Empleado_Topic_Progreso"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        2288,
+        4944
+      ],
+      "id": "3da03190-2586-46e7-8bf9-88ffb1e567cf",
+      "name": "Google Sheets - Read Empleado_Topic_Progreso (Recalc)",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const ev = $node['Code - Normalize Topic Payload'].json;\nconst rows = $items('Google Sheets - Read Empleado_Topic_Progreso (Recalc)').map(i => i.json)\n  .filter(r => (r.employee_id || r.empleado_id || '') === ev.employee_id && (r.modulo_id || '') === ev.modulo_id);\n\nconst topics_total = rows.length;\nconst topics_completados = rows.filter(r => String(r.status || '').toUpperCase() === 'COMPLETADO').length;\nconst progreso_pct = topics_total ? Math.round((topics_completados / topics_total) * 100) : 0;\n\nconst scores = rows\n  .map(r => Number(r.quiz_score))\n  .filter(n => !Number.isNaN(n) && Number.isFinite(n));\nconst quiz_score_avg = scores.length ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : 0;\n\nconst quiz_intentos = rows.reduce((acc, r) => acc + (Number(r.attempts || 0) || 0), 0);\n\nlet status = 'NO_INICIADO';\nif (progreso_pct >= 100) status = 'COMPLETADO';\nelse if (progreso_pct > 0) status = 'EN_PROGRESO';\n\nconst last_activity_at = rows\n  .map(r => r.last_activity_at)\n  .filter(Boolean)\n  .sort()\n  .reverse()[0] || ev.last_activity_at;\n\nconst now = new Date();\nconst last = last_activity_at ? new Date(last_activity_at) : null;\nif (status === 'EN_PROGRESO' && last && (now - last) / (1000*60*60*24) >= 3 && progreso_pct < 30) {\n  status = 'EN_RIESGO';\n}\n\nreturn [{\n  json: {\n    employee_id: ev.employee_id,\n    modulo_id: ev.modulo_id,\n    modulo_nombre: ev.modulo_nombre,\n    area_id: ev.area_id,\n    assigned_at: '',\n    started_at: progreso_pct > 0 ? (rows.map(r => r.last_activity_at).filter(Boolean).sort()[0] || ev.last_activity_at) : '',\n    completed_at: status === 'COMPLETADO' ? (rows.map(r => r.completed_at).filter(Boolean).sort().reverse()[0] || ev.last_activity_at) : '',\n    status,\n    progreso_pct,\n    topics_total,\n    topics_completados,\n    quiz_score_avg,\n    quiz_intentos,\n    last_activity_at,\n    next_review_at: '',\n    updated_at: new Date().toISOString()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2576,
+        4944
+      ],
+      "id": "24e0a8cd-1bd2-497b-945d-ee47d485aa28",
+      "name": "Code - Recalculate Module Progress"
+    },
+    {
+      "parameters": {
+        "jsCode": "const m = $node['Code - Recalculate Module Progress'].json;\nconst rows = $items('Google Sheets - Read Empleado_Modulo_Progreso2').map(i => i.json);\nconst found = rows.find(r =>\n  (r.employee_id || r.empleado_id || '') === m.employee_id &&\n  (r.modulo_id || '') === m.modulo_id\n);\nreturn [{ json: { ...m, module_exists: !!found } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3088,
+        4944
+      ],
+      "id": "3a1cc815-d3f3-49dd-b468-0427657660c9",
+      "name": "Code - Check Module Progress Exists"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.module_exists}}",
+              "value2": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        3328,
+        4944
+      ],
+      "id": "a1853969-c32d-421e-8dd0-ef7cdd866de9",
+      "name": "IF - Module Row Exists"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 0,
+          "mode": "list",
+          "cachedResultName": "Empleado_Modulo_Progreso"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "employee_id": "={{$json.employee_id}}",
+            "modulo_id": "={{$json.modulo_id}}",
+            "modulo_nombre": "={{$json.modulo_nombre}}",
+            "area_id": "={{$json.area_id}}",
+            "assigned_at": "={{$json.assigned_at}}",
+            "started_at": "={{$json.started_at}}",
+            "completed_at": "={{$json.completed_at}}",
+            "status": "={{$json.status}}",
+            "progreso_pct": "={{$json.progreso_pct}}",
+            "topics_total": "={{$json.topics_total}}",
+            "topics_completados": "={{$json.topics_completados}}",
+            "quiz_score_avg": "={{$json.quiz_score_avg}}",
+            "quiz_intentos": "={{$json.quiz_intentos}}",
+            "last_activity_at": "={{$json.last_activity_at}}",
+            "next_review_at": "={{$json.next_review_at}}",
+            "updated_at": "={{$json.updated_at}}"
+          },
+          "matchingColumns": [
+            "employee_id",
+            "modulo_id"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        3600,
+        4848
+      ],
+      "id": "f6395913-c119-4c83-8d31-80cd66189674",
+      "name": "Google Sheets - Update Empleado_Modulo_Progreso",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 0,
+          "mode": "list",
+          "cachedResultName": "Empleado_Modulo_Progreso"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "employee_id": "={{$json.employee_id}}",
+            "modulo_id": "={{$json.modulo_id}}",
+            "modulo_nombre": "={{$json.modulo_nombre}}",
+            "area_id": "={{$json.area_id}}",
+            "assigned_at": "={{$json.assigned_at}}",
+            "started_at": "={{$json.started_at}}",
+            "completed_at": "={{$json.completed_at}}",
+            "status": "={{$json.status}}",
+            "progreso_pct": "={{$json.progreso_pct}}",
+            "topics_total": "={{$json.topics_total}}",
+            "topics_completados": "={{$json.topics_completados}}",
+            "quiz_score_avg": "={{$json.quiz_score_avg}}",
+            "quiz_intentos": "={{$json.quiz_intentos}}",
+            "last_activity_at": "={{$json.last_activity_at}}",
+            "next_review_at": "={{$json.next_review_at}}",
+            "updated_at": "={{$json.updated_at}}"
+          },
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        3600,
+        5040
+      ],
+      "id": "a12e7ac1-6a2a-44d8-9f5a-afcd6a019c64",
+      "name": "Google Sheets - Append Empleado_Modulo_Progreso",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 0,
+          "mode": "list",
+          "cachedResultName": "Empleado_Modulo_Progreso"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        2832,
+        4944
+      ],
+      "id": "3dcb2b84-9824-477f-bb3b-d207bc0cd69f",
+      "name": "Google Sheets - Read Empleado_Modulo_Progreso2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1382733302,
+          "mode": "list",
+          "cachedResultName": "Bitacora"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "event_id": "={{'evt_' + Date.now()}}",
+            "timestamp": "={{new Date().toISOString()}}",
+            "employee_id": "={{$node[\"Code - Normalize Topic Payload\"].json.employee_id}}",
+            "email": "",
+            "area_id": "={{$node[\"Code - Normalize Topic Payload\"].json.area_id || ''}}",
+            "modulo_id": "={{$node[\"Code - Normalize Topic Payload\"].json.modulo_id}}",
+            "topic_id": "={{$node[\"Code - Normalize Topic Payload\"].json.topic_id}}",
+            "action": "TOPIC_PROGRESS_UPDATED",
+            "resource_type": "TOPIC",
+            "resource_name": "={{$node[\"Code - Normalize Topic Payload\"].json.topic_nombre || ''}}",
+            "meta_json": "={{JSON.stringify($node[\"Code - Normalize Topic Payload\"].json)}}"
+          },
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        3856,
+        4944
+      ],
+      "id": "fcc23e91-6f7d-4abb-b7f2-9072f696cc87",
+      "name": "Google Sheets - Append Bitacora3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        4112,
+        4944
+      ],
+      "id": "7942b8ff-d9c0-442d-87e5-ae013c3b8dd3",
+      "name": "Respond to Webhook4"
+    },
+    {
+      "parameters": {
+        "content": "## PROGRESO POR TOPIC\n**POST https://n8n.mobilvendor.com/webhook/mvlearning/progress/topic/update**",
+        "height": 624,
+        "width": 3776,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        576,
+        4672
+      ],
+      "typeVersion": 1,
+      "id": "f73e0be8-7c19-4862-9f90-eb767b7bbdff",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "operation": "run_code",
+        "code": "function makeId(prefix = \"\") {\n  if (globalThis.crypto?.randomUUID) return prefix + globalThis.crypto.randomUUID();\n  const rnd = () => Math.floor(Math.random() * 1e9).toString(16).padStart(8, \"0\");\n  const t = Date.now().toString(16);\n  return prefix + `${t}-${rnd()}-${rnd()}-${rnd()}`;\n}\n\nfunction bytesToBase64(bytes) {\n  let binary = \"\";\n  const chunkSize = 0x8000;\n  for (let i = 0; i < bytes.length; i += chunkSize) {\n    binary += String.fromCharCode(...bytes.slice(i, i + chunkSize));\n  }\n  return btoa(binary);\n}\n\nfunction strToBytes(str) {\n  return new TextEncoder().encode(str);\n}\n\nasync function pbkdf2Hash(password, saltBytes, iterations = 210000, dkLen = 32) {\n  const keyMaterial = await crypto.subtle.importKey(\n    \"raw\",\n    strToBytes(password),\n    { name: \"PBKDF2\" },\n    false,\n    [\"deriveBits\"]\n  );\n\n  const derivedBits = await crypto.subtle.deriveBits(\n    {\n      name: \"PBKDF2\",\n      salt: saltBytes,\n      iterations,\n      hash: \"SHA-256\",\n    },\n    keyMaterial,\n    dkLen * 8\n  );\n\n  return new Uint8Array(derivedBits);\n}\n\n// Puede venir como { body: [...] } o directamente [...]\nconst raw = $json.body ?? $json;\nconst body = Array.isArray(raw) ? raw[0] : raw;\n\nconst email = (body.email || \"\").trim().toLowerCase();\nif (!email) throw new Error(\"Falta email\");\n\nconst password = (body.password || \"\").toString();\nif (!password) throw new Error(\"Falta password (admin debe asignarlo)\");\n\nconst empleado_id = makeId(\"emp_\");\nconst auth_token = makeId(\"tok_\");\nconst token_expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();\n\nconst area = (body.area || \"\").trim();\nconst rol = (body.rol || \"\").trim();\nconst estado_global = (body.estado_global || \"ACTIVO\").toString().trim().toUpperCase();\n\n// ✅ Hash PBKDF2\nconst salt = new Uint8Array(16);\ncrypto.getRandomValues(salt);\nconst iterations = 210000;\nconst dkLen = 32;\n\nconst hashBytes = await pbkdf2Hash(password, salt, iterations, dkLen);\n\nconst password_hash = [\n  \"pbkdf2\",\n  \"sha256\",\n  iterations,\n  bytesToBase64(salt),\n  bytesToBase64(hashBytes),\n].join(\"$\");\n\nconst password_updated_at = new Date().toISOString();\nconst must_change_password = body.must_change_password ?? 1;\n\nreturn [{\n  json: {\n    empleado_id,\n    nombre: (body.nombre || \"\").trim(),\n    email,\n    rol,\n    area,\n    fecha_inicio: (body.fecha_inicio || \"\").trim(),\n    manager_email: (body.manager_email || \"\").trim().toLowerCase(),\n    test_url: (body.evaluacion_url || \"\").trim().toLowerCase(),\n    estado_global,\n    auth_token,\n    token_expires,\n    meta_certificacion_pct: body.meta_certificacion_pct ?? 85,\n    last_activity_at: body.last_activity_at || new Date().toISOString(),\n\n    // 👇 nuevos campos en Empleados\n    password_hash,\n    password_updated_at,\n    must_change_password,\n\n    _perm: {\n      employee_id: empleado_id,\n      email,\n      role: rol,\n      area_id: area,\n      enabled: (body.enabled ?? true) ? \"true\" : \"false\",\n      granted_by: \"SYSTEM\",\n      granted_at: new Date().toISOString(),\n      notes: body.cohort ? `cohort=${body.cohort}` : \"\"\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-yepcode.yepCode",
+      "typeVersion": 1,
+      "position": [
+        848,
+        112
+      ],
+      "id": "ae5f65ce-d16c-4e95-9757-9a54c5b35505",
+      "name": "YepCode",
+      "credentials": {
+        "yepCodeApi": {
+          "id": "4alPEtXkmKStJGhx",
+          "name": "YepCode account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "run_code",
+        "code": "const { passwordIn, storedHash, nowMs, newToken, newTokenExpires, emp } = $json;\n\nfunction base64ToBytes(b64) {\n  const binary = atob(b64);\n  const bytes = new Uint8Array(binary.length);\n  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);\n  return bytes;\n}\n\nasync function pbkdf2Verify(password, stored) {\n  const parts = stored.split(\"$\");\n  if (parts.length !== 5) throw new Error(\"Formato de hash inválido\");\n  const [, , iterStr, b64Salt, b64Hash] = parts;\n  const iterations   = parseInt(iterStr, 10);\n  const salt         = base64ToBytes(b64Salt);\n  const expectedHash = base64ToBytes(b64Hash);\n\n  const keyMaterial = await crypto.subtle.importKey(\n    \"raw\", new TextEncoder().encode(password),\n    { name: \"PBKDF2\" }, false, [\"deriveBits\"]\n  );\n  const derivedBits = await crypto.subtle.deriveBits(\n    { name: \"PBKDF2\", salt, iterations, hash: \"SHA-256\" },\n    keyMaterial, expectedHash.length * 8\n  );\n  const derived = new Uint8Array(derivedBits);\n  if (derived.length !== expectedHash.length) return false;\n  let diff = 0;\n  for (let i = 0; i < derived.length; i++) diff |= derived[i] ^ expectedHash[i];\n  return diff === 0;\n}\n\nconst passwordOk = await pbkdf2Verify(passwordIn, storedHash);\nif (!passwordOk) {\n  return [{ json: { ok: false, status: 401, message: \"Contraseña incorrecta\" } }];\n}\n\n// Token\nconst rawRole = (emp.rol || \"empleado\").toString().trim().toLowerCase();\nconst role    = rawRole === \"admin\" ? \"admin\" : \"empleado\";\n\nlet token         = (emp.auth_token    || \"\").toString().trim();\nlet token_expires = (emp.token_expires || \"\").toString().trim();\n\nconst expDate  = token_expires ? new Date(token_expires) : null;\nconst expValid = expDate && expDate.toString() !== \"Invalid Date\" && expDate.getTime() > Number(nowMs);\n\nif (!token || !expValid) {\n  token         = newToken;\n  token_expires = newTokenExpires;\n}\n\nconst redirect = role === \"admin\" ? \"/admin/dashboard\" : \"/empleado/dashboard\";\n\nreturn [{\n  json: {\n    ok: true,\n    empleado_id:            emp.empleado_id || \"\",\n    nombre:                 emp.nombre      || \"\",\n    email:                  emp.email,\n    role,\n    area:                   emp.area        || \"\",\n    estado_global:          emp.estado_global,\n    meta_certificacion_pct: Number(emp.meta_certificacion_pct || 85),\n    must_change_password:   emp.must_change_password == \"1\" || emp.must_change_password === true,\n    token,\n    token_expires,\n    redirect,\n    _update: {\n      empleado_id:      emp.empleado_id || \"\",\n      auth_token:       token,\n      token_expires,\n      last_activity_at: new Date().toISOString()\n    }\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-yepcode.yepCode",
+      "typeVersion": 1,
+      "position": [
+        1456,
+        1504
+      ],
+      "id": "1ca8654b-ceac-4986-9879-5bed1daeeb4e",
+      "name": "YepCode1",
+      "credentials": {
+        "yepCodeApi": {
+          "id": "4alPEtXkmKStJGhx",
+          "name": "YepCode account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mvlearning/auth/login",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        688,
+        1504
+      ],
+      "id": "4f04b284-4df3-4984-8a77-64407624190b",
+      "name": "Webhook - Login",
+      "webhookId": "a3c4a7f5-0d72-4d9a-8d8b-6d1a5a9b0c11"
+    },
+    {
+      "parameters": {
+        "jsCode": "function makeId(prefix = \"\") {\n  if (globalThis.crypto?.randomUUID) return prefix + globalThis.crypto.randomUUID();\n  const rnd = () => Math.floor(Math.random() * 1e9).toString(16).padStart(8, \"0\");\n  const t = Date.now().toString(16);\n  return prefix + `${t}-${rnd()}-${rnd()}-${rnd()}`;\n}\n\nconst raw = $json.body ?? $json;\nconst body = Array.isArray(raw) ? raw[0] : raw;\n\nconst email = (body.email || \"\").trim().toLowerCase();\nif (!email) throw new Error(\"Falta email\");\n\nconst password = (body.password || \"\").toString();\n\nconst now = new Date();\n\nreturn [{\n  json: {\n    email,\n    password,\n    now_iso: now.toISOString(),\n    now_ms: now.getTime(),\n    new_token: makeId(\"tok_\"),\n    new_token_expires: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString()\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        1504
+      ],
+      "id": "e62f785c-640d-4032-9144-ea788e79f76f",
+      "name": "Code - Parse + Token"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1973427917,
+          "mode": "list",
+          "cachedResultName": "Empleados",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=1973427917"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1088,
+        1504
+      ],
+      "id": "cdfa526e-38f7-48c6-88ed-e11c0a14e496",
+      "name": "Google Sheets - Read Empleados3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const emailIn    = ($node[\"Code - Parse + Token\"].json.email    || \"\").trim().toLowerCase();\nconst passwordIn = ($node[\"Code - Parse + Token\"].json.password || \"\").toString();\nconst nowMs      = Number($node[\"Code - Parse + Token\"].json.now_ms);\nconst newToken         = $node[\"Code - Parse + Token\"].json.new_token;\nconst newTokenExpires  = $node[\"Code - Parse + Token\"].json.new_token_expires;\n\nconst empleados = $items(\"Google Sheets - Read Empleados3\").map(i => i.json);\n\nconst emp = empleados.find(e =>\n  (e.email || \"\").toString().trim().toLowerCase() === emailIn\n);\nif (!emp) {\n  return [{ json: { ok: false, status: 404, message: \"Usuario no existe\" } }];\n}\n\nconst estado = (emp.estado_global || \"ACTIVO\").toString().trim().toUpperCase();\nif (estado !== \"ACTIVO\") {\n  return [{ json: { ok: false, status: 403, message: `Usuario no habilitado (${estado})` } }];\n}\n\nif (!passwordIn) {\n  return [{ json: { ok: false, status: 400, message: \"Falta password\" } }];\n}\n\nconst storedHash = (emp.password_hash || \"\").toString().trim();\nif (!storedHash) {\n  return [{ json: { ok: false, status: 401, message: \"Cuenta sin contraseña configurada\" } }];\n}\n\nreturn [{\n  json: {\n    passwordIn,\n    storedHash,\n    nowMs,\n    newToken,\n    newTokenExpires,\n    emp: {\n      empleado_id:            emp.empleado_id || \"\",\n      nombre:                 emp.nombre      || \"\",\n      email:                  emailIn,\n      rol:                    emp.rol         || \"\",\n      area:                   emp.area        || \"\",\n      estado_global:          estado,\n      meta_certificacion_pct: emp.meta_certificacion_pct || 85,\n      must_change_password:   emp.must_change_password,\n      auth_token:             emp.auth_token    || \"\",\n      token_expires:          emp.token_expires || \"\"\n    }\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1264,
+        1504
+      ],
+      "id": "36629353-315f-4c2a-94c7-196296f444f6",
+      "name": "Code - Validate + Role + Token"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "2b53c447-176b-4f16-bdf2-d2dee3c95e67",
+              "leftValue": "={{ $json.returnValue[0].json.ok }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1664,
+        1504
+      ],
+      "id": "eb9f9181-8312-43e2-a399-dd2d8739ffc7",
+      "name": "IF - OK?"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1973427917,
+          "mode": "list",
+          "cachedResultName": "Empleados",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=1973427917"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "auth_token": "={{ $json.returnValue[0].json._update.auth_token }}",
+            "token_expires": "={{ $json.returnValue[0].json._update.token_expires }}",
+            "last_activity_at": "={{ $json.returnValue[0].json._update.last_activity_at }}",
+            "empleado_id": "={{ $json.returnValue[0].json.empleado_id }}",
+            "email": "={{ $json.returnValue[0].json.email }}",
+            "rol": "={{ $json.returnValue[0].json.role }}",
+            "area": "={{ $json.returnValue[0].json.area }}"
+          },
+          "matchingColumns": [
+            "empleado_id"
+          ],
+          "schema": [
+            {
+              "id": "empleado_id",
+              "displayName": "empleado_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "rol",
+              "displayName": "rol",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "area",
+              "displayName": "area",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha_inicio",
+              "displayName": "fecha_inicio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "manager_email",
+              "displayName": "manager_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "estado_global",
+              "displayName": "estado_global",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "auth_token",
+              "displayName": "auth_token",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "token_expires",
+              "displayName": "token_expires",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "meta_certificacion_pct",
+              "displayName": "meta_certificacion_pct",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "last_activity_at",
+              "displayName": "last_activity_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1872,
+        1376
+      ],
+      "id": "ced7d035-1acd-40a0-91f5-427977238373",
+      "name": "Google Sheets - Update Token",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        2112,
+        1376
+      ],
+      "id": "2f0fe1f2-e960-46f6-95e8-0f73deb45d4f",
+      "name": "Respond - OK"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1872,
+        1648
+      ],
+      "id": "49332c02-b3b4-42ed-952f-8e37389e7399",
+      "name": "Respond - Error"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1227212104,
+          "mode": "list",
+          "cachedResultName": "Empleado_Topic_Progreso",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=1227212104"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "employee_id": "={{ $('YepCode').item.json.returnValue[0].json.empleado_id }}",
+            "email": "={{ $('YepCode').item.json.returnValue[0].json.email }}",
+            "area_id": "={{ $('Loop Modulos1').item.json.area_id }}",
+            "modulo_id": "={{ $json.modulo_id }}",
+            "topic_id": "={{ $json.topic_id }}",
+            "status": "={{ $json.activo }}",
+            "completed_at": "0",
+            "last_activity_at": "={{ $('YepCode').item.json.returnValue[0].json.last_activity_at }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "employee_id",
+              "displayName": "employee_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "area_id",
+              "displayName": "area_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "modulo_id",
+              "displayName": "modulo_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "topic_id",
+              "displayName": "topic_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "completed_at",
+              "displayName": "completed_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "last_activity_at",
+              "displayName": "last_activity_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "unlocked_at",
+              "displayName": "unlocked_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        2752,
+        128
+      ],
+      "id": "140db0eb-87a5-470d-b6f8-1a8e23679112",
+      "name": "Google Sheets - Append Empleado_Topic_Progreso1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 876577961,
+          "mode": "list",
+          "cachedResultName": "Empleado_Modulo_Progreso",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=876577961"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "area_id": "={{ $json.area_id }}",
+            "employee_id": "={{ $('YepCode').item.json.returnValue[0].json.empleado_id }}",
+            "email": "={{ $('YepCode').item.json.returnValue[0].json.email }}",
+            "last_activity_at": "={{ $('YepCode').item.json.returnValue[0].json.last_activity_at }}",
+            "status": "={{ $('YepCode').item.json.returnValue[0].json.estado_global }}",
+            "completed_at": "0",
+            "modulo_id": "={{ $json.modulo_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "employee_id",
+              "displayName": "employee_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "area_id",
+              "displayName": "area_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "modulo_id",
+              "displayName": "modulo_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "completed_at",
+              "displayName": "completed_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "last_activity_at",
+              "displayName": "last_activity_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "unlocked_at",
+              "displayName": "unlocked_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        2032,
+        128
+      ],
+      "id": "f8bd7cae-30f2-4725-9c7c-383ced4c6390",
+      "name": "Google Sheets - Append Empleado_Modulo_Progreso1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 544330144,
+          "mode": "list",
+          "cachedResultName": "Modulos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=544330144"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "area_id",
+              "lookupValue": "={{ $json.area_id }}"
+            }
+          ]
+        },
+        "options": {
+          "returnAllMatches": "returnAllMatches"
+        }
+      },
+      "id": "b4a17678-6b20-4b56-9c92-c3aeb06d2773",
+      "name": "Read Modulos1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        1568,
+        112
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1744,
+        112
+      ],
+      "id": "c52bd7c5-52db-4aab-8c1b-54b62963af89",
+      "name": "Loop Modulos1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1581071180,
+          "mode": "list",
+          "cachedResultName": "Topics",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=1581071180"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "modulo_id",
+              "lookupValue": "={{ $json.modulo_id }}"
+            }
+          ]
+        },
+        "options": {
+          "returnAllMatches": "returnAllMatches"
+        }
+      },
+      "id": "2aec4d1b-211a-4b81-85a9-7cc5e576adf3",
+      "name": "Read Topics1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        2240,
+        128
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2464,
+        112
+      ],
+      "id": "91a0f920-bf1d-423c-a1c5-b2fe9e810be5",
+      "name": "Loop Topics1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1505033244,
+          "mode": "list",
+          "cachedResultName": "Areas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=1505033244"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "name",
+              "lookupValue": "={{ $json.area }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0bfa5c5b-4900-40b2-a5d7-d6dc5c562a50",
+      "name": "Read Areas1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        1184,
+        112
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Webhook Trigger": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mobilvendor.com",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0",
+            "content-length": "80",
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "es-419,es;q=0.9,es-ES;q=0.8,en;q=0.7,en-GB;q=0.6,en-US;q=0.5",
+            "content-type": "application/json",
+            "origin": "null",
+            "priority": "u=1, i",
+            "sec-ch-ua": "\"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"144\", \"Microsoft Edge\";v=\"144\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "cross-site",
+            "x-forwarded-for": "10.0.0.2",
+            "x-forwarded-host": "n8n.mobilvendor.com",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "2e458db9975e",
+            "x-real-ip": "10.0.0.2"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "sync_type": "full",
+            "action": "fetch_all",
+            "timestamp": "2026-02-11T14:58:59.569Z"
+          },
+          "webhookUrl": "https://n8n.mobilvendor.com/webhook/mvlearning-area-mod-topics-recursos",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Webhook - Admin List Employees": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mobilvendor.com",
+            "user-agent": "node",
+            "accept": "*/*",
+            "accept-encoding": "br, gzip, deflate",
+            "accept-language": "*",
+            "cache-control": "no-cache",
+            "content-type": "application/json",
+            "pragma": "no-cache",
+            "sec-fetch-mode": "cors",
+            "x-forwarded-for": "10.0.0.2",
+            "x-forwarded-host": "n8n.mobilvendor.com",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "280a866c1348",
+            "x-real-ip": "10.0.0.2"
+          },
+          "params": {},
+          "query": {},
+          "body": {},
+          "webhookUrl": "https://n8n.mobilvendor.com/webhook/mvlearning/admin/employees",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Webhook - Delete Employee Soft": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mobilvendor.com",
+            "user-agent": "node",
+            "content-length": "60",
+            "accept": "*/*",
+            "accept-encoding": "br, gzip, deflate",
+            "accept-language": "*",
+            "cache-control": "no-cache",
+            "content-type": "application/json",
+            "pragma": "no-cache",
+            "sec-fetch-mode": "cors",
+            "x-forwarded-for": "10.0.0.2",
+            "x-forwarded-host": "n8n.mobilvendor.com",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "280a866c1348",
+            "x-real-ip": "10.0.0.2"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "employee_id": "emp_19c77d72919-21299fdc-279afb19-0ddd409b"
+          },
+          "webhookUrl": "https://n8n.mobilvendor.com/webhook/mvlearning/admin/employee/delete",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Webhook - Employee Progress": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mobilvendor.com",
+            "user-agent": "axios/1.12.0",
+            "accept": "application/json,text/html,application/xhtml+xml,application/xml,text/*;q=0.9, image/*;q=0.8, */*;q=0.7",
+            "accept-encoding": "gzip, compress, deflate, br",
+            "x-forwarded-for": "10.0.0.2",
+            "x-forwarded-host": "n8n.mobilvendor.com",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "280a866c1348",
+            "x-real-ip": "10.0.0.2"
+          },
+          "params": {},
+          "query": {
+            "empleado_id": "emp_19c791e242e-27815b74-2defecbc-24f1b880"
+          },
+          "body": {},
+          "webhookUrl": "https://n8n.mobilvendor.com/webhook/mvlearning/employee/progress",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Webhook - Update Employee": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mobilvendor.com",
+            "user-agent": "node",
+            "content-length": "294",
+            "accept": "*/*",
+            "accept-encoding": "br, gzip, deflate",
+            "accept-language": "*",
+            "cache-control": "no-cache",
+            "content-type": "application/json",
+            "pragma": "no-cache",
+            "sec-fetch-mode": "cors",
+            "x-forwarded-for": "10.0.0.2",
+            "x-forwarded-host": "n8n.mobilvendor.com",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "280a866c1348",
+            "x-real-ip": "10.0.0.2"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "employee_id": "emp_464eb11b-fcd4-442b-9c0d-49f37b699835",
+            "nombre": "Sebastián Lojan",
+            "email": "slojan1@mobilvendor.com",
+            "rol": "empleado",
+            "areas": [
+              "OPERACIONES"
+            ],
+            "cohort": "",
+            "fecha_inicio": "2026-03-02",
+            "meta_certificacion_pct": 85,
+            "manager_email": "e.andrade@mobilvendor.com",
+            "area": "OPERACIONES"
+          },
+          "webhookUrl": "https://n8n.mobilvendor.com/webhook/mvlearning/admin/employee/update",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Webhook - Login": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mobilvendor.com",
+            "user-agent": "node",
+            "content-length": "66",
+            "accept": "*/*",
+            "accept-encoding": "br, gzip, deflate",
+            "accept-language": "*",
+            "cache-control": "no-cache",
+            "content-type": "application/json",
+            "pragma": "no-cache",
+            "sec-fetch-mode": "cors",
+            "x-forwarded-for": "10.0.0.2",
+            "x-forwarded-host": "n8n.mobilvendor.com",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "280a866c1348",
+            "x-real-ip": "10.0.0.2"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "email": "e.andrade@mobilvendor.com",
+            "password": "mobilvendor2026"
+          },
+          "webhookUrl": "https://n8n.mobilvendor.com/webhook/mvlearning/auth/login",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Webhook - Create Employee": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mobilvendor.com",
+            "user-agent": "node",
+            "content-length": "507",
+            "accept": "*/*",
+            "accept-encoding": "br, gzip, deflate",
+            "accept-language": "*",
+            "cache-control": "no-cache",
+            "content-type": "application/json",
+            "pragma": "no-cache",
+            "sec-fetch-mode": "cors",
+            "x-forwarded-for": "10.0.0.2",
+            "x-forwarded-host": "n8n.mobilvendor.com",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "280a866c1348",
+            "x-real-ip": "10.0.0.2"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "nombre": "Sebastián Lojan",
+            "email": "slojan@mobilvendor.com",
+            "password": "slojan2026",
+            "rol": "empleado",
+            "areas": [
+              "OPERACIONES"
+            ],
+            "cohort": "",
+            "fecha_inicio": "2026-03-04",
+            "meta_certificacion_pct": 85,
+            "manager_email": "e.andrade@mobilvendor.com",
+            "evaluacion_url": "https://forms.office.com/Pages/ResponsePage.aspx?id=gV7CnVC9L0GpjxKBOrlXTGPml87YVKVLoop6U13EWfBUQTdRSFFOQVBXNFJRMFI5Q005QTBORVkxOC4u",
+            "area": "OPERACIONES",
+            "estado_global": "activo",
+            "progreso_actual_pct": 0,
+            "last_activity_at": "2026-03-04T18:01:14.330Z"
+          },
+          "webhookUrl": "https://n8n.mobilvendor.com/webhook/mvlearning/employee/create",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-05T00:47:18.205Z",
+      "createdAt": "2026-03-05T00:47:18.205Z",
+      "role": "workflow:owner",
+      "workflowId": "zpOcWMjjWOTVhAdAhfntR",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [
+    {
+      "updatedAt": "2026-02-10T21:41:51.654Z",
+      "createdAt": "2026-02-10T21:41:51.654Z",
+      "id": "k445nROP8Mok1qsB",
+      "name": "mvlearning"
+    }
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2026-03-05T03:29:22.000Z",
+  "versionId": "58203a1d-7aa5-4000-a8d4-0ac4b765bc81"
+}
