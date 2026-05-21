@@ -1,0 +1,940 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-05-06T13:07:50.000Z",
+    "createdAt": "2026-05-06T13:07:42.345Z",
+    "versionId": "dae0ff34-88bd-42f3-8c6c-6f4a659104a3",
+    "workflowId": "SLx4W6pOaRpCQ35NNQQOD",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "prompt-pantallas",
+          "responseMode": "responseNode",
+          "options": {
+            "allowedOrigins": "*"
+          }
+        },
+        "id": "41c500d8-da7d-499a-8def-16be646273f2",
+        "name": "Recibir Solicitud del HTML2",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          2064,
+          1200
+        ],
+        "webhookId": "prompt-pantallas"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": false,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "val-orig",
+                "leftValue": "={{ $json.body.textoOriginal }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty"
+                }
+              },
+              {
+                "id": "val-chng",
+                "leftValue": "={{ $json.body.textoCambios }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "8e268e5e-aab5-4ab4-926c-b060fac44d77",
+        "name": "Validar Campos de Entrada2",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          2288,
+          1200
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{ \"exito\": false, \"error\": \"Los campos textoOriginal y textoCambios son obligatorios\" }",
+          "options": {
+            "responseCode": 400,
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ]
+            }
+          }
+        },
+        "id": "d1f9e542-af31-4fa7-a7e3-2a2e644aed8d",
+        "name": "Responder Error de Validacion2",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          2512,
+          1392
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "v1",
+                "name": "textoOriginal",
+                "value": "={{ $json.body.textoOriginal }}",
+                "type": "string"
+              },
+              {
+                "id": "v2",
+                "name": "textoCambios",
+                "value": "={{ $json.body.textoCambios }}",
+                "type": "string"
+              },
+              {
+                "id": "v3",
+                "name": "tipoCambio",
+                "value": "={{ $json.body.tipoCambio || 'instruccion' }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "6e34c496-f755-49dc-bd56-9267b07abd7a",
+        "name": "Extraer Variables de Entrada2",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          2512,
+          1200
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Eres un analista editorial especializado en documentación técnica de software B2B para distribución y ventas. Tu única tarea es analizar el material de cambio y producir una especificación de edición estructurada en formato JSON.\n\n## DOCUMENTO ORIGINAL (en formato HTML con formato preservado):\n{{ $json.textoOriginal }}\n\nNOTA: El documento original llega en HTML. Analiza su contenido textual para identificar secciones y posición del cambio. Las etiquetas <strong> indican texto en negrita del documento original.\n\n## MATERIAL DE CAMBIO (Tipo: {{ $json.tipoCambio }}):\n{{ $json.textoCambios }}\n\n## INSTRUCCIONES SEGÚN EL TIPO DE MATERIAL:\n\nSi tipoCambio es \"instruccion\": El material es una instrucción directa. Identifica la sección exacta que debe modificarse y redacta el contenido nuevo con el mismo estilo y tono del documento original.\n\nSi tipoCambio es \"referencia\": El material es texto largo o HTML exportado (por ejemplo, video de Guidde). Extrae únicamente la información funcional relevante. Descarta navegación, pasos de interfaz repetitivos y capturas. Resume en máximo 100 palabras con el estilo del documento.\n\nSi tipoCambio es \"kb\": El material proviene de una base de conocimiento (Bitrix, Copilot u otro sistema). Identifica el fragmento pertinente para el documento original y sintetízalo en máximo 100 palabras con tono profesional.\n\n## REGLAS PARA EL CAMPO \"contenidoIntegrar\":\n- Escribe en presente simple: describe lo que el sistema hace, cómo funciona, qué permite\n- Usa frases como: \"permite\", \"define\", \"establece\", \"funciona\", \"al activarse\", \"el campo X aplica\"\n- Ejemplos de redacción correcta:\n  \"El campo Escalonado permite al distribuidor definir rangos de cantidad comprada\"\n  \"Al activarse, el sistema aplica beneficios diferenciados según el rango configurado\"\n- Máximo 100 palabras\n- No copies literalmente el material de cambio recibido\n- Si el material incluye la sección destino, úsala exactamente en el campo \"seccion\"\n\n## FORMATO DE RESPUESTA:\nResponde ÚNICAMENTE con el siguiente JSON, sin texto adicional, sin bloques de código markdown:\n\n{\n  \"seccion\": \"Nombre exacto de la sección del documento donde va el cambio\",\n  \"tipoOperacion\": \"agregar_item_lista o agregar_parrafo o modificar_parrafo o expandir_seccion o agregar_subseccion\",\n  \"posicion\": \"Descripción precisa de dónde ubicar el cambio dentro de la sección, por ejemplo: al final de la lista de tipos de acciones, o después del párrafo que menciona inventario promocional\",\n  \"contenidoIntegrar\": \"Texto redactado en presente simple, con el estilo del documento, máximo 100 palabras\",\n  \"resumenCambio\": \"Una oración que describe en qué consiste el cambio\"\n}"
+        },
+        "id": "493c7b4b-8af8-40a4-9d27-0289bc8724b2",
+        "name": "Paso 1 Analizar y Extraer Especificacion2",
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.4,
+        "position": [
+          2752,
+          1200
+        ]
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-4o",
+            "mode": "list",
+            "cachedResultName": "gpt-4o"
+          },
+          "options": {
+            "maxTokens": 1024,
+            "temperature": 0.2
+          }
+        },
+        "id": "785a6ec5-b977-4707-870e-923456db1774",
+        "name": "Modelo GPT-4o Extractor2",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          2752,
+          1392
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "E7b7vwKLzPo4JwAR",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// Obtener el texto devuelto por el extractor\nconst textoExtractor = $('Paso 1 Analizar y Extraer Especificacion2').item.json.text || '';\nconst textoOriginal  = $('Extraer Variables de Entrada2').item.json.textoOriginal;\nconst textoCambios   = $('Extraer Variables de Entrada2').item.json.textoCambios;\nconst tipoCambio     = $('Extraer Variables de Entrada2').item.json.tipoCambio;\n\n// Limpiar posibles bloques de markdown que GPT pueda agregar\nlet jsonLimpio = textoExtractor\n  .replace(/```json\\s*/gi, '')\n  .replace(/```\\s*/gi, '')\n  .trim();\n\nlet especificacion = {};\ntry {\n  especificacion = JSON.parse(jsonLimpio);\n} catch(e) {\n  // Si falla el parseo, construir especificación básica de respaldo\n  especificacion = {\n    seccion: 'Seccion no identificada',\n    tipoOperacion: 'agregar_parrafo',\n    posicion: 'Al final del documento',\n    contenidoIntegrar: textoCambios.substring(0, 300),\n    resumenCambio: 'Agregar informacion al documento'\n  };\n}\n\nreturn {\n  json: {\n    textoOriginal,\n    tipoCambio,\n    especificacion,\n    especificacionTexto: JSON.stringify(especificacion, null, 2)\n  }\n};"
+        },
+        "id": "45c2614c-3147-4902-94dd-0f55bb2cf2d5",
+        "name": "Parsear Especificacion del Cambio2",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2992,
+          1200
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Eres un editor técnico especializado en documentación de software para distribución y ventas B2B. Tu tarea es aplicar una modificación específica al documento original y devolver la versión final completa.\n\n## DOCUMENTO ORIGINAL (en formato HTML):\n{{ $json.textoOriginal }}\n\nIMPORTANTE: El documento original ya viene en HTML. Conserva EXACTAMENTE las mismas etiquetas <strong>, <em>, <h2>, <ul>, <li> que ya existen. No pierdas ningún formato que ya está marcado.\n\n## ESPECIFICACION DEL CAMBIO A APLICAR:\n{{ $json.especificacionTexto }}\n\n## MODO DE ESCRITURA OBLIGATORIO:\nEscribe siempre en presente simple y atemporal. Las funcionalidades del sistema existen y funcionan. Describe lo que el sistema hace, no lo que se añadió o incorporó.\n\nRedacción correcta:\n\"El campo Escalonado permite al distribuidor definir rangos de cantidad comprada\"\n\"Al activar esta opción, el sistema aplica beneficios diferenciados según el rango\"\n\"Las acciones escalonadas definen límites a partir de los cuales el regalo no sigue una escala progresiva\"\n\n## REGLAS DE EDICIÓN:\n\n1. Integra el campo \"contenidoIntegrar\" en la posicion indicada dentro de la seccion señalada.\n\n2. Adapta el contenidoIntegrar al flujo narrativo del texto circundante. El resultado debe leerse como si siempre hubiera formado parte del documento, sin costuras visibles.\n\n3. Escribe en presente simple en todo momento. El sistema funciona, permite, define, establece, aplica. No describe eventos pasados ni incorporaciones recientes.\n\n4. Conserva ÍNTEGRAMENTE todas las demás secciones, párrafos y listas del documento sin ningún cambio.\n\n5. Mantén el mismo formato: párrafos separados por línea en blanco, listas con viñeta (•), títulos de sección en su propio renglón.\n\n6. El tono es profesional, orientado al usuario de negocio, claro y directo.\n\n7. Si tipoOperacion es \"agregar_item_lista\", el nuevo ítem sigue el formato y extensión de los ítems existentes en esa lista.\n\n8. Si tipoOperacion es \"modificar_parrafo\", reemplaza únicamente ese párrafo sin tocar los demás.\n\n9. No agregues comentarios, encabezados adicionales, notas ni meta-texto de ningún tipo.\n\n10. FORMATO DE SALIDA — sigue estas reglas sin excepción:\n   - Devuelve el documento en HTML semántico directo\n   - <p> para cada párrafo\n   - <strong> para cualquier texto que en el original esté en negrita\n   - <em> para cursiva\n   - <h2> para títulos de sección principales (ej: \"Pantalla Promociones\")\n   - <h3> para subtítulos\n   - <ul><li> para listas con viñetas\n   - <ol><li> para listas numeradas\n   - PROHIBIDO: no uses ```html, no uses <!DOCTYPE>, no uses <html>, <head> ni <body>\n   - PROHIBIDO: no incluyas estilos CSS ni atributos class o style\n   - Devuelve ÚNICAMENTE el HTML del contenido, empezando directamente con la primera etiqueta"
+        },
+        "id": "ba59cb2d-0c73-4931-b1e2-4de54202525d",
+        "name": "Paso 2 Redactar Documento Final2",
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.4,
+        "position": [
+          3232,
+          1200
+        ]
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-4o",
+            "mode": "list",
+            "cachedResultName": "gpt-4o"
+          },
+          "options": {
+            "maxTokens": 4096,
+            "temperature": 0.1
+          }
+        },
+        "id": "108b141b-5d9d-4fe1-83d5-c0d12ca99a9a",
+        "name": "Modelo GPT-4o Editor2",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          3232,
+          1392
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "E7b7vwKLzPo4JwAR",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "r1",
+                "name": "exito",
+                "value": true,
+                "type": "boolean"
+              },
+              {
+                "id": "r2",
+                "name": "textoFinal",
+                "value": "={{ $('Paso 2 Redactar Documento Final2').item.json.text }}",
+                "type": "string"
+              },
+              {
+                "id": "r3",
+                "name": "meta.cambioAplicado",
+                "value": "={{ $('Parsear Especificacion del Cambio2').item.json.especificacion.resumenCambio }}",
+                "type": "string"
+              },
+              {
+                "id": "r4",
+                "name": "meta.seccionModificada",
+                "value": "={{ $('Parsear Especificacion del Cambio2').item.json.especificacion.seccion }}",
+                "type": "string"
+              },
+              {
+                "id": "r5",
+                "name": "meta.tipoCambio",
+                "value": "={{ $('Extraer Variables de Entrada2').item.json.tipoCambio }}",
+                "type": "string"
+              },
+              {
+                "id": "r6",
+                "name": "meta.procesadoEn",
+                "value": "={{ $now.toISO() }}",
+                "type": "string"
+              },
+              {
+                "id": "r7",
+                "name": "meta.modelo",
+                "value": "gpt-4o — extractor 0.2 | editor 0.1",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "4d09b1e1-8b19-4824-9fe4-f4b13a52e765",
+        "name": "Preparar Respuesta JSON2",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          3472,
+          1200
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ JSON.stringify($json) }}",
+          "options": {
+            "responseCode": 200,
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "name": "Access-Control-Allow-Headers",
+                  "value": "Content-Type, Authorization"
+                },
+                {
+                  "name": "Access-Control-Allow-Methods",
+                  "value": "POST, OPTIONS"
+                }
+              ]
+            }
+          }
+        },
+        "id": "6c42ec25-9a06-4406-b90e-cad006e3db8e",
+        "name": "Responder al HTML con Resultado2",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          3712,
+          1200
+        ]
+      }
+    ],
+    "connections": {
+      "Recibir Solicitud del HTML2": {
+        "main": [
+          [
+            {
+              "node": "Validar Campos de Entrada2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validar Campos de Entrada2": {
+        "main": [
+          [
+            {
+              "node": "Extraer Variables de Entrada2",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Responder Error de Validacion2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extraer Variables de Entrada2": {
+        "main": [
+          [
+            {
+              "node": "Paso 1 Analizar y Extraer Especificacion2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Paso 1 Analizar y Extraer Especificacion2": {
+        "main": [
+          [
+            {
+              "node": "Parsear Especificacion del Cambio2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Modelo GPT-4o Extractor2": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Paso 1 Analizar y Extraer Especificacion2",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Parsear Especificacion del Cambio2": {
+        "main": [
+          [
+            {
+              "node": "Paso 2 Redactar Documento Final2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Paso 2 Redactar Documento Final2": {
+        "main": [
+          [
+            {
+              "node": "Preparar Respuesta JSON2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Modelo GPT-4o Editor2": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Paso 2 Redactar Documento Final2",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Preparar Respuesta JSON2": {
+        "main": [
+          [
+            {
+              "node": "Responder al HTML con Resultado2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "ZEI MOBILVENDOR",
+    "name": "Version 5",
+    "description": "",
+    "autosaved": false
+  },
+  "activeVersionId": "dae0ff34-88bd-42f3-8c6c-6f4a659104a3",
+  "connections": {
+    "Recibir Solicitud del HTML2": {
+      "main": [
+        [
+          {
+            "node": "Validar Campos de Entrada2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar Campos de Entrada2": {
+      "main": [
+        [
+          {
+            "node": "Extraer Variables de Entrada2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder Error de Validacion2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer Variables de Entrada2": {
+      "main": [
+        [
+          {
+            "node": "Paso 1 Analizar y Extraer Especificacion2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Paso 1 Analizar y Extraer Especificacion2": {
+      "main": [
+        [
+          {
+            "node": "Parsear Especificacion del Cambio2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modelo GPT-4o Extractor2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Paso 1 Analizar y Extraer Especificacion2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Especificacion del Cambio2": {
+      "main": [
+        [
+          {
+            "node": "Paso 2 Redactar Documento Final2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Paso 2 Redactar Documento Final2": {
+      "main": [
+        [
+          {
+            "node": "Preparar Respuesta JSON2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modelo GPT-4o Editor2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Paso 2 Redactar Documento Final2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Respuesta JSON2": {
+      "main": [
+        [
+          {
+            "node": "Responder al HTML con Resultado2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-04-29T03:13:16.316Z",
+  "id": "SLx4W6pOaRpCQ35NNQQOD",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Mobilvendor — Editor Comparativo v2.4",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "prompt-pantallas",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "41c500d8-da7d-499a-8def-16be646273f2",
+      "name": "Recibir Solicitud del HTML2",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        2064,
+        1200
+      ],
+      "webhookId": "prompt-pantallas"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "val-orig",
+              "leftValue": "={{ $json.body.textoOriginal }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "val-chng",
+              "leftValue": "={{ $json.body.textoCambios }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "8e268e5e-aab5-4ab4-926c-b060fac44d77",
+      "name": "Validar Campos de Entrada2",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2288,
+        1200
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{ \"exito\": false, \"error\": \"Los campos textoOriginal y textoCambios son obligatorios\" }",
+        "options": {
+          "responseCode": 400,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "d1f9e542-af31-4fa7-a7e3-2a2e644aed8d",
+      "name": "Responder Error de Validacion2",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        2512,
+        1392
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "v1",
+              "name": "textoOriginal",
+              "value": "={{ $json.body.textoOriginal }}",
+              "type": "string"
+            },
+            {
+              "id": "v2",
+              "name": "textoCambios",
+              "value": "={{ $json.body.textoCambios }}",
+              "type": "string"
+            },
+            {
+              "id": "v3",
+              "name": "tipoCambio",
+              "value": "={{ $json.body.tipoCambio || 'instruccion' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6e34c496-f755-49dc-bd56-9267b07abd7a",
+      "name": "Extraer Variables de Entrada2",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2512,
+        1200
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Eres un analista editorial especializado en documentación técnica de software B2B para distribución y ventas. Tu única tarea es analizar el material de cambio y producir una especificación de edición estructurada en formato JSON.\n\n## DOCUMENTO ORIGINAL (en formato HTML con formato preservado):\n{{ $json.textoOriginal }}\n\nNOTA: El documento original llega en HTML. Analiza su contenido textual para identificar secciones y posición del cambio. Las etiquetas <strong> indican texto en negrita del documento original.\n\n## MATERIAL DE CAMBIO (Tipo: {{ $json.tipoCambio }}):\n{{ $json.textoCambios }}\n\n## INSTRUCCIONES SEGÚN EL TIPO DE MATERIAL:\n\nSi tipoCambio es \"instruccion\": El material es una instrucción directa. Identifica la sección exacta que debe modificarse y redacta el contenido nuevo con el mismo estilo y tono del documento original.\n\nSi tipoCambio es \"referencia\": El material es texto largo o HTML exportado (por ejemplo, video de Guidde). Extrae únicamente la información funcional relevante. Descarta navegación, pasos de interfaz repetitivos y capturas. Resume en máximo 100 palabras con el estilo del documento.\n\nSi tipoCambio es \"kb\": El material proviene de una base de conocimiento (Bitrix, Copilot u otro sistema). Identifica el fragmento pertinente para el documento original y sintetízalo en máximo 100 palabras con tono profesional.\n\n## REGLAS PARA EL CAMPO \"contenidoIntegrar\":\n- Escribe en presente simple: describe lo que el sistema hace, cómo funciona, qué permite\n- Usa frases como: \"permite\", \"define\", \"establece\", \"funciona\", \"al activarse\", \"el campo X aplica\"\n- Ejemplos de redacción correcta:\n  \"El campo Escalonado permite al distribuidor definir rangos de cantidad comprada\"\n  \"Al activarse, el sistema aplica beneficios diferenciados según el rango configurado\"\n- Máximo 100 palabras\n- No copies literalmente el material de cambio recibido\n- Si el material incluye la sección destino, úsala exactamente en el campo \"seccion\"\n\n## FORMATO DE RESPUESTA:\nResponde ÚNICAMENTE con el siguiente JSON, sin texto adicional, sin bloques de código markdown:\n\n{\n  \"seccion\": \"Nombre exacto de la sección del documento donde va el cambio\",\n  \"tipoOperacion\": \"agregar_item_lista o agregar_parrafo o modificar_parrafo o expandir_seccion o agregar_subseccion\",\n  \"posicion\": \"Descripción precisa de dónde ubicar el cambio dentro de la sección, por ejemplo: al final de la lista de tipos de acciones, o después del párrafo que menciona inventario promocional\",\n  \"contenidoIntegrar\": \"Texto redactado en presente simple, con el estilo del documento, máximo 100 palabras\",\n  \"resumenCambio\": \"Una oración que describe en qué consiste el cambio\"\n}"
+      },
+      "id": "493c7b4b-8af8-40a4-9d27-0289bc8724b2",
+      "name": "Paso 1 Analizar y Extraer Especificacion2",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        2752,
+        1200
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {
+          "maxTokens": 1024,
+          "temperature": 0.2
+        }
+      },
+      "id": "785a6ec5-b977-4707-870e-923456db1774",
+      "name": "Modelo GPT-4o Extractor2",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2752,
+        1392
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "E7b7vwKLzPo4JwAR",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Obtener el texto devuelto por el extractor\nconst textoExtractor = $('Paso 1 Analizar y Extraer Especificacion2').item.json.text || '';\nconst textoOriginal  = $('Extraer Variables de Entrada2').item.json.textoOriginal;\nconst textoCambios   = $('Extraer Variables de Entrada2').item.json.textoCambios;\nconst tipoCambio     = $('Extraer Variables de Entrada2').item.json.tipoCambio;\n\n// Limpiar posibles bloques de markdown que GPT pueda agregar\nlet jsonLimpio = textoExtractor\n  .replace(/```json\\s*/gi, '')\n  .replace(/```\\s*/gi, '')\n  .trim();\n\nlet especificacion = {};\ntry {\n  especificacion = JSON.parse(jsonLimpio);\n} catch(e) {\n  // Si falla el parseo, construir especificación básica de respaldo\n  especificacion = {\n    seccion: 'Seccion no identificada',\n    tipoOperacion: 'agregar_parrafo',\n    posicion: 'Al final del documento',\n    contenidoIntegrar: textoCambios.substring(0, 300),\n    resumenCambio: 'Agregar informacion al documento'\n  };\n}\n\nreturn {\n  json: {\n    textoOriginal,\n    tipoCambio,\n    especificacion,\n    especificacionTexto: JSON.stringify(especificacion, null, 2)\n  }\n};"
+      },
+      "id": "45c2614c-3147-4902-94dd-0f55bb2cf2d5",
+      "name": "Parsear Especificacion del Cambio2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2992,
+        1200
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Eres un editor técnico especializado en documentación de software para distribución y ventas B2B. Tu tarea es aplicar una modificación específica al documento original y devolver la versión final completa.\n\n## DOCUMENTO ORIGINAL (en formato HTML):\n{{ $json.textoOriginal }}\n\nIMPORTANTE: El documento original ya viene en HTML. Conserva EXACTAMENTE las mismas etiquetas <strong>, <em>, <h2>, <ul>, <li> que ya existen. No pierdas ningún formato que ya está marcado.\n\n## ESPECIFICACION DEL CAMBIO A APLICAR:\n{{ $json.especificacionTexto }}\n\n## MODO DE ESCRITURA OBLIGATORIO:\nEscribe siempre en presente simple y atemporal. Las funcionalidades del sistema existen y funcionan. Describe lo que el sistema hace, no lo que se añadió o incorporó.\n\nRedacción correcta:\n\"El campo Escalonado permite al distribuidor definir rangos de cantidad comprada\"\n\"Al activar esta opción, el sistema aplica beneficios diferenciados según el rango\"\n\"Las acciones escalonadas definen límites a partir de los cuales el regalo no sigue una escala progresiva\"\n\n## REGLAS DE EDICIÓN:\n\n1. Integra el campo \"contenidoIntegrar\" en la posicion indicada dentro de la seccion señalada.\n\n2. Adapta el contenidoIntegrar al flujo narrativo del texto circundante. El resultado debe leerse como si siempre hubiera formado parte del documento, sin costuras visibles.\n\n3. Escribe en presente simple en todo momento. El sistema funciona, permite, define, establece, aplica. No describe eventos pasados ni incorporaciones recientes.\n\n4. Conserva ÍNTEGRAMENTE todas las demás secciones, párrafos y listas del documento sin ningún cambio.\n\n5. Mantén el mismo formato: párrafos separados por línea en blanco, listas con viñeta (•), títulos de sección en su propio renglón.\n\n6. El tono es profesional, orientado al usuario de negocio, claro y directo.\n\n7. Si tipoOperacion es \"agregar_item_lista\", el nuevo ítem sigue el formato y extensión de los ítems existentes en esa lista.\n\n8. Si tipoOperacion es \"modificar_parrafo\", reemplaza únicamente ese párrafo sin tocar los demás.\n\n9. No agregues comentarios, encabezados adicionales, notas ni meta-texto de ningún tipo.\n\n10. FORMATO DE SALIDA — sigue estas reglas sin excepción:\n   - Devuelve el documento en HTML semántico directo\n   - <p> para cada párrafo\n   - <strong> para cualquier texto que en el original esté en negrita\n   - <em> para cursiva\n   - <h2> para títulos de sección principales (ej: \"Pantalla Promociones\")\n   - <h3> para subtítulos\n   - <ul><li> para listas con viñetas\n   - <ol><li> para listas numeradas\n   - PROHIBIDO: no uses ```html, no uses <!DOCTYPE>, no uses <html>, <head> ni <body>\n   - PROHIBIDO: no incluyas estilos CSS ni atributos class o style\n   - Devuelve ÚNICAMENTE el HTML del contenido, empezando directamente con la primera etiqueta"
+      },
+      "id": "ba59cb2d-0c73-4931-b1e2-4de54202525d",
+      "name": "Paso 2 Redactar Documento Final2",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        3232,
+        1200
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {
+          "maxTokens": 4096,
+          "temperature": 0.1
+        }
+      },
+      "id": "108b141b-5d9d-4fe1-83d5-c0d12ca99a9a",
+      "name": "Modelo GPT-4o Editor2",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        3232,
+        1392
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "E7b7vwKLzPo4JwAR",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "r1",
+              "name": "exito",
+              "value": true,
+              "type": "boolean"
+            },
+            {
+              "id": "r2",
+              "name": "textoFinal",
+              "value": "={{ $('Paso 2 Redactar Documento Final2').item.json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "r3",
+              "name": "meta.cambioAplicado",
+              "value": "={{ $('Parsear Especificacion del Cambio2').item.json.especificacion.resumenCambio }}",
+              "type": "string"
+            },
+            {
+              "id": "r4",
+              "name": "meta.seccionModificada",
+              "value": "={{ $('Parsear Especificacion del Cambio2').item.json.especificacion.seccion }}",
+              "type": "string"
+            },
+            {
+              "id": "r5",
+              "name": "meta.tipoCambio",
+              "value": "={{ $('Extraer Variables de Entrada2').item.json.tipoCambio }}",
+              "type": "string"
+            },
+            {
+              "id": "r6",
+              "name": "meta.procesadoEn",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            },
+            {
+              "id": "r7",
+              "name": "meta.modelo",
+              "value": "gpt-4o — extractor 0.2 | editor 0.1",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4d09b1e1-8b19-4824-9fe4-f4b13a52e765",
+      "name": "Preparar Respuesta JSON2",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3472,
+        1200
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type, Authorization"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "POST, OPTIONS"
+              }
+            ]
+          }
+        }
+      },
+      "id": "6c42ec25-9a06-4406-b90e-cad006e3db8e",
+      "name": "Responder al HTML con Resultado2",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        3712,
+        1200
+      ]
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "binaryMode": "separate"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-04-29T03:13:16.331Z",
+      "createdAt": "2026-04-29T03:13:16.331Z",
+      "role": "workflow:owner",
+      "workflowId": "SLx4W6pOaRpCQ35NNQQOD",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [
+    {
+      "updatedAt": "2026-05-04T17:46:46.818Z",
+      "createdAt": "2026-05-04T17:46:46.818Z",
+      "id": "DP72i8eHsxDb0XAK",
+      "name": "dos-pasos"
+    },
+    {
+      "updatedAt": "2026-04-29T03:23:52.750Z",
+      "createdAt": "2026-04-29T03:23:52.750Z",
+      "id": "T3LOjAho96wH2bTs",
+      "name": "documentacion"
+    },
+    {
+      "updatedAt": "2026-04-29T03:13:14.536Z",
+      "createdAt": "2026-04-29T03:13:14.536Z",
+      "id": "a9DB8phPl3mzE3b0",
+      "name": "documentación"
+    },
+    {
+      "updatedAt": "2026-04-29T03:13:14.546Z",
+      "createdAt": "2026-04-29T03:13:14.546Z",
+      "id": "ejHWK4KqON23uoLa",
+      "name": "mobilvendor"
+    },
+    {
+      "updatedAt": "2026-04-29T03:13:14.557Z",
+      "createdAt": "2026-04-29T03:13:14.557Z",
+      "id": "puNw19neng7fuO8N",
+      "name": "editor"
+    },
+    {
+      "updatedAt": "2026-04-29T03:23:52.744Z",
+      "createdAt": "2026-04-29T03:23:52.744Z",
+      "id": "uSAUTZ5NlinK6iBS",
+      "name": "webhook"
+    },
+    {
+      "updatedAt": "2026-04-29T03:13:14.563Z",
+      "createdAt": "2026-04-29T03:13:14.563Z",
+      "id": "w4tfmoK2CAdBp4F7",
+      "name": "chatgpt"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2026-05-06T13:07:42.342Z",
+  "versionId": "dae0ff34-88bd-42f3-8c6c-6f4a659104a3"
+}
