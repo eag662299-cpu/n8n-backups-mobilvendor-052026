@@ -1,0 +1,81 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {},
+  "createdAt": "2026-01-13T02:49:47.109Z",
+  "id": "5eUqo0u6k0GnlTDd",
+  "isArchived": false,
+  "meta": null,
+  "name": "My workflow 23",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.microsoft.com/v1.0/subscriptions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"changeType\": \"updated\",\n  \"notificationUrl\": \"https://n8n.mobilvendor.com/webhook/f7806dad-e4d7-4750-95d9-6a1b51b5ef92\",\n  \"resource\": \"/sites/mobilvendorcom.sharepoint.com,f545d085-e894-4c08-b06d-fd9559e9391f,6b7b3702-269f-4e6b-8a31-04ffbffff3fd/lists/8e362680-536d-43c4-81d6-c8738799a09e\",\n  \"expirationDateTime\": \"2025-12-31T23:59:59Z\",\n  \"clientState\": \"secretMobilvendor\"\n}\n",
+        "options": {}
+      },
+      "name": "Suscripción carpeta app",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -160,
+        -48
+      ],
+      "id": "e911f5c0-4d1c-4a7a-aab8-11632ad9ae0d",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "rtxDh1vSk3F4bb0q",
+          "name": "Conexion SharePoint"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/sites/mobilvendorcom.sharepoint.com,f545d085-e894-4c08-b06d-fd9559e9391f,6b7b3702-269f-4e6b-8a31-04ffbffff3fd/lists",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -160,
+        144
+      ],
+      "id": "68abb63e-4efd-4505-be9b-b43136d18bd4",
+      "name": "carpeta_error_web1",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "rtxDh1vSk3F4bb0q",
+          "name": "Conexion SharePoint"
+        }
+      }
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:47.261Z",
+      "createdAt": "2026-01-13T02:49:47.261Z",
+      "role": "workflow:owner",
+      "workflowId": "5eUqo0u6k0GnlTDd",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T02:49:47.109Z",
+  "versionId": "d1481757-74eb-483e-9d30-bf8d3b97cf5d"
+}
