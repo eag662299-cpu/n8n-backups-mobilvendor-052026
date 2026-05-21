@@ -1,0 +1,764 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "⏰ Trigger Lun-Vie 9AM": {
+      "main": [
+        [
+          {
+            "node": "📊 Leer Todos los Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📊 Leer Todos los Leads": {
+      "main": [
+        [
+          {
+            "node": "🔍 Filtrar Leads Inactivos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Filtrar Leads Inactivos": {
+      "main": [
+        [
+          {
+            "node": "❓ ¿Hay Leads para Seguir?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "❓ ¿Hay Leads para Seguir?": {
+      "main": [
+        [
+          {
+            "node": "📦 Batch (5 por vez)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📦 Batch (5 por vez)": {
+      "main": [
+        [
+          {
+            "node": "🔀 Switch por Intento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔀 Switch por Intento": {
+      "main": [
+        [
+          {
+            "node": "📱 WA Intento 1 - Recordatorio",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "📱 WA Intento 2 - Valor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "📱 WA Intento Final - Cierre",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📱 WA Intento 1 - Recordatorio": {
+      "main": [
+        [
+          {
+            "node": "🔗 Merge Resultados WA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📱 WA Intento 2 - Valor": {
+      "main": [
+        [
+          {
+            "node": "🔗 Merge Resultados WA",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "🔗 Merge Resultados WA": {
+      "main": [
+        [
+          {
+            "node": "⏳ Espera 2s (Rate Limit)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⏳ Espera 2s (Rate Limit)": {
+      "main": [
+        [
+          {
+            "node": "📝 Preparar Update Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📝 Preparar Update Sheet": {
+      "main": [
+        [
+          {
+            "node": "✏️ Actualizar Lead en Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✏️ Actualizar Lead en Sheet": {
+      "main": [
+        [
+          {
+            "node": "❓ ¿Es Último Intento?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "❓ ¿Es Último Intento?": {
+      "main": [
+        [
+          {
+            "node": "🧊 Bitrix24: Marcar Lead Frío",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "📊 Log Ejecución",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🧊 Bitrix24: Marcar Lead Frío": {
+      "main": [
+        [
+          {
+            "node": "📊 Log Ejecución",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-13T21:22:42.641Z",
+  "id": "O6zi296fcgFMj2YZWNydL",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Seguimiento_Leads_Sin_Interacción_WA",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 🎯 SEGUIMIENTO DE LEADS SIN INTERACCIÓN WA\n\n**Objetivo:** Recontactar automáticamente a leads que recibieron el WA inicial pero NO respondieron.\n\n**Lógica de intentos (best practice marketing):**\n| Intento | Día desde creación | Mensaje |\n|---------|--------------------|---------|\n| 1       | Día +1             | Recordatorio suave |\n| 2       | Día +4             | Propuesta de valor |\n| 3       | Día +11            | Última oportunidad |\n| FRÍO    | Día +12+           | Marcar en Bitrix24 |\n\n**Condición de salida:** Lead responde WA (MQL1=TRUE) o alcanza 3 intentos sin respuesta.",
+        "height": 500,
+        "width": 560,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -4256,
+        -560
+      ],
+      "id": "5d382915-0770-406f-bdb0-02dde7f98ff2",
+      "name": "📋 Documentación"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * 1-5"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3648,
+        -352
+      ],
+      "id": "d95573db-20c2-461d-b5f1-560bf38b6938",
+      "name": "⏰ Trigger Lun-Vie 9AM"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "documentId": {
+          "__rl": true,
+          "value": "1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg",
+          "mode": "list",
+          "cachedResultName": "MQL",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg/edit"
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -3408,
+        -352
+      ],
+      "id": "78e4966d-043f-4256-8fa1-e1f0e17c65e2",
+      "name": "📊 Leer Todos los Leads",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// ============================================================\n// FILTRAR LEADS INACTIVOS SIN RESPUESTA EN WHATSAPP\n// ============================================================\nconst now = new Date();\nconst msPerDay = 1000 * 60 * 60 * 24;\nconst results = [];\n\nfor (const item of $input.all()) {\n  const row = item.json;\n\n  // 1. Skip si ya está calificado (MQL completado)\n  const mql1 = String(row.MQL1 || '').toLowerCase() === 'true';\n  const mql2 = String(row.MQL2 || '').toLowerCase() === 'true';\n  if (mql1 && mql2) continue;\n\n  // 2. Skip si no tiene teléfono válido\n  const phone = String(row.phone || '').trim();\n  if (!phone || phone.replace(/\\D/g, '').length < 9) continue;\n\n  // 3. Número de intentos de follow-up\n  const attemps = parseInt(row.attemps || '0') || 0;\n  if (attemps >= 3) continue; // Ya tiene 3 intentos, se marca como frío\n\n  // 4. Parsear fecha de creación (formato dd-MM-yyyy)\n  const fechaStr = String(row['fecha '] || row.fecha || '').trim();\n  if (!fechaStr) continue;\n  const parts = fechaStr.split('-');\n  if (parts.length !== 3) continue;\n  const fechaCreacion = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));\n  if (isNaN(fechaCreacion.getTime())) continue;\n\n  const diasDesdeCreacion = Math.floor((now - fechaCreacion) / msPerDay);\n\n  // 5. Ventana de tiempo para cada intento\n  // Intento 0→1: entre día 1 y 3\n  // Intento 1→2: entre día 4 y 10\n  // Intento 2→3: entre día 11 y 20\n  const ventanas = [\n    { min: 1,  max: 3  },\n    { min: 4,  max: 10 },\n    { min: 11, max: 20 }\n  ];\n  const ventana = ventanas[attemps];\n  if (diasDesdeCreacion < ventana.min || diasDesdeCreacion > ventana.max) continue;\n\n  // 6. Normalizar teléfono a E.164\n  const digits = phone.replace(/\\D/g, '');\n  const phoneE164 = phone.startsWith('+') ? phone : '+' + digits;\n\n  // 7. Determinar tipo de mensaje según intento\n  const tiposIntento = [\n    { template: 'seguimiento_wa_intento1_mv', label: 'Recordatorio_D1' },\n    { template: 'seguimiento_wa_intento2_mv', label: 'PropuestaValor_D4' },\n    { template: 'seguimiento_wa_final_mv',    label: 'UltimaOportunidad_D11' }\n  ];\n  const intenTipo = tiposIntento[attemps];\n\n  results.push({\n    json: {\n      ...row,\n      phone_e164:            phoneE164,\n      attemps_num:           attemps,\n      dias_desde_creacion:   diasDesdeCreacion,\n      template_wa:           intenTipo.template,\n      label_intento:         intenTipo.label,\n      nombre:                String(row.nombre  || 'Cliente').trim(),\n      empresa:               String(row.empresa || '').trim(),\n      nuevo_attemps:         attemps + 1,\n      es_ultimo_intento:     attemps === 2\n    }\n  });\n}\n\n// Retorna vacío especial si no hay leads\nif (results.length === 0) {\n  return [{ json: { _sin_leads: true, total: 0, fecha_ejecucion: now.toISOString() } }];\n}\n\nreturn results;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3152,
+        -352
+      ],
+      "id": "5a82ec8a-7034-4b6a-a848-e2b8f5219397",
+      "name": "🔍 Filtrar Leads Inactivos"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond-001",
+              "leftValue": "={{ $json._sin_leads }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2896,
+        -352
+      ],
+      "id": "fddc5e5f-9d2c-4ba1-aa8c-a6c32d049cab",
+      "name": "❓ ¿Hay Leads para Seguir?"
+    },
+    {
+      "parameters": {
+        "batchSize": 5,
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -2656,
+        -480
+      ],
+      "id": "72d36567-27ae-43d1-b31c-4a3046ac371a",
+      "name": "📦 Batch (5 por vez)"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "sw-cond-01",
+                    "leftValue": "={{ $json.attemps_num }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Intento_1"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "sw-cond-02",
+                    "leftValue": "={{ $json.attemps_num }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Intento_2"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "sw-cond-03",
+                    "leftValue": "={{ $json.attemps_num }}",
+                    "rightValue": 2,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Intento_Final"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -2416,
+        -480
+      ],
+      "id": "f1eece21-5dc8-4d9a-a9c4-4486f9deba51",
+      "name": "🔀 Switch por Intento"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "865315756662811",
+        "recipientPhoneNumber": "={{ $json.phone_e164 }}",
+        "textBody": "={{ '👋 Hola ' + $json.nombre + ', hace un día te enviamos información sobre *Mobilvendor*. \\n\\n¿Tuviste oportunidad de revisar cómo podemos optimizar las ventas de *' + $json.empresa + '*? \\n\\nResponde *SÍ* si deseas que un asesor te contacte o *INFO* para más detalles. 🚀' }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        -2144,
+        -592
+      ],
+      "id": "ce0e375e-8c07-4e71-b4d2-ba38eccee1a7",
+      "name": "📱 WA Intento 1 - Recordatorio",
+      "webhookId": "aad2ed31-5787-4820-b5f1-c41b969bc0e6",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "iJtDoyn2qJjzpWd5",
+          "name": "WhatsApp account_TEST"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "**📅 Intento 1 – Día +1**\nRecordatorio suave, mensaje conversacional.\n✅ Día 1 post-envío inicial.\n⚠️ Si la API WA requiere plantillas aprobadas, reemplazar por template: `seguimiento_wa_intento1_mv`",
+        "width": 300,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2144,
+        -784
+      ],
+      "id": "1ceba9a7-ee05-4d84-8180-71e24d663d3c",
+      "name": "Note Intento 1"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "865315756662811",
+        "recipientPhoneNumber": "={{ $json.phone_e164 }}",
+        "textBody": "={{ '🚀 Hola ' + $json.nombre + ', ¿sabías que empresas como la tuya en el sector *' + $json.empresa + '* han aumentado sus ventas hasta un 35% con Mobilvendor?\\n\\nTe ofrecemos una *demo gratuita de 15 min* personalizada para tu operación.\\n\\n📅 Responde *DEMO* para agendar o *INFO* para más detalles.' }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        -2144,
+        -400
+      ],
+      "id": "ff82df20-eb89-4a87-966d-bb173aa22724",
+      "name": "📱 WA Intento 2 - Valor",
+      "webhookId": "e7f634ea-91d4-471d-a11c-29b03aaaff6b",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "iJtDoyn2qJjzpWd5",
+          "name": "WhatsApp account_TEST"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "**📅 Intento 2 – Día +4**\nPropuesta de valor con social proof.\nEnfoca en beneficio tangible (% aumento ventas).\n⚠️ Template requerido: `seguimiento_wa_intento2_mv`",
+        "height": 140,
+        "width": 300,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1888,
+        -560
+      ],
+      "id": "41004416-f311-4bb3-99fc-6912ab3ed09c",
+      "name": "Note Intento 2"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "865315756662811",
+        "recipientPhoneNumber": "={{ $json.phone_e164 }}",
+        "textBody": "={{ '⚡ ' + $json.nombre + ', este es nuestro *último mensaje* para no saturar tu WhatsApp.\\n\\nSi en algún momento decides optimizar la gestión de ventas de *' + $json.empresa + '*, estaremos aquí para ayudarte. 🤝\\n\\nResponde *SÍ* cuando estés listo y te conectamos con un asesor de inmediato.' }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        -2144,
+        -192
+      ],
+      "id": "e44e861c-8356-45d8-af82-4f6c12b46bfc",
+      "name": "📱 WA Intento Final - Cierre",
+      "webhookId": "49384658-603b-4a62-992d-7369410b2c16",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "iJtDoyn2qJjzpWd5",
+          "name": "WhatsApp account_TEST"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "**📅 Intento Final – Día +11**\nMensaje de cierre empático (no agresivo).\nDeja la puerta abierta para el futuro.\n⚠️ Template: `seguimiento_wa_final_mv`\n🔴 Después de esto → lead se marca FRÍO",
+        "width": 300,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1920,
+        -176
+      ],
+      "id": "7a2a9ba2-e67f-417d-a76f-4ff23e65d1af",
+      "name": "Note Intento Final"
+    },
+    {
+      "parameters": {
+        "mode": "passThrough"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        -1888,
+        -400
+      ],
+      "id": "dbe48a82-e914-4c59-bc64-3dc1a84d4d01",
+      "name": "🔗 Merge Resultados WA"
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1648,
+        -400
+      ],
+      "id": "f828adf9-23db-4f70-a104-bd1a2bbae829",
+      "name": "⏳ Espera 2s (Rate Limit)",
+      "webhookId": "360172d2-f785-4ab5-94cb-c808a7c48b69"
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// Preparar datos para actualizar la fila en Google Sheets\nconst item = $input.first().json;\nconst ahora = new Date();\nconst fechaHoy = `${String(ahora.getDate()).padStart(2,'0')}-${String(ahora.getMonth()+1).padStart(2,'0')}-${ahora.getFullYear()}`;\n\nreturn [{\n  json: {\n    phone:          item.phone,\n    attemps:        String(item.nuevo_attemps),\n    last_message:   `Seguimiento_${item.label_intento}_${fechaHoy}`,\n    mode:           item.es_ultimo_intento ? 'lead_frio' : 'seguimiento',\n    // Campos de identidad (para match en GSheets)\n    email:          item.email || '',\n    nombre:         item.nombre || '',\n    empresa:        item.empresa || '',\n    // Metadata follow-up\n    _es_ultimo:     item.es_ultimo_intento,\n    _id_lead:       item.id_lead || '',\n    _label_intento: item.label_intento,\n    _phone_e164:    item.phone_e164\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1408,
+        -400
+      ],
+      "id": "5e6c590f-11f9-4195-b460-b1a4b2545184",
+      "name": "📝 Preparar Update Sheet"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg",
+          "mode": "list",
+          "cachedResultName": "MQL",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "attemps": "={{ $json.attemps }}",
+            "last_message": "={{ $json.last_message }}",
+            "mode": "={{ $json.mode }}"
+          },
+          "matchingColumns": [
+            "phone"
+          ],
+          "schema": [
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "attemps",
+              "displayName": "attemps",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "last_message",
+              "displayName": "last_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "mode",
+              "displayName": "mode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1168,
+        -400
+      ],
+      "id": "1214e50f-fc12-4ece-b935-a383dd4b8e5b",
+      "name": "✏️ Actualizar Lead en Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond-ultimo",
+              "leftValue": "={{ $json._es_ultimo }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -928,
+        -400
+      ],
+      "id": "fded09b3-7071-4dd7-802f-1249180b66e7",
+      "name": "❓ ¿Es Último Intento?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://mobilvendor.bitrix24.es/rest/1/vz55jbu9kzwezk25/crm.lead.update.json",
+        "sendQuery": true,
+        "specifyQuery": "json",
+        "jsonQuery": "={\n  \"id\": \"{{ $json._id_lead }}\",\n  \"fields\": {\n    \"STATUS_ID\": \"JUNK\",\n    \"COMMENTS\": \"Lead marcado como FRÍO automáticamente por n8n. Sin respuesta tras 3 intentos de seguimiento WA. Último intento: {{ $json._label_intento }} | Fecha: {{ $now.format('DD-MM-YYYY') }}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -656,
+        -512
+      ],
+      "id": "b9df2dca-52ca-4a30-ae72-773e04bec133",
+      "name": "🧊 Bitrix24: Marcar Lead Frío",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// Genera resumen de ejecución para monitoreo\nconst items = $input.all();\nconst ahora = new Date().toISOString();\nreturn [{\n  json: {\n    resumen_ejecucion: {\n      fecha: ahora,\n      total_procesados: items.length,\n      leads_marcados_frios: items.filter(i => i.json._es_ultimo).length,\n      leads_seguimiento_activo: items.filter(i => !i.json._es_ultimo).length\n    }\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -656,
+        -272
+      ],
+      "id": "337f2f9d-9900-4f6b-a45d-52a87f3afddc",
+      "name": "📊 Log Ejecución"
+    },
+    {
+      "parameters": {
+        "content": "**✅ Sin leads pendientes**\nNo hay leads que requieran seguimiento hoy.\nEl flujo termina aquí hasta la próxima ejecución.",
+        "height": 120,
+        "width": 280,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2896,
+        -176
+      ],
+      "id": "3775ab22-a556-44eb-90a9-50341396510c",
+      "name": "Note Sin Leads"
+    },
+    {
+      "parameters": {
+        "content": "## ⚠️ TEMPLATES DE WHATSAPP\nLos nodos WA usan mensajes de texto directo.\nSi tu cuenta WA Business requiere **plantillas aprobadas** para mensajes outbound (24h window), debes:\n1. Crear 3 templates en Meta Business Manager:\n   - `seguimiento_wa_intento1_mv`\n   - `seguimiento_wa_intento2_mv`\n   - `seguimiento_wa_final_mv`\n2. Cambiar operation a `sendTemplate` en cada nodo WA\n3. Agregar parámetros `{{1}}=nombre`, `{{2}}=empresa`",
+        "height": 260,
+        "width": 400,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2672,
+        80
+      ],
+      "id": "056c7d29-f434-4db8-b517-393a1d9d731f",
+      "name": "Note Templates WA"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-13T21:22:42.669Z",
+      "createdAt": "2026-03-13T21:22:42.669Z",
+      "role": "workflow:owner",
+      "workflowId": "O6zi296fcgFMj2YZWNydL",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-03-16T02:35:08.448Z",
+  "versionId": "ebcd4fac-2c3a-4f7e-87d0-4f0133fabc3a"
+}
