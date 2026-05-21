@@ -1,0 +1,274 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Upload Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Audio": {
+      "main": [
+        [
+          {
+            "node": "Start Transcription",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start Transcription": {
+      "main": [
+        [
+          {
+            "node": "Wait for Transcription",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Transcription": {
+      "main": [
+        [
+          {
+            "node": "Check Transcription Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Transcription Status": {
+      "main": [
+        [
+          {
+            "node": "Check if Completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Completed": {
+      "main": [
+        [
+          {
+            "node": "Format Transcription Output",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle Incomplete Transcription",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:48.201Z",
+  "id": "QH4JDPm9kNz9xeKx",
+  "isArchived": false,
+  "meta": null,
+  "name": "Transcripcion Automatica de Reunion",
+  "nodes": [
+    {
+      "id": "1",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "transcribe-meeting",
+        "responseMode": "lastNode"
+      }
+    },
+    {
+      "id": "2",
+      "name": "Upload Audio",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        480,
+        300
+      ],
+      "parameters": {
+        "requestMethod": "POST",
+        "url": "https://api.assemblyai.com/v2/upload",
+        "options": {
+          "sendBinaryData": true,
+          "binaryPropertyName": "data"
+        },
+        "headerParametersUi": {
+          "parameter": [
+            {
+              "name": "authorization",
+              "value": "{{myCredentials}}"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": "myCredentials"
+      }
+    },
+    {
+      "id": "3",
+      "name": "Start Transcription",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        720,
+        300
+      ],
+      "parameters": {
+        "requestMethod": "POST",
+        "url": "https://api.assemblyai.com/v2/transcript",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={\n  \"audio_url\": \"{{$node[\\\"Upload Audio\\\"].json.upload_url}}\"\n}",
+        "headerParametersUi": {
+          "parameter": [
+            {
+              "name": "authorization",
+              "value": "{{myCredentials}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": null,
+          "name": "myCredentials"
+        }
+      }
+    },
+    {
+      "id": "4",
+      "name": "Wait for Transcription",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        960,
+        300
+      ],
+      "parameters": {
+        "waitTime": 60000
+      }
+    },
+    {
+      "id": "5",
+      "name": "Check Transcription Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        300
+      ],
+      "parameters": {
+        "requestMethod": "GET",
+        "url": "=https://api.assemblyai.com/v2/transcript/{{$node[\"Start Transcription\"].json.id}}",
+        "options": {},
+        "headerParametersUi": {
+          "parameter": [
+            {
+              "name": "authorization",
+              "value": "{{myCredentials}}"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": null,
+          "name": "myCredentials"
+        }
+      }
+    },
+    {
+      "id": "6",
+      "name": "Check if Completed",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json[\"status\"]}}",
+              "operation": "equal",
+              "value2": "completed"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "7",
+      "name": "Format Transcription Output",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1680,
+        240
+      ],
+      "parameters": {
+        "functionCode": "try {\n  // Retornamos el texto de la transcripción\n  return [{ transcription: $node[\"Check Transcription Status\"].json.text }];\n} catch(error) {\n  return [{ error: error.message }];\n}"
+      }
+    },
+    {
+      "id": "8",
+      "name": "Handle Incomplete Transcription",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1680,
+        360
+      ],
+      "parameters": {
+        "functionCode": "try {\n  return [{ error: \"La transcripción aún no se ha completado. Intente nuevamente más tarde.\" }];\n} catch(error) {\n  return [{ error: error.message }];\n}"
+      }
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:48.432Z",
+      "createdAt": "2026-01-13T02:49:48.432Z",
+      "role": "workflow:owner",
+      "workflowId": "QH4JDPm9kNz9xeKx",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T13:21:05.233Z",
+  "versionId": "fbe5c03a-44c1-481b-ad31-1facee4b9558"
+}
