@@ -1,0 +1,1445 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-05-21T02:55:27.000Z",
+    "createdAt": "2026-05-21T02:54:44.637Z",
+    "versionId": "8243fb05-ae0f-4db4-abd4-61c2ed1ac0e9",
+    "workflowId": "dWY1q1uW3-vr6rlT40go4",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "mobilvoice",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "1900125c-481d-4217-a4ef-e5b3b2d4c821",
+        "name": "Webhook MobilVoice",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          -704,
+          560
+        ],
+        "webhookId": "mobilvoice"
+      },
+      {
+        "parameters": {
+          "jsCode": "const body = $json.body || {};\nlet metadata = {};\ntry {\n  metadata = typeof body.metadata === 'string' ? JSON.parse(body.metadata) : (body.metadata || {});\n} catch (e) {\n  metadata = { parseError: String(e) };\n}\n\nreturn [{\n  json: {\n    receivedAt: new Date().toISOString(),\n    sessionId: body.sessionId || metadata.sessionId || '',\n    metadata,\n    tabTitle: metadata.tab?.title || '',\n    tabUrl: metadata.tab?.url || ''\n  },\n  binary: {\n    audio: $binary.audio\n  }\n}];"
+        },
+        "id": "a3119665-4991-4bed-862d-4e8fd01bad82",
+        "name": "Normalize Metadata1",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -416,
+          560
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const hasAudio = Boolean($binary && $binary.audio);\nconst metadata = $json.metadata || {};\nconst sessionId = $json.sessionId || '';\nconst sizeBytes = Number(metadata.sizeBytes || 0);\n\nconst errors = [];\nif (!hasAudio) errors.push('Missing binary audio field.');\nif (!sessionId) errors.push('Missing sessionId.');\nif (!metadata.chunkTimestamp) errors.push('Missing metadata.chunkTimestamp.');\nif (!metadata.tab || !metadata.tab.url) errors.push('Missing metadata.tab.url.');\nif (sizeBytes > 25 * 1024 * 1024) errors.push('Audio chunk too large (>25MB).');\n\nreturn [{\n  json: {\n    ...$json,\n    validationOk: errors.length === 0,\n    validationErrors: errors\n  },\n  binary: $binary\n}];"
+        },
+        "id": "b55e594e-d60a-4f8d-9626-0dc229785380",
+        "name": "Validate Payload1",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -224,
+          560
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "boolean": [
+              {
+                "value1": "={{$json.validationOk}}",
+                "value2": true
+              }
+            ],
+            "combinator": "and",
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            }
+          },
+          "options": {}
+        },
+        "id": "c49420f2-aab1-4bf6-9fe7-1f25e745f140",
+        "name": "If Validation OK1",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -48,
+          560
+        ]
+      },
+      {
+        "parameters": {
+          "resource": "audio",
+          "modelId": {
+            "__rl": true,
+            "value": "models/gemini-2.5-flash",
+            "mode": "list",
+            "cachedResultName": "models/gemini-2.5-flash"
+          },
+          "inputType": "binary",
+          "binaryPropertyName": "audio",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.googleGemini",
+        "typeVersion": 1.1,
+        "position": [
+          160,
+          480
+        ],
+        "id": "418e6700-4da8-4fc8-a372-4b827305fdd4",
+        "name": "Transcribe a recording1",
+        "credentials": {
+          "googlePalmApi": {
+            "id": "3kPwiErYQsN8A94Z",
+            "name": "Google Gemini(PaLM) Api account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"ok\": true,\n  \"sessionId\": \"{{ $json.sessionId }}\",\n  \"receivedAt\": \"{{ $json.receivedAt }}\"\n}",
+          "options": {}
+        },
+        "id": "27ee5662-dda9-4ccc-ac4c-f4f517a3436e",
+        "name": "Respond OK1",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1,
+        "position": [
+          352,
+          480
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"ok\": false,\n  \"error\": \"Invalid payload\",\n  \"details\": {{ JSON.stringify($json.validationErrors) }}\n}",
+          "options": {}
+        },
+        "id": "9cfc9a51-faef-4004-a72c-4544ae118153",
+        "name": "Respond Bad Request1",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1,
+        "position": [
+          336,
+          672
+        ]
+      },
+      {
+        "parameters": {},
+        "id": "08100179-0b1e-4ccc-a067-df7e36ebcbc0",
+        "name": "Manual Trigger",
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -832,
+          1072
+        ]
+      },
+      {
+        "parameters": {
+          "keepOnlySet": true,
+          "values": {
+            "string": [
+              {
+                "name": "apiKey",
+                "value": "8eb63165-754f-4d7f-8fc2-75cdc3f1a0f6"
+              },
+              {
+                "name": "text",
+                "value": "={{ $json.body.fullText }}"
+              },
+              {
+                "name": "model",
+                "value": "spanish-v1"
+              },
+              {
+                "name": "output_format",
+                "value": "mp3"
+              }
+            ],
+            "number": [
+              {
+                "name": "sample_rate",
+                "value": 48000
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "34fd08fd-9341-4157-9275-7f4cd04cec51",
+        "name": "Set Config",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 2,
+        "position": [
+          -528,
+          1072
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://ai01.mobilvendor.com/create-temporary-token",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{$json.apiKey}}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "d9000fc5-c686-4c20-a71a-041252c4af5d",
+        "name": "Create Temporary Token",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -272,
+          944
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://ai01.mobilvendor.com/text-to-speech",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{$json.apiKey}}"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"text\": \"{{$json.text}}\",\n  \"model\": \"{{$json.model}}\",\n  \"output_format\": \"{{$json.output_format}}\",\n  \"sample_rate\": {{$json.sample_rate}}\n}",
+          "options": {
+            "response": {
+              "response": {
+                "responseFormat": "file"
+              }
+            }
+          }
+        },
+        "id": "402d56b1-9e3f-46ae-9a5d-7c8b9493568c",
+        "name": "Text to Speech",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -272,
+          1184
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const token = $input.first().json.token || $input.first().json.data?.token || null;\nreturn [{ json: {\n  ok: !!token,\n  token,\n  websocket_url: token ? `wss://ai01.mobilvendor.com/speech-to-text?token=${token}` : null,\n  note: 'Usa este token temporal para pruebas de STT por WebSocket'\n}}];"
+        },
+        "id": "0998f201-d071-4361-829e-e8ea3936b2d7",
+        "name": "Format Token Result",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          0,
+          944
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const item = $input.first();\nreturn [{ json: {\n  ok: true,\n  message: 'Audio TTS generado correctamente',\n  binaryProperty: Object.keys(item.binary || {})[0] || 'data'\n}, binary: item.binary }];"
+        },
+        "id": "d7af07cd-7419-41b5-91a6-5a14f12f5ca4",
+        "name": "Confirm Audio",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          0,
+          1184
+        ]
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "transcriptor",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -864,
+          1632
+        ],
+        "id": "ea218364-2a95-4279-8434-0b1492054720",
+        "name": "Webhook",
+        "webhookId": "2f4c0436-6761-4572-9f67-acd6fcd1c82f"
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={ \"status\": \"ok\" }",
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "id": "0cc21f03-0c01-4a02-85b4-7a0c62410d4d",
+        "name": "Responder OK",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          560,
+          1616
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "cond1",
+                "leftValue": "={{ $json.body.fullText }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEmpty",
+                  "name": "filter.operator.notEmpty"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "f1a92c40-0936-4522-94bc-6ea9b0dda127",
+        "name": "Tiene fullText1",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          -624,
+          1632
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const fullText = $json.body?.fullText || '';\nconst cleaned = fullText.replace(/\\s+/g, ' ').trim();\nreturn [{ json: { sessionId: $json.body?.sessionId || null, timestamp: $json.body?.timestamp || null, title: $json.body?.tab?.title || '', transcript: cleaned } }];"
+        },
+        "id": "b6a17afe-6f9c-4d25-ab0b-098292dfd5e2",
+        "name": "Limpiar transcripción1",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -384,
+          1616
+        ]
+      },
+      {
+        "parameters": {
+          "text": "={{ $json.transcript }}",
+          "attributes": {
+            "attributes": [
+              {
+                "name": "summary",
+                "description": "Resumen ejecutivo en español de la reunión en un párrafo claro y profesional.",
+                "required": true
+              },
+              {
+                "name": "action_items_html",
+                "description": "Lista de acuerdos en HTML usando solo etiquetas li, uno por cada acuerdo o tarea concreta.",
+                "required": true
+              },
+              {
+                "name": "topics_html",
+                "description": "Temas tratados en HTML usando etiquetas p y br, con redacción ejecutiva y limpia.",
+                "required": true
+              },
+              {
+                "name": "subject",
+                "description": "Asunto corto para correo, en español, relacionado con la reunión.",
+                "required": true
+              }
+            ]
+          },
+          "options": {
+            "systemPromptTemplate": "Eres un asistente experto en minutas de reuniones. Lee la transcripción y devuelve únicamente la información solicitada. No inventes datos. Si algo no está claro, resume solo lo evidente. Responde en español. action_items_html debe contener solo elementos <li>...</li>. topics_html debe contener solo HTML simple con <p> y <br>."
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+        "typeVersion": 1.2,
+        "position": [
+          -128,
+          1616
+        ],
+        "id": "488685ff-1398-4bc2-8ed2-f7659f4f7780",
+        "name": "Information Extractor1"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4.1-mini"
+          },
+          "builtInTools": {},
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.3,
+        "position": [
+          -128,
+          1840
+        ],
+        "id": "60f500a7-914a-47c5-965e-155e9c5c744b",
+        "name": "OpenAI Chat Model1",
+        "credentials": {
+          "openAiApi": {
+            "id": "E7b7vwKLzPo4JwAR",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const data = $json.output || {};\n\nconst summary = data.summary || '';\nconst actionItems = data.action_items_html || '';\nconst topics = data.topics_html || '';\nconst subject = data.subject || 'Resumen de reunión';\n\nconst body_html = `\n<p><b>📄 Resumen:</b></p>\n<p>${summary}</p>\n<hr>\n<p><b>✅ Acuerdos:</b></p>\n<ul>${actionItems}</ul>\n<hr>\n<p><b>🕒 Temas Tratados:</b></p>\n${topics}\n`;\n\nreturn [\n  {\n    json: {\n      ...data,\n      body_html,\n      subject\n    }\n  }\n];"
+        },
+        "id": "a9af39cd-edcf-466f-a333-19e18a18abba",
+        "name": "Preparar correo1",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          176,
+          1616
+        ]
+      },
+      {
+        "parameters": {
+          "toRecipients": "={{ $('Webhook').item.json.body.correos_asistentes }}",
+          "subject": "=RESUMEN {{ $('Tiene fullText1').item.json.body.meetingTitle }}",
+          "bodyContent": "={{ $json.body_html }}",
+          "additionalFields": {
+            "bodyContentType": "html"
+          }
+        },
+        "id": "3f7cfc90-35fd-4916-959d-512e058b7cff",
+        "name": "Enviar correo1",
+        "type": "n8n-nodes-base.microsoftOutlook",
+        "typeVersion": 2,
+        "position": [
+          336,
+          1616
+        ],
+        "webhookId": "d018ec76-abe9-47ac-8df6-bf74e3d4d501",
+        "credentials": {
+          "microsoftOutlookOAuth2Api": {
+            "id": "JySFgjY3Gqtx7Gdo",
+            "name": "Microsoft Outlook account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\"ok\": false, \"message\": \"No llegó fullText\"}",
+          "options": {}
+        },
+        "id": "ac67e86b-8b1e-4d17-9f68-9622193b23b0",
+        "name": "Sin contenido1",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          -384,
+          1824
+        ]
+      }
+    ],
+    "connections": {
+      "Webhook MobilVoice": {
+        "main": [
+          [
+            {
+              "node": "Normalize Metadata1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize Metadata1": {
+        "main": [
+          [
+            {
+              "node": "Validate Payload1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validate Payload1": {
+        "main": [
+          [
+            {
+              "node": "If Validation OK1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If Validation OK1": {
+        "main": [
+          [
+            {
+              "node": "Transcribe a recording1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Respond Bad Request1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Transcribe a recording1": {
+        "main": [
+          [
+            {
+              "node": "Respond OK1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Manual Trigger": {
+        "main": [
+          [
+            {
+              "node": "Set Config",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Config": {
+        "main": [
+          [
+            {
+              "node": "Create Temporary Token",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Text to Speech",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create Temporary Token": {
+        "main": [
+          [
+            {
+              "node": "Format Token Result",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Text to Speech": {
+        "main": [
+          [
+            {
+              "node": "Confirm Audio",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Tiene fullText1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tiene fullText1": {
+        "main": [
+          [
+            {
+              "node": "Limpiar transcripción1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Sin contenido1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Limpiar transcripción1": {
+        "main": [
+          [
+            {
+              "node": "Information Extractor1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Information Extractor1": {
+        "main": [
+          [
+            {
+              "node": "Preparar correo1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Information Extractor1",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Preparar correo1": {
+        "main": [
+          [
+            {
+              "node": "Enviar correo1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Enviar correo1": {
+        "main": [
+          [
+            {
+              "node": "Responder OK",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "ZEI MOBILVENDOR",
+    "name": "Version 7.3",
+    "description": "",
+    "autosaved": true
+  },
+  "activeVersionId": "8243fb05-ae0f-4db4-abd4-61c2ed1ac0e9",
+  "connections": {
+    "Webhook MobilVoice": {
+      "main": [
+        [
+          {
+            "node": "Normalize Metadata1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Metadata1": {
+      "main": [
+        [
+          {
+            "node": "Validate Payload1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Payload1": {
+      "main": [
+        [
+          {
+            "node": "If Validation OK1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Validation OK1": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Bad Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording1": {
+      "main": [
+        [
+          {
+            "node": "Respond OK1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Config": {
+      "main": [
+        [
+          {
+            "node": "Create Temporary Token",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Text to Speech",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Temporary Token": {
+      "main": [
+        [
+          {
+            "node": "Format Token Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text to Speech": {
+      "main": [
+        [
+          {
+            "node": "Confirm Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Tiene fullText1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tiene fullText1": {
+      "main": [
+        [
+          {
+            "node": "Limpiar transcripción1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sin contenido1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limpiar transcripción1": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor1": {
+      "main": [
+        [
+          {
+            "node": "Preparar correo1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar correo1": {
+      "main": [
+        [
+          {
+            "node": "Enviar correo1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar correo1": {
+      "main": [
+        [
+          {
+            "node": "Responder OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-29T22:07:01.755Z",
+  "id": "dWY1q1uW3-vr6rlT40go4",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Resumen de Reuniones Automático",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mobilvoice",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "1900125c-481d-4217-a4ef-e5b3b2d4c821",
+      "name": "Webhook MobilVoice",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -704,
+        560
+      ],
+      "webhookId": "mobilvoice"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body || {};\nlet metadata = {};\ntry {\n  metadata = typeof body.metadata === 'string' ? JSON.parse(body.metadata) : (body.metadata || {});\n} catch (e) {\n  metadata = { parseError: String(e) };\n}\n\nreturn [{\n  json: {\n    receivedAt: new Date().toISOString(),\n    sessionId: body.sessionId || metadata.sessionId || '',\n    metadata,\n    tabTitle: metadata.tab?.title || '',\n    tabUrl: metadata.tab?.url || ''\n  },\n  binary: {\n    audio: $binary.audio\n  }\n}];"
+      },
+      "id": "a3119665-4991-4bed-862d-4e8fd01bad82",
+      "name": "Normalize Metadata1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -416,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const hasAudio = Boolean($binary && $binary.audio);\nconst metadata = $json.metadata || {};\nconst sessionId = $json.sessionId || '';\nconst sizeBytes = Number(metadata.sizeBytes || 0);\n\nconst errors = [];\nif (!hasAudio) errors.push('Missing binary audio field.');\nif (!sessionId) errors.push('Missing sessionId.');\nif (!metadata.chunkTimestamp) errors.push('Missing metadata.chunkTimestamp.');\nif (!metadata.tab || !metadata.tab.url) errors.push('Missing metadata.tab.url.');\nif (sizeBytes > 25 * 1024 * 1024) errors.push('Audio chunk too large (>25MB).');\n\nreturn [{\n  json: {\n    ...$json,\n    validationOk: errors.length === 0,\n    validationErrors: errors\n  },\n  binary: $binary\n}];"
+      },
+      "id": "b55e594e-d60a-4f8d-9626-0dc229785380",
+      "name": "Validate Payload1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.validationOk}}",
+              "value2": true
+            }
+          ],
+          "combinator": "and",
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          }
+        },
+        "options": {}
+      },
+      "id": "c49420f2-aab1-4bf6-9fe7-1f25e745f140",
+      "name": "If Validation OK1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -48,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "inputType": "binary",
+        "binaryPropertyName": "audio",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        160,
+        480
+      ],
+      "id": "418e6700-4da8-4fc8-a372-4b827305fdd4",
+      "name": "Transcribe a recording1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "3kPwiErYQsN8A94Z",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"ok\": true,\n  \"sessionId\": \"{{ $json.sessionId }}\",\n  \"receivedAt\": \"{{ $json.receivedAt }}\"\n}",
+        "options": {}
+      },
+      "id": "27ee5662-dda9-4ccc-ac4c-f4f517a3436e",
+      "name": "Respond OK1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        352,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"ok\": false,\n  \"error\": \"Invalid payload\",\n  \"details\": {{ JSON.stringify($json.validationErrors) }}\n}",
+        "options": {}
+      },
+      "id": "9cfc9a51-faef-4004-a72c-4544ae118153",
+      "name": "Respond Bad Request1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        336,
+        672
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "08100179-0b1e-4ccc-a067-df7e36ebcbc0",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -832,
+        1072
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "apiKey",
+              "value": "8eb63165-754f-4d7f-8fc2-75cdc3f1a0f6"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.body.fullText }}"
+            },
+            {
+              "name": "model",
+              "value": "spanish-v1"
+            },
+            {
+              "name": "output_format",
+              "value": "mp3"
+            }
+          ],
+          "number": [
+            {
+              "name": "sample_rate",
+              "value": 48000
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "34fd08fd-9341-4157-9275-7f4cd04cec51",
+      "name": "Set Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        -528,
+        1072
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ai01.mobilvendor.com/create-temporary-token",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$json.apiKey}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d9000fc5-c686-4c20-a71a-041252c4af5d",
+      "name": "Create Temporary Token",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -272,
+        944
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ai01.mobilvendor.com/text-to-speech",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$json.apiKey}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"text\": \"{{$json.text}}\",\n  \"model\": \"{{$json.model}}\",\n  \"output_format\": \"{{$json.output_format}}\",\n  \"sample_rate\": {{$json.sample_rate}}\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "402d56b1-9e3f-46ae-9a5d-7c8b9493568c",
+      "name": "Text to Speech",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -272,
+        1184
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const token = $input.first().json.token || $input.first().json.data?.token || null;\nreturn [{ json: {\n  ok: !!token,\n  token,\n  websocket_url: token ? `wss://ai01.mobilvendor.com/speech-to-text?token=${token}` : null,\n  note: 'Usa este token temporal para pruebas de STT por WebSocket'\n}}];"
+      },
+      "id": "0998f201-d071-4361-829e-e8ea3936b2d7",
+      "name": "Format Token Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        944
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\nreturn [{ json: {\n  ok: true,\n  message: 'Audio TTS generado correctamente',\n  binaryProperty: Object.keys(item.binary || {})[0] || 'data'\n}, binary: item.binary }];"
+      },
+      "id": "d7af07cd-7419-41b5-91a6-5a14f12f5ca4",
+      "name": "Confirm Audio",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        1184
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "transcriptor",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -864,
+        1632
+      ],
+      "id": "ea218364-2a95-4279-8434-0b1492054720",
+      "name": "Webhook",
+      "webhookId": "2f4c0436-6761-4572-9f67-acd6fcd1c82f"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"status\": \"ok\" }",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "0cc21f03-0c01-4a02-85b4-7a0c62410d4d",
+      "name": "Responder OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        560,
+        1616
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cond1",
+              "leftValue": "={{ $json.body.fullText }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "name": "filter.operator.notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f1a92c40-0936-4522-94bc-6ea9b0dda127",
+      "name": "Tiene fullText1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -624,
+        1632
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const fullText = $json.body?.fullText || '';\nconst cleaned = fullText.replace(/\\s+/g, ' ').trim();\nreturn [{ json: { sessionId: $json.body?.sessionId || null, timestamp: $json.body?.timestamp || null, title: $json.body?.tab?.title || '', transcript: cleaned } }];"
+      },
+      "id": "b6a17afe-6f9c-4d25-ab0b-098292dfd5e2",
+      "name": "Limpiar transcripción1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        1616
+      ]
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.transcript }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "summary",
+              "description": "Resumen ejecutivo en español de la reunión en un párrafo claro y profesional.",
+              "required": true
+            },
+            {
+              "name": "action_items_html",
+              "description": "Lista de acuerdos en HTML usando solo etiquetas li, uno por cada acuerdo o tarea concreta.",
+              "required": true
+            },
+            {
+              "name": "topics_html",
+              "description": "Temas tratados en HTML usando etiquetas p y br, con redacción ejecutiva y limpia.",
+              "required": true
+            },
+            {
+              "name": "subject",
+              "description": "Asunto corto para correo, en español, relacionado con la reunión.",
+              "required": true
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "Eres un asistente experto en minutas de reuniones. Lee la transcripción y devuelve únicamente la información solicitada. No inventes datos. Si algo no está claro, resume solo lo evidente. Responde en español. action_items_html debe contener solo elementos <li>...</li>. topics_html debe contener solo HTML simple con <p> y <br>."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        -128,
+        1616
+      ],
+      "id": "488685ff-1398-4bc2-8ed2-f7659f4f7780",
+      "name": "Information Extractor1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -128,
+        1840
+      ],
+      "id": "60f500a7-914a-47c5-965e-155e9c5c744b",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "E7b7vwKLzPo4JwAR",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json.output || {};\n\nconst summary = data.summary || '';\nconst actionItems = data.action_items_html || '';\nconst topics = data.topics_html || '';\nconst subject = data.subject || 'Resumen de reunión';\n\nconst body_html = `\n<p><b>📄 Resumen:</b></p>\n<p>${summary}</p>\n<hr>\n<p><b>✅ Acuerdos:</b></p>\n<ul>${actionItems}</ul>\n<hr>\n<p><b>🕒 Temas Tratados:</b></p>\n${topics}\n`;\n\nreturn [\n  {\n    json: {\n      ...data,\n      body_html,\n      subject\n    }\n  }\n];"
+      },
+      "id": "a9af39cd-edcf-466f-a333-19e18a18abba",
+      "name": "Preparar correo1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        176,
+        1616
+      ]
+    },
+    {
+      "parameters": {
+        "toRecipients": "={{ $('Webhook').item.json.body.correos_asistentes }}",
+        "subject": "=RESUMEN {{ $('Tiene fullText1').item.json.body.meetingTitle }}",
+        "bodyContent": "={{ $json.body_html }}",
+        "additionalFields": {
+          "bodyContentType": "html"
+        }
+      },
+      "id": "3f7cfc90-35fd-4916-959d-512e058b7cff",
+      "name": "Enviar correo1",
+      "type": "n8n-nodes-base.microsoftOutlook",
+      "typeVersion": 2,
+      "position": [
+        336,
+        1616
+      ],
+      "webhookId": "d018ec76-abe9-47ac-8df6-bf74e3d4d501",
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "JySFgjY3Gqtx7Gdo",
+          "name": "Microsoft Outlook account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\": false, \"message\": \"No llegó fullText\"}",
+        "options": {}
+      },
+      "id": "ac67e86b-8b1e-4d17-9f68-9622193b23b0",
+      "name": "Sin contenido1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -384,
+        1824
+      ]
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mobilvendor.com",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+            "content-length": "3453",
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "en-US,en;q=0.9,es-419;q=0.8,es;q=0.7",
+            "content-type": "application/json",
+            "cookie": {
+              "__redacted": true,
+              "reason": "node_defined_field",
+              "canReveal": false
+            },
+            "origin": "chrome-extension://pagpfbbbagddapooeolpnijlmgaophbh",
+            "priority": "u=1, i",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "none",
+            "sec-fetch-storage-access": "active",
+            "x-forwarded-for": "10.0.0.2",
+            "x-forwarded-host": "n8n.mobilvendor.com",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "936a8da302ec",
+            "x-real-ip": "10.0.0.2"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "sessionId": "mv-mpew6zd9-czjcf",
+            "speaker": "Reunión Completa",
+            "text": "[00:02] Tú: Oh\n[00:04] Tú: We hope.\n[00:11] Tú: Podemos hablar de eso después. Sí. Más bien tengo que traer algo de comer. Bueno. Vale, gracias.\n[00:17] Tú: Los candidatos que les propuse son tan buenos o mejores que yo para el carro.\n[00:23] Tú: ¿Por qué no aceptan que estén a mi puesto como monitor? Porque te escogimos a ti y no hay tiempo para otro proceso de selección.\n[00:28] Tú: Asume el contrato o paga la cláusula. La licitación no ha empezado.\n[00:32] Tú: Y les recuerdo que sin acá el encima puedo retear en cualquier momento.\n[00:36] Tú: La licitación comenzó ayer.\n[00:44] Tú: El consejo está esperando tu visto bueno. Todo estaba en tu correo. O ni siquiera revisas tu correo por estar dando excusas absurdas para no trabajar.\n[00:49] Tú: Okay.\n[01:05] Tú: Studio is to, and si to enregist, lo apruebo. No, no, no, no, no, no. Two time de studio se acabó or two pataletas de ahogado. Tienes que firmar ya.\n[01:08] Tú: términos de referencia de la licitación.\n[01:10] Tú: ¿Qué les digo?\n[01:11] Tú: Yeah.\n[01:15] Tú: Please don't win.\n[01:36] Tú: Please.\n[01:44] Tú: ¿Qué le hicieron?\n[01:54] Tú: Tomando, yo estoy muy bien los tiempos para salir a lo caso. Por lo menos me lo cambien de patio, pero yo no quiero que esté tan cerca de ese tipo de esto.\n[01:55] Tú: So we can",
+            "fullText": "[00:02] Tú: Oh\n[00:04] Tú: We hope.\n[00:11] Tú: Podemos hablar de eso después. Sí. Más bien tengo que traer algo de comer. Bueno. Vale, gracias.\n[00:17] Tú: Los candidatos que les propuse son tan buenos o mejores que yo para el carro.\n[00:23] Tú: ¿Por qué no aceptan que estén a mi puesto como monitor? Porque te escogimos a ti y no hay tiempo para otro proceso de selección.\n[00:28] Tú: Asume el contrato o paga la cláusula. La licitación no ha empezado.\n[00:32] Tú: Y les recuerdo que sin acá el encima puedo retear en cualquier momento.\n[00:36] Tú: La licitación comenzó ayer.\n[00:44] Tú: El consejo está esperando tu visto bueno. Todo estaba en tu correo. O ni siquiera revisas tu correo por estar dando excusas absurdas para no trabajar.\n[00:49] Tú: Okay.\n[01:05] Tú: Studio is to, and si to enregist, lo apruebo. No, no, no, no, no, no. Two time de studio se acabó or two pataletas de ahogado. Tienes que firmar ya.\n[01:08] Tú: términos de referencia de la licitación.\n[01:10] Tú: ¿Qué les digo?\n[01:11] Tú: Yeah.\n[01:15] Tú: Please don't win.\n[01:36] Tú: Please.\n[01:44] Tú: ¿Qué le hicieron?\n[01:54] Tú: Tomando, yo estoy muy bien los tiempos para salir a lo caso. Por lo menos me lo cambien de patio, pero yo no quiero que esté tan cerca de ese tipo de esto.\n[01:55] Tú: So we can",
+            "isFinal": true,
+            "isFinalKnown": true,
+            "timestamp": "2026-05-21T02:51:28.735Z",
+            "startAt": "2026-05-21T02:49:28.461Z",
+            "meetingTitle": "pruebas chrome 15:30",
+            "localUser": "Tú",
+            "participants": [
+              {
+                "name": "Esteban Andrade",
+                "email": "e.andrade@mobilvendor.com",
+                "isOrganizer": true,
+                "source": "n8n_invitee"
+              },
+              {
+                "name": "ZEI Reuniones",
+                "email": "ti.desarrollo@mobilvendor.com",
+                "isOrganizer": false,
+                "source": "n8n_invitee"
+              }
+            ],
+            "asistentes": "Esteban Andrade, ZEI Reuniones",
+            "correos_asistentes": "e.andrade@mobilvendor.com, ti.desarrollo@mobilvendor.com",
+            "total_asistentes": 2,
+            "tab": {
+              "id": 2069031554,
+              "title": "(31) Calendar | pruebas chrome 15:30 | Microsoft Teams",
+              "url": "https://teams.cloud.microsoft/"
+            }
+          },
+          "webhookUrl": "https://n8n.mobilvendor.com/webhook/transcriptor",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "binaryMode": "separate"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-29T22:07:01.770Z",
+      "createdAt": "2026-03-29T22:07:01.770Z",
+      "role": "workflow:owner",
+      "workflowId": "dWY1q1uW3-vr6rlT40go4",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 2,
+  "updatedAt": "2026-05-21T02:54:44.635Z",
+  "versionId": "8243fb05-ae0f-4db4-abd4-61c2ed1ac0e9"
+}
