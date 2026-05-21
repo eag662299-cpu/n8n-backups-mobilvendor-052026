@@ -1,0 +1,766 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Upload to Llama Cloud",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to Llama Cloud": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Check Parsing Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Parsing Status": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Extract Markdown from Llama Cloud",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Check Parsing Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Markdown from Llama Cloud": {
+      "main": [
+        [
+          {
+            "node": "Clean Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader1": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter1": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader1",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Text": {
+      "main": [
+        [
+          {
+            "node": "Enrich Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enrich Metadata": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:47.278Z",
+  "id": "feKUyZ41mWOGpGsD",
+  "isArchived": false,
+  "meta": null,
+  "name": "Brochure_Knowledge",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1TW1dAn5k6Qfv5j618EKlf3FStaklHN8V",
+          "mode": "list",
+          "cachedResultName": "brochure_mobilvendor",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1TW1dAn5k6Qfv5j618EKlf3FStaklHN8V"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -672,
+        240
+      ],
+      "id": "62d4257e-156a-4233-9cc0-10bdc8eb2b80",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "nZU8LW95ZL0VVPJ9",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -48,
+        0
+      ],
+      "id": "18a0956c-696b-4958-8674-ea8b21c4df8e",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "nZU8LW95ZL0VVPJ9",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        496,
+        0
+      ],
+      "id": "d454e82e-9b77-4865-a3db-a303e260e83a",
+      "name": "Wait",
+      "webhookId": "650aed56-944b-47c4-ab90-847d1a482edf"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cloud.llamaindex.ai/api/v1/parsing/upload",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer llx-7gl0VrHRB8dzykWVlgsnafemTct2O1L0aNt1JMEJy3crv7eS"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        336,
+        0
+      ],
+      "id": "ea25639b-a1b6-4aaa-af18-dce6cf67b1f9",
+      "name": "Upload to Llama Cloud"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.cloud.llamaindex.ai/api/v1/parsing/job/{{ $('Upload to Llama Cloud').item.json.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer llx-7gl0VrHRB8dzykWVlgsnafemTct2O1L0aNt1JMEJy3crv7eS"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        704,
+        0
+      ],
+      "id": "527858a1-c7e9-4f24-a0f2-9d0299387dee",
+      "name": "Check Parsing Status"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0954cab1-6f2c-4dc9-9a46-2c0ac8784614",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "SUCCESS",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        912,
+        0
+      ],
+      "id": "2617e554-e149-4d04-b95e-853b3890d950",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1184,
+        208
+      ],
+      "id": "5922bbe4-2fb7-4196-86a8-bcaad54e45f0",
+      "name": "Wait1",
+      "webhookId": "3ceb46c8-52a4-49a1-b3c7-f5196c768ff6"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.cloud.llamaindex.ai/api/v1/parsing/job/{{ $json.id }}/result/markdown",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer llx-7gl0VrHRB8dzykWVlgsnafemTct2O1L0aNt1JMEJy3crv7eS"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1104,
+        -96
+      ],
+      "id": "37d00c4d-137a-4d0d-9bb3-e13732899d8c",
+      "name": "Extract Markdown from Llama Cloud"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "brochure",
+          "mode": "list",
+          "cachedResultName": "brochure"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        1664,
+        -96
+      ],
+      "id": "571987e6-cfbb-4a65-a7da-99d9530b007b",
+      "name": "Pinecone Vector Store1",
+      "credentials": {
+        "pineconeApi": {
+          "id": "y2zor79Ke4hLDdwP",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1664,
+        112
+      ],
+      "id": "fa7b8261-6b94-47b3-a57b-45d19c1fa35f",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "E7b7vwKLzPo4JwAR",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        1808,
+        112
+      ],
+      "id": "a46afc1d-9744-4ec0-b9fc-a0e47eefa635",
+      "name": "Default Data Loader1"
+    },
+    {
+      "parameters": {
+        "chunkOverlap": 200,
+        "options": {
+          "splitCode": "markdown"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        1904,
+        320
+      ],
+      "id": "8439835e-fbb4-400f-8adf-8c79f6a832e9",
+      "name": "Recursive Character Text Splitter1"
+    },
+    {
+      "parameters": {
+        "content": "## LLAMA INDEX",
+        "height": 800,
+        "width": 1824
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        256,
+        -256
+      ],
+      "typeVersion": 1,
+      "id": "f06f9806-9082-4435-9f8e-1ca6fa8bb87f",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## 📊 PROCESAMIENTO DE BROCHURES CON CONTEO\n\n### Flujo:\n1. **Google Drive Trigger** → Detecta nuevos archivos\n2. **Download + Initialize Counter** → Descarga e inicia tracking\n3. **Dual Processing:**\n   - **Ruta Básica**: Vectorización directa con Pinecone\n   - **Ruta LlamaIndex**: Procesamiento avanzado con LlamaCloud\n4. **Success Tracking** → Registro de cada éxito\n5. **Statistics** → Consolidación de métricas\n\n### Métricas Disponibles:\n- ✅ Archivos procesados exitosamente\n- ⏱️ Tiempo promedio de procesamiento  \n- 📊 Estadísticas por tipo de vectorización\n- 📝 Cantidad de texto procesado\n- 📈 Eficiencia del sistema",
+        "height": 800,
+        "width": 976,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -816,
+        -256
+      ],
+      "typeVersion": 1,
+      "id": "4a875a9e-acc2-49a0-836f-8f376307e2e8",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "jsCode": "// === CLEAN TEXT + CHUNKING SEMÁNTICO ===\n\n// 1. Obtener texto de entrada (Markdown o texto plano)\nconst input = $json.markdown || $json.text || \"\";\nlet text = input;\n\n// --- Limpieza básica ---\ntext = text\n  .replace(/Página\\s*\\d+/gi, \"\")           // Eliminar encabezados de página\n  .replace(/^\\s*\\d+\\s*$/gm, \"\")            // Eliminar líneas que son solo números\n  .replace(/[-=_]{3,}/g, \"\\n\")             // Separadores largos\n  .replace(/&nbsp;/g, \" \")\n  .replace(/[●■♦▪✓•–—]/g, \"-\")            // Viñetas raras a guiones\n  .replace(/[ \\t]+/g, \" \")\n  .replace(/\\n{2,}/g, \"\\n\\n\")\n  .trim();\n\n// --- Chunking semántico ---\n// Dividir por títulos principales o secciones del brochure\nlet sections = text.split(/(?=^Módulo|^Caso de éxito|^Roadmap|^Soporte|^¿Quiénes somos?|^Ecosistema Mobilvendor|^Nuestros beneficios|^Censos Móviles|^Módulo Ecommerce)/gmi);\n\n// Si no se detectaron secciones, usar todo el texto como 1 sección\nif (sections.length <= 1) sections = [text];\n\nconst MAX_CHUNK = 1000;\nconst OVERLAP = 100;\nconst output = [];\n\nsections.forEach((section, sectionIndex) => {\n  const cleanSection = section.trim();\n  if (cleanSection.length === 0) return;\n\n  // Tomar el primer renglón de la sección como título para contexto\n  const sectionTitle = cleanSection.split('\\n')[0];\n\n  if (cleanSection.length <= MAX_CHUNK) {\n    output.push({\n      json: {\n        sectionText: `# ${sectionTitle}\\n\\n${cleanSection}`, // Agrega el título al inicio\n        sectionIndex\n      }\n    });\n  } else {\n    let start = 0;\n    let chunkIndex = 0;\n    while (start < cleanSection.length) {\n      const end = Math.min(start + MAX_CHUNK, cleanSection.length);\n      const chunk = cleanSection.slice(start, end).trim();\n      if (chunk.length > 0) {\n        output.push({\n          json: {\n            sectionText: `# ${sectionTitle}\\n\\n${chunk}`, // Título al inicio de cada subchunk\n            sectionIndex,\n            chunkIndex,\n            totalChunks: Math.ceil(cleanSection.length / MAX_CHUNK)\n          }\n        });\n      }\n      start += (MAX_CHUNK - OVERLAP);\n      chunkIndex++;\n    }\n  }\n});\n\nreturn output;\n\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        -96
+      ],
+      "id": "aecd6240-f19d-4385-9266-9328db148cf7",
+      "name": "Clean Text"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1hyRC7SStMMYIvx-QtqYInXHYgGTEfQPHH5HLPBlYk8U",
+          "mode": "list",
+          "cachedResultName": "KB PROCCESS FILES BROCHURE",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hyRC7SStMMYIvx-QtqYInXHYgGTEfQPHH5HLPBlYk8U/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hyRC7SStMMYIvx-QtqYInXHYgGTEfQPHH5HLPBlYk8U/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "file_name": "={{ $('Download file').item.json.originalFilename }}",
+            "file_id": "={{ $('Download file').item.json.id }}",
+            "basic_vectorization": "={{ $('Check Parsing Status').item.json.status }}",
+            "processed_text_length": "={{ $json.metadata.loc.lines.to }}",
+            "processing_start": "={{ $('Download file').item.json.createdTime }}",
+            "pinecone_index": "=brochure"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "file_name",
+              "displayName": "file_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "file_id",
+              "displayName": "file_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "processing_start",
+              "displayName": "processing_start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "pinecone_index",
+              "displayName": "pinecone_index",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "processing_end",
+              "displayName": "processing_end",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "processing_time_seconds",
+              "displayName": "processing_time_seconds",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "basic_vectorization",
+              "displayName": "basic_vectorization",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "llama_vectorization",
+              "displayName": "llama_vectorization",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "processed_text_length",
+              "displayName": "processed_text_length",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "useAppend": false
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2160,
+        -96
+      ],
+      "id": "b3fd9cc8-03ef-4513-842e-76b7037c35d6",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2480,
+        -96
+      ],
+      "id": "a3efcf96-7eea-4788-b61c-1aeae5b60b56",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "jsCode": "// === ENRICH METADATA V2 ===\n// Más contexto, prefijo en texto y clasificación de secciones\n\nclass MobilvendorMetadataEnricher {\n    constructor() {\n        this.modulePatterns = { /* tus patrones existentes */ };\n        this.topicPatterns = { /* tus patrones existentes */ };\n        this.benefitPatterns = { /* ... */ };\n        this.featurePatterns = { /* ... */ };\n        this.techPatterns = { /* ... */ };\n    }\n\n    extractEntities(text, patterns) {\n        const entities = new Set();\n        for (const [name, pattern] of Object.entries(patterns)) {\n            if (pattern.test(text)) entities.add(name);\n        }\n        return Array.from(entities);\n    }\n\n    classifySection(text) {\n        if (/módulo/i.test(text)) return \"module\";\n        if (/caso de éxito/i.test(text)) return \"case_study\";\n        if (/soporte/i.test(text)) return \"support\";\n        if (/roadmap/i.test(text)) return \"roadmap\";\n        return \"general\";\n    }\n\n    getDocumentType(fileName) {\n        const name = (fileName || \"\").toLowerCase();\n        if (name.includes(\"general\")) return \"corporate_general\";\n        if (name.includes(\"distribuidor\")) return \"corporate_distributors\";\n        return \"module_generic\";\n    }\n\n    calculateRelevance(metadata, textLength) {\n        let score = 0;\n        score += metadata.mobilvendor_modules.length * 10;\n        score += metadata.main_topics.length * 8;\n        if (metadata.section_type === \"case_study\") score += 10;\n        if (metadata.section_type === \"module\") score += 8;\n        if (textLength > 800) score += 5;\n        return Math.max(score, 5);\n    }\n\n    generateEnrichedText(text, metadata) {\n        const prefix = `[${metadata.section_type.toUpperCase()} | doc:${metadata.document_type}] - `;\n        return prefix + text;\n    }\n}\n\nconst enricher = new MobilvendorMetadataEnricher();\nconst output = [];\n\nfor (const item of $input.all()) {\n    const text = item.json.sectionText || item.json.normalizedText || \"\";\n    const fileName = item.json.name || \"unknown_brochure\";\n\n    const mobilvendor_modules = enricher.extractEntities(text, enricher.modulePatterns);\n    const main_topics = enricher.extractEntities(text, enricher.topicPatterns);\n    const benefits = enricher.extractEntities(text, enricher.benefitPatterns);\n    const features = enricher.extractEntities(text, enricher.featurePatterns);\n    const technologies_used = enricher.extractEntities(text, enricher.techPatterns);\n\n    const section_type = enricher.classifySection(text);\n    const document_type = enricher.getDocumentType(fileName);\n\n    const metadata = {\n        document_source: fileName,\n        document_type,\n        section_type,\n        mobilvendor_modules,\n        main_topics,\n        benefits,\n        features,\n        technologies_used,\n        chunk_index: item.json.chunkIndex || 0,\n        word_count: text.split(/\\s+/).length,\n        language: \"es\",\n        content_source: \"mobilvendor_brochure\"\n    };\n\n    metadata.relevance_score = enricher.calculateRelevance(metadata, text.length);\n    const enrichedText = enricher.generateEnrichedText(text, metadata);\n\n    output.push({\n        json: {\n            enrichedText,\n            metadata,\n            originalText: text\n        }\n    });\n}\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1440,
+        -96
+      ],
+      "name": "Enrich Metadata",
+      "id": "341d2504-5f25-4d5e-afa3-6acd71efc30e",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -304,
+        32
+      ],
+      "id": "fa992216-9cf4-46f5-99bf-7c5560e8786f",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "event": "fileUpdated"
+      },
+      "type": "n8n-nodes-base.microsoftOneDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        752
+      ],
+      "id": "bda2b6df-a06b-49bc-aa84-59b6b0f5590d",
+      "name": "Microsoft OneDrive Trigger"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:48.194Z",
+      "createdAt": "2026-01-13T02:49:48.194Z",
+      "role": "workflow:owner",
+      "workflowId": "feKUyZ41mWOGpGsD",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": {
+    "node:Google Drive Trigger": {
+      "lastTimeChecked": "2026-01-11T21:43:51Z"
+    }
+  },
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-03-02T03:17:52.271Z",
+  "versionId": "e5b3009f-4607-46ad-a60a-790a894b0796"
+}
