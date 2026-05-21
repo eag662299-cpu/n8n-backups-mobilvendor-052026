@@ -1,0 +1,119 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get current user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get current user": {
+      "main": [
+        [
+          {
+            "node": "Get a transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:40.622Z",
+  "id": "9UDRjLGQQj7dIlbM",
+  "isArchived": false,
+  "meta": null,
+  "name": "My workflow 13",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        -176
+      ],
+      "id": "5003bea0-a73b-4ccd-89cd-7b4ce87b5de9",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "user"
+      },
+      "type": "@firefliesai/n8n-nodes-fireflies.fireflies",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -176
+      ],
+      "id": "4c981f6f-c598-427d-9bb4-a2343b38fe1c",
+      "name": "Get current user",
+      "credentials": {
+        "firefliesApi": {
+          "id": "i1NcwHmjW0ps21nP",
+          "name": "Fireflies ti.desarrollo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "transcriptId": "={{ $json.data.recent_transcript }}"
+      },
+      "type": "@firefliesai/n8n-nodes-fireflies.fireflies",
+      "typeVersion": 1,
+      "position": [
+        240,
+        -176
+      ],
+      "id": "f1f62607-1b49-4236-a0ac-6e2843889e66",
+      "name": "Get a transcript",
+      "credentials": {
+        "firefliesApi": {
+          "id": "i1NcwHmjW0ps21nP",
+          "name": "Fireflies ti.desarrollo"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "wss://api.fireflies.ai",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        16,
+        -304
+      ],
+      "id": "01f8eed5-4786-48b9-9afd-231245519448",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:40.868Z",
+      "createdAt": "2026-01-13T02:49:40.868Z",
+      "role": "workflow:owner",
+      "workflowId": "9UDRjLGQQj7dIlbM",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T02:49:40.622Z",
+  "versionId": "7ba27dbc-79ac-4775-86fc-5ee18936d8b9"
+}
