@@ -1,0 +1,82 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {},
+  "createdAt": "2026-05-19T21:52:40.417Z",
+  "id": "Ot1jhRe1D1Wr79ZW",
+  "isArchived": false,
+  "meta": null,
+  "name": "My workflow 34",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "e839555c-ecb8-4bc0-b5e0-1eb61f0320c0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        800,
+        -176
+      ],
+      "id": "df45c8e0-5f15-4611-98b8-23c08c2ce676",
+      "name": "Webhook",
+      "webhookId": "e839555c-ecb8-4bc0-b5e0-1eb61f0320c0"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1024,
+        -176
+      ],
+      "id": "4aa875b6-30ac-4b27-8e15-4407cb7c69ec",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/users/ti.desarrollo@mobilvendor.com/calendarView?startDateTime=2026-05-19T00:00:00-05:00&endDateTime=2026-05-20T23:59:59-05:00&$select=id,subject,type,recurrence,start,end,organizer,isOnlineMeeting,onlineMeetingProvider",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "microsoftOutlookOAuth2Api",
+        "options": {}
+      },
+      "id": "17182bf0-5d4a-4cdf-bbd3-5a5f3bfd95db",
+      "name": "Teams",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -176,
+        -32
+      ],
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "9PzZSt6H7nHqgUkg",
+          "name": "Microsoft Outlook ti.desarrollo"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-05-19T21:52:40.436Z",
+      "createdAt": "2026-05-19T21:52:40.436Z",
+      "role": "workflow:owner",
+      "workflowId": "Ot1jhRe1D1Wr79ZW",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-05-20T02:52:03.089Z",
+  "versionId": "1f64df87-d680-45ce-ba28-6ef3667b3b88"
+}
