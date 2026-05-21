@@ -1,0 +1,523 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "1. Listar Carpetas SharePoint",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Listar Archivos S3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1. Listar Carpetas SharePoint": {
+      "main": [
+        [
+          {
+            "node": "2. Preparar URLs Carpetas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. Preparar URLs Carpetas": {
+      "main": [
+        [
+          {
+            "node": "3. Obtener Archivos por Carpeta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3. Obtener Archivos por Carpeta": {
+      "main": [
+        [
+          {
+            "node": "4. Procesar Lista Archivos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4. Procesar Lista Archivos": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6. Comparar y Determinar Acciones": {
+      "main": [
+        [
+          {
+            "node": "Batch Deletes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Batch Deletes": {
+      "main": [
+        [],
+        [
+          {
+            "node": "10. Eliminar de S3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5.1 Filtrar S3 txt/pdf": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Listar Archivos S3": {
+      "main": [
+        [
+          {
+            "node": "5.1 Filtrar S3 txt/pdf",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "6. Comparar y Determinar Acciones",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "10. Eliminar de S3": {
+      "main": [
+        [
+          {
+            "node": "12. Resumen Final",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Batch Deletes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Subir a S3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:40.988Z",
+  "id": "JEI2tR5KpAgtdaha",
+  "isArchived": false,
+  "meta": null,
+  "name": "Backup BC_ZEI  Sincronización de carpetas Sharepoint-S3",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## ⚙️ CONFIGURACIÓN REQUERIDA\n\n**Credenciales**:\n✅ Microsoft SharePoint OAuth2\n   - ID: Mk0zfp4BGXet86UQ\n✅ Microsoft Graph OAuth2 (HTTP)\n   - ID: rtxDh1vSk3F4bb0q\n✅ AWS S3\n   - ID: gpmkKyepTbC5nySz\n\n**IDs SharePoint**:\n- Site: mobilvendorcom.sharepoint.com,f545d085-...\n- Drive: b!hdBF9ZToCEywbf2V...\n- Folder: 01SHM76UEO6UWXC36VUBE232FJ3BTGVQ4R\n\n**Bucket S3**: mobilvendorzei\n**Prefix**: knowledge/support/\n\n**Rate Limits**:\n- SharePoint: Max 3 descargas simultáneas\n- S3: Max 10 operaciones simultáneas",
+        "height": 532,
+        "width": 376,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        304,
+        -16
+      ],
+      "id": "9d318057-b47b-45e3-952c-21507bbe4f39",
+      "name": "📌 Nota: Configuración"
+    },
+    {
+      "parameters": {
+        "content": "## 🎯 FLUJO DE DATOS\n\n```\n  Trigger\n    ↓\n┌───────────────────┐\n│ Listar Carpetas   │\n│ SharePoint        │\n└─────────┬─────────┘\n          ↓\n    ┌─────┴─────┐\n    │           │\n    ↓           ↓\nObten      Listar\nArchivos   S3\nSharePoint Files\n    │           │\n    └─────┬─────┘\n          ↓\n    Comparar\n    (Diff)\n          ↓\n    ┌─────┴─────┐\n    ↓           ↓\n  Upload      Delete\n   Rama        Rama\n    │           │\n    └─────┬─────┘\n          ↓\n     Merge +\n     Resumen\n```",
+        "height": 916,
+        "width": 380
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        304,
+        560
+      ],
+      "id": "5341bb06-f72f-4184-88d9-b46eb87bc8a0",
+      "name": "📌 Nota: Diagrama de Flujo"
+    },
+    {
+      "parameters": {
+        "content": "## 📊 FASE 3: CONSOLIDACIÓN Y REPORTE\n\n**Merge**: Combina resultados de ambas ramas\n\n**Resumen genera**:\n- Total archivos procesados\n- Operaciones exitosas/fallidas\n- Lista detallada de cambios\n- Estado final de S3\n\n**Salida**:\n```json\n{\n  \"timestamp\": \"2025-12-29T12:00:00Z\",\n  \"operations\": {\n    \"uploaded\": 5,\n    \"deleted\": 2,\n    \"noChanges\": 15\n  },\n  \"status\": \"✅ Sincronización completada\"\n}\n```\n\n",
+        "height": 880,
+        "width": 808,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        4112,
+        592
+      ],
+      "id": "5e421662-af47-4154-9105-3d7ecf08ef66",
+      "name": "📌 Nota: Consolidación"
+    },
+    {
+      "parameters": {
+        "content": "## 🗑️ RAMA DELETE\n\n**Proceso**:\n1. Split items de toDelete[]\n2. Batch de 10 archivos (S3 permite más concurrencia)\n3. Eliminar de S3\n\n**Seguridad**:\n- Solo elimina bajo knowledge/support/\n- Verifica que archivo no existe en SharePoint\n- Log de cada eliminación\n\n**Razones de eliminación**:\n- Archivo eliminado manualmente en SharePoint\n- Archivo movido a otra carpeta\n- Cambio de nombre en origen",
+        "height": 880,
+        "width": 1196,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2800,
+        592
+      ],
+      "id": "c76eae74-9384-43ec-8277-bd0272909dae",
+      "name": "📌 Nota: Rama Delete"
+    },
+    {
+      "parameters": {
+        "content": "## 🔍 FASE 2: COMPARACIÓN INTELIGENTE\n\n**Objetivo**: Detectar cambios entre SharePoint y S3\n\n**Análisis**:\n- ✅ Archivos idénticos → Sin acción\n- 🆕 Nuevos en SharePoint → Subir a S3\n- 🔄 Modificados (fecha más reciente) → Actualizar S3\n- 🗑️ Solo en S3 → Eliminar de S3\n\n**Algoritmo**:\n1. Crear Map de archivos S3 (O(1) lookup)\n2. Comparar cada archivo SharePoint\n3. Identificar archivos huérfanos en S3\n\n**Output**: Dos listas\n- toUpload[]\n- toDelete[]",
+        "height": 880,
+        "width": 816,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1952,
+        592
+      ],
+      "id": "bb50656f-420a-4e4e-b3da-c05c04fe9acc",
+      "name": "📌 Nota: Comparación"
+    },
+    {
+      "parameters": {
+        "content": "## 📂 FASE 1: EXPLORACIÓN SHAREPOINT\n\n**Objetivo**: Obtener lista completa de carpetas y archivos\n\n**Pasos**:\n1. Listar subcarpetas de SOPORTE ESTRUCTURADO\n2. Para cada carpeta, obtener TODOS sus archivos\n3. Extraer metadatos: nombre, fecha, ID\n\n**Carpetas típicas**:\n- PRC (Procedimientos)\n- CON (Contratos)\n- DB (Base de Datos)\n- FOR (Formularios)\n- etc.\n\n**Output**: Lista completa de archivos con ruta S3 proyectada",
+        "height": 880,
+        "width": 1160,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        752,
+        592
+      ],
+      "id": "01c4f27f-39dc-48c9-845c-4bdb85f421f8",
+      "name": "📌 Nota: Fase Exploración"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        432,
+        1120
+      ],
+      "id": "ccf40a18-2d53-44e2-aee3-a2996bb7acc1",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/sites/mobilvendorcom.sharepoint.com,f545d085-e894-4c08-b06d-fd9559e9391f,6b7b3702-269f-4e6b-8a31-04ffbffff3fd/drive/items/01SHM76UEO6UWXC36VUBE232FJ3BTGVQ4R/children?$select=id,name,folder&$filter=folder ne null",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        1104
+      ],
+      "id": "e0e81ead-bb9b-4a73-8ab6-8b7dd301edd9",
+      "name": "1. Listar Carpetas SharePoint",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "rtxDh1vSk3F4bb0q",
+          "name": "Conexion SharePoint"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const folders = $input.item.json.value || [];\n\nif (!folders.length) {\n  throw new Error('❌ No se encontraron carpetas en SOPORTE ESTRUCTURADO');\n}\n\nconsole.log(`✅ Carpetas encontradas: ${folders.length}`);\nfolders.forEach(f => console.log(`  📁 ${f.name}`));\n\nreturn folders.map(folder => ({\n  json: {\n    folderId: folder.id,\n    folderName: folder.name,\n    url: `https://graph.microsoft.com/v1.0/drives/b!hdBF9ZToCEywbf2VWek5HwI3e2ufJmtOijEE_7__8_2AJjaObVPEQ4HWyHOHmaCe/items/${folder.id}/children?$select=id,name,file,webUrl,parentReference,lastModifiedDateTime`\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1008,
+        1104
+      ],
+      "id": "862880dc-8197-4ebf-a617-3318409ff9b9",
+      "name": "2. Preparar URLs Carpetas"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1232,
+        1104
+      ],
+      "id": "25f75bdb-ea6f-4c80-a04f-40d00a453f95",
+      "name": "3. Obtener Archivos por Carpeta",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "rtxDh1vSk3F4bb0q",
+          "name": "Conexion SharePoint"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst results = [];\n\nfor (const item of items) {\n  const files = item.json.value || [];\n\n  for (const file of files) {\n    const parentPath = file.parentReference?.path || \"\";\n    const siteId = file.parentReference?.siteId || \"\";\n    const driveId = file.parentReference?.driveId || \"\";\n\n    // Extraer carpeta final (PRC, DB, APP, etc.)\n    const folderName = parentPath.split('/').pop();\n\n    // Key determinística para S3\n    const s3Key = `knowledge/support/${folderName}/${file.name}`;\n\n    results.push({\n      json: {\n        // Identidad del archivo\n        name: file.name,\n        id: file.id,\n\n        // Fechas\n        lastModified: file.lastModifiedDateTime,\n\n        // URLs\n        webUrl: file.webUrl,\n\n        // SharePoint metadata (REQUERIDO)\n        parentPath,\n        siteId,\n        driveId,\n\n        // Derivados para el flujo\n        folderName,\n        s3Key\n      }\n    });\n  }\n}\n\nreturn results;\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1424,
+        1104
+      ],
+      "id": "0331af5e-8929-4fd1-bcf6-dd24e731c2f8",
+      "name": "4. Procesar Lista Archivos"
+    },
+    {
+      "parameters": {
+        "jsCode": "// =====================================================\n// DELETE ONLY – Mantener espejo S3 = SharePoint\n// Fuente de verdad: SharePoint\n// Input: Merge (SharePoint + S3 filtrado)\n// =====================================================\n\nconst items = $input.all();\n\nconst normalizeKey = (key) =>\n  String(key || '')\n    .replace(/^\\/+/, '')\n    .replace(/\\/+/g, '/')\n    .trim();\n\nconst validExtensions = ['.txt', '.pdf'];\nconst hasValidExtension = (key) =>\n  validExtensions.some(ext => key.toLowerCase().endsWith(ext));\n\n// 1️⃣ Separar datos que vienen del Merge\nconst sharepoint = [];\nconst s3 = [];\n\nfor (const item of items) {\n  // SharePoint items → tienen s3Key\n  if (item.json?.s3Key) {\n    const k = normalizeKey(item.json.s3Key);\n    if (k && hasValidExtension(k)) {\n      sharepoint.push(k.toLowerCase());\n    }\n    continue;\n  }\n\n  // S3 items → tienen Key\n  if (item.json?.Key) {\n    const k = normalizeKey(item.json.Key);\n    if (\n      k &&\n      !k.endsWith('/') &&\n      hasValidExtension(k)\n    ) {\n      s3.push({\n        key: k,\n        keyLower: k.toLowerCase(),\n        size: item.json.Size,\n        lastModified: item.json.LastModified\n      });\n    }\n  }\n}\n\n// 2️⃣ Set de SharePoint (159)\nconst spSet = new Set(sharepoint);\n\n// 3️⃣ Detectar S3 EXTRA (298 − 159 = 139)\nconst toDeleteMap = new Map();\n\nfor (const f of s3) {\n  if (!spSet.has(f.keyLower)) {\n    if (!toDeleteMap.has(f.keyLower)) {\n      toDeleteMap.set(f.keyLower, {\n        key: f.key,\n        action: 'delete',\n        size: f.size,\n        lastModified: f.lastModified\n      });\n    }\n  }\n}\n\nconst toDelete = Array.from(toDeleteMap.values());\n\n// 4️⃣ Log de verificación\nconsole.log('DELETE MIRROR SUMMARY', {\n  sharepointCount: spSet.size,\n  s3Count: s3.length,\n  toDeleteCount: toDelete.length,\n  expected: Math.max(0, s3.length - spSet.size)\n});\n\n// 5️⃣ SALIDA: 1 item = 1 delete\nreturn toDelete.map(d => ({ json: d }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2512,
+        1120
+      ],
+      "id": "02362962-5a55-4c0c-a307-00f56653dc0b",
+      "name": "6. Comparar y Determinar Acciones"
+    },
+    {
+      "parameters": {
+        "batchSize": 10,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        3216,
+        1120
+      ],
+      "id": "6cb87d43-73ba-4a70-978d-c8334c452d86",
+      "name": "Batch Deletes"
+    },
+    {
+      "parameters": {
+        "jsCode": "// === RESUMEN FINAL DE SINCRONIZACIÓN ===\nconst uploadResults = $('9. Subir a S').all() || [];\nconst deleteResults = $('10. Eliminar de S3').all() || [];\nconst comparisonData = $('6. Comparar y Determinar Acciones').first().json.summary;\n\nconst summary = {\n  timestamp: new Date().toISOString(),\n  status: '✅ Sincronización completada exitosamente',\n  operations: {\n    uploaded: uploadResults.length,\n    deleted: deleteResults.length,\n    noChanges: comparisonData.noChangeCount,\n    total: uploadResults.length + deleteResults.length\n  },\n  details: {\n    sharepointTotal: comparisonData.sharepointTotal,\n    s3TotalBefore: comparisonData.s3Total,\n    s3TotalAfter: comparisonData.sharepointTotal\n  },\n  uploadedFiles: uploadResults.map(r => ({\n    file: r.json.s3Key || r.json.fileName,\n    action: r.json.action || 'uploaded',\n    folder: r.json.folderName\n  })),\n  deletedFiles: deleteResults.map(r => ({\n    file: r.json.key,\n    reason: 'No existe en SharePoint'\n  }))\n};\n\nconsole.log('\\n' + '='.repeat(70));\nconsole.log('🎉 SINCRONIZACIÓN COMPLETADA');\nconsole.log('='.repeat(70));\nconsole.log(`⏰ Timestamp: ${summary.timestamp}`);\nconsole.log(`\\n📊 OPERACIONES:`);\nconsole.log(`  ⬆️  Archivos subidos/actualizados: ${summary.operations.uploaded}`);\nconsole.log(`  🗑️  Archivos eliminados: ${summary.operations.deleted}`);\nconsole.log(`  ✅ Sin cambios: ${summary.operations.noChanges}`);\nconsole.log(`  📝 Total operaciones: ${summary.operations.total}`);\nconsole.log(`\\n💾 ESTADO S3:`);\nconsole.log(`  Antes: ${summary.details.s3TotalBefore} archivos`);\nconsole.log(`  Ahora: ${summary.details.s3TotalAfter} archivos`);\nconsole.log(`  SharePoint: ${summary.details.sharepointTotal} archivos`);\nconsole.log('='.repeat(70));\n\nif (summary.uploadedFiles.length > 0) {\n  console.log(`\\n📤 ARCHIVOS SUBIDOS:`);\n  summary.uploadedFiles.forEach(f => {\n    console.log(`  ${f.action === 'new' ? '🆕' : '🔄'} ${f.file}`);\n  });\n}\n\nif (summary.deletedFiles.length > 0) {\n  console.log(`\\n🗑️  ARCHIVOS ELIMINADOS:`);\n  summary.deletedFiles.forEach(f => {\n    console.log(`  ❌ ${f.file}`);\n  });\n}\n\nconsole.log('\\n✅ S3 está ahora sincronizado con SharePoint');\n\nreturn [{ json: summary }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4192,
+        1136
+      ],
+      "id": "6e877034-7fb2-45cd-b92b-8b83a6aff005",
+      "name": "12. Resumen Final"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ===============================\n// FILTRAR ARCHIVOS S3 (.txt / .pdf)\n// ===============================\n\nconst items = $input.all();\n\nconst validExtensions = ['.txt', '.pdf'];\n\nconst normalizeKey = (key) =>\n  key.replace(/^\\/+/, '').replace(/\\/+/g, '/').trim();\n\nconst filtered = [];\n\nfor (const item of items) {\n  const f = item.json;\n\n  if (!f.Key) continue;\n\n  const key = normalizeKey(f.Key);\n\n  // ❌ ignorar carpetas\n  if (key.endsWith('/')) continue;\n\n  // ❌ solo extensiones permitidas\n  if (!validExtensions.some(ext => key.toLowerCase().endsWith(ext))) {\n    continue;\n  }\n\n  filtered.push({\n    json: {\n      ...f,\n      Key: key\n    }\n  });\n}\n\nconsole.log(`S3 filtrados: ${filtered.length} de ${items.length}`);\n\nreturn filtered;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1424,
+        1328
+      ],
+      "id": "a69c6881-7dd3-4505-828e-9e3fb50d35ea",
+      "name": "5.1 Filtrar S3 txt/pdf"
+    },
+    {
+      "parameters": {
+        "resource": "bucket",
+        "operation": "search",
+        "bucketName": "mobilvendorzei",
+        "returnAll": true,
+        "additionalFields": {
+          "prefix": "knowledge/support/"
+        }
+      },
+      "type": "n8n-nodes-base.awsS3",
+      "typeVersion": 2,
+      "position": [
+        800,
+        1328
+      ],
+      "id": "366ff8f5-3d2c-447b-a6e2-c872693ebc50",
+      "name": "Listar Archivos S3",
+      "executeOnce": true,
+      "credentials": {
+        "aws": {
+          "id": "gpmkKyepTbC5nySz",
+          "name": "AWS account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2144,
+        1120
+      ],
+      "id": "a7197965-445f-4c9a-8e18-0f123a994e30",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "bucketName": "mobilvendorzei",
+        "fileKey": "={{ $json.Key }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.awsS3",
+      "typeVersion": 2,
+      "position": [
+        3552,
+        1136
+      ],
+      "id": "35cbf467-3562-4948-b128-829edae8c29e",
+      "name": "10. Eliminar de S3",
+      "credentials": {
+        "aws": {
+          "id": "gpmkKyepTbC5nySz",
+          "name": "AWS account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "bucketName": "mobilvendorzei",
+        "fileKey": "knowledge/support/con_/K00_retenciones-S02.txt"
+      },
+      "type": "n8n-nodes-base.awsS3",
+      "typeVersion": 2,
+      "position": [
+        1264,
+        96
+      ],
+      "id": "c204d109-8fe2-4396-9c5d-2a73695ab41c",
+      "name": "Download S3",
+      "credentials": {
+        "aws": {
+          "id": "gpmkKyepTbC5nySz",
+          "name": "AWS account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "bucketName": "mobilvendorzei",
+        "fileName": "={{ $json.Key }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.awsS3",
+      "typeVersion": 2,
+      "position": [
+        1264,
+        320
+      ],
+      "id": "847150cc-f759-47b6-8ee9-774e51c46c15",
+      "name": "Subir a S3",
+      "credentials": {
+        "aws": {
+          "id": "gpmkKyepTbC5nySz",
+          "name": "AWS account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// LISTADO EXPLÍCITO DE KEYS A ELIMINAR (S3)\nconst keys = [\n  \"knowledge/support/con\",\n  \"knowledge/support/con/K00_retenciones-S01.txt\",\n  \"knowledge/support/con/K00_retenciones-S02.txt\",\n  \"knowledge/support/con/K00_retenciones-S03.txt\",\n  \"knowledge/support/con/K00_retenciones-S04.txt\",\n  \"knowledge/support/con/K00_retenciones_asumida-S05.txt\",\n  \"knowledge/support/con/K00_retenciones_clientes_rep-S05.txt\",\n  \"knowledge/support/con/K00_retenciones_proveedor_rep-S06.txt\",\n  \"knowledge/support/con/K01_anexo_transaccional-S01.txt\",\n  \"knowledge/support/con/K02_nomina-S01.txt\",\n  \"knowledge/support/con/K02_nomina-S02.txt\",\n  \"knowledge/support/con/K03_pago_de_clientes-S01.txt\",\n  \"knowledge/support/con/K03_pago_de_clientes-S02.txt\",\n  \"knowledge/support/con/K03_recibo_pagos_tarjeta_credito-S03.txt\",\n  \"knowledge/support/con/K03_recibo_pagos_tarjeta_credito_ordenes_comision_gasto_S05.txt\",\n  \"knowledge/support/con/K03_recibo_pagos_tarjeta_credito_ordenes_pedidos-S04.txt\",\n  \"knowledge/support/con/K04_impuestos-S01.txt\",\n  \"knowledge/support/con/K05_concepto_pagos_de_clientes-S01.txt\",\n  \"knowledge/support/con/K06_moneda-S01.txt\",\n  \"knowledge/support/con/K07_bancos-S01.txt\",\n  \"knowledge/support/con/K08_chequeras-S01.txt\",\n  \"knowledge/support/con/K08_chequeras-S02.txt\",\n  \"knowledge/support/con/K08_chequeras_creacion-S01.txt\",\n  \"knowledge/support/con/K09_plan_de_cuentas-S01.txt\",\n  \"knowledge/support/con/K10_asientos_contables-S01.txt\",\n  \"knowledge/support/con/K11_conjuntos-S01.txt\",\n  \"knowledge/support/con/K12_procedimientos-S01.txt\",\n  \"knowledge/support/con/K13_centro_de_costos-S01.txt\",\n  \"knowledge/support/con/K14_periodos-S01.txt\",\n  \"knowledge/support/con/K15_notas_de_debito_de_cliente-S01.txt\",\n  \"knowledge/support/con/K16_pago_a_proveedores-S01.txt\",\n  \"knowledge/support/con/K16_pago_a_proveedores-S02.txt\",\n  \"knowledge/support/con/K17_Conciliacion-tributaria-S02.txt\",\n  \"knowledge/support/con/K17_cierre_de_año-S01.txt\",\n  \"knowledge/support/con/K18_reporte_anticipos-S01.txt\",\n  \"knowledge/support/con/K18_reporte_anticipos_clientes-S01.txt\",\n  \"knowledge/support/con/K18_reporte_anticipos_proveedores-S02.txt\",\n  \"knowledge/support/con/K19_nomina_anticipos-S02.txt\",\n  \"knowledge/support/con/K19_nomina_pagos-S01.txt\",\n  \"knowledge/support/con/K20_deposito_proceso-S00.txt\",\n  \"knowledge/support/con/K21_contabilizar_documentos-S00.txt\"\n];\n\n// SALIDA: 1 item = 1 delete\nreturn keys.map(k => ({\n  json: {\n    Key: k,\n    action: \"delete\"\n  }\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        976,
+        320
+      ],
+      "id": "9b022a7a-1417-4409-a6be-693cb5145575",
+      "name": "Code",
+      "disabled": true
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:42.692Z",
+      "createdAt": "2026-01-13T02:49:42.692Z",
+      "role": "workflow:owner",
+      "workflowId": "JEI2tR5KpAgtdaha",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-20T16:21:45.877Z",
+  "versionId": "bcb5d79e-02dd-4069-b0e7-640d8721b9bc"
+}
