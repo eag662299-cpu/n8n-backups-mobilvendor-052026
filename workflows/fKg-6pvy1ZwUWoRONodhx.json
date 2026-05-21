@@ -1,0 +1,449 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Init Paging5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Init Paging5": {
+      "main": [
+        [
+          {
+            "node": "Get a list of transcripts (paged)2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a list of transcripts (paged)2": {
+      "main": [
+        [
+          {
+            "node": "Get Transcript Detail3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet2": {
+      "main": [
+        [
+          {
+            "node": "Wait2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Transcript Detail3": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait2": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Get a list of transcripts (paged)2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-02-26T20:15:19.878Z",
+  "id": "fKg-6pvy1ZwUWoRONodhx",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Reportes Flowise",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        6784,
+        640
+      ],
+      "id": "19713f5a-5cf1-4096-9416-0ebc8bfd57f1",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "values": {
+          "number": [
+            {
+              "name": "skip"
+            },
+            {
+              "name": "limit",
+              "value": 50
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        7136,
+        640
+      ],
+      "id": "803f8e86-c48b-4843-b16b-2352c17ad896",
+      "name": "Init Paging5"
+    },
+    {
+      "parameters": {
+        "operation": "getTranscriptsList",
+        "skip": "={{ $json.skip }}",
+        "filters": {}
+      },
+      "type": "@firefliesai/n8n-nodes-fireflies.fireflies",
+      "typeVersion": 1,
+      "position": [
+        7376,
+        640
+      ],
+      "id": "c14aaf31-5553-48bb-ae02-0f477350b134",
+      "name": "Get a list of transcripts (paged)2",
+      "credentials": {
+        "firefliesApi": {
+          "id": "hxr0xziaiHh15j7f",
+          "name": "Fireflies account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1bvTusWHFysCYLztk5PQAwzKHS77tMD9liKv19-lM2zU",
+          "mode": "list",
+          "cachedResultName": "ZEI's Fireflies Matriz de tiempos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bvTusWHFysCYLztk5PQAwzKHS77tMD9liKv19-lM2zU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Fireflies Meetings",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bvTusWHFysCYLztk5PQAwzKHS77tMD9liKv19-lM2zU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.data.transcript.id }}",
+            "Titulo Reunion": "={{ $json.data.transcript.title }}",
+            "Organizador": "={{ $json.data.transcript.host_email }}",
+            "Invitados": "={{ $json.data.transcript.participants[0] }}",
+            "Fecha": "={{ new Date($json.data.transcript.dateString || $json.data.date).toLocaleString('es-EC', { timeZone: 'America/Guayaquil' }) }}",
+            "Tiempo Reunion (min)": "={{ $json.data.transcript.duration }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Titulo Reunion",
+              "displayName": "Titulo Reunion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Fecha",
+              "displayName": "Fecha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Organizador",
+              "displayName": "Organizador",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tiempo Reunion (min)",
+              "displayName": "Tiempo Reunion (min)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Invitados",
+              "displayName": "Invitados",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Atendidos",
+              "displayName": "Atendidos",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        7888,
+        640
+      ],
+      "id": "9caaaca2-8f84-483a-8d42-aaac85f509d6",
+      "name": "Append row in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.fireflies.ai/graphql",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 2684c9c2-857e-4548-a17f-e643a202eeb7"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"query Transcript($transcriptId: String!) { transcript(id: $transcriptId) { id title host_email participants dateString duration meeting_link } }\",\n  \"variables\": { \"transcriptId\": \"{{ $json.data.id }}\" }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        7616,
+        640
+      ],
+      "id": "3ffb4879-e669-4e0e-9b75-449c541422f1",
+      "name": "Get Transcript Detail3"
+    },
+    {
+      "parameters": {
+        "amount": 45
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        8080,
+        640
+      ],
+      "id": "2985853b-c7c2-48b1-b8df-d477e250a8f7",
+      "name": "Wait2",
+      "webhookId": "a4d65007-31b2-4e65-97a1-1903cef292b0",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1bvTusWHFysCYLztk5PQAwzKHS77tMD9liKv19-lM2zU",
+          "mode": "list",
+          "cachedResultName": "ZEI's Fireflies Matriz de tiempos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bvTusWHFysCYLztk5PQAwzKHS77tMD9liKv19-lM2zU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Fireflies Meetings",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bvTusWHFysCYLztk5PQAwzKHS77tMD9liKv19-lM2zU/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        8320,
+        640
+      ],
+      "id": "5dc9e8bf-9d82-441a-97f9-da80c6d718c8",
+      "name": "Get row(s) in sheet",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "field": "id"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        8544,
+        896
+      ],
+      "id": "15c639a2-6a17-47df-aaf6-4767f506e8e2",
+      "name": "Summarize"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "da06d77c-af69-40bb-9e74-a1439b3b690e",
+              "name": "skip",
+              "value": "={{ $json.count_id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        8752,
+        896
+      ],
+      "id": "5b06db34-bd80-4124-9502-21bf1cad222c",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "content": "## Configuración\n**Skip:** Numero de  saltos  dentro de la bsae de datos\n**Limit:** Max 50\n",
+        "height": 256,
+        "width": 288
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        7008,
+        528
+      ],
+      "typeVersion": 1,
+      "id": "08037e18-a60b-426c-a291-bec0a0d9773b",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {
+    "When clicking ‘Execute workflow’": [
+      {
+        "json": {},
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-02-26T20:15:19.895Z",
+      "createdAt": "2026-02-26T20:15:19.895Z",
+      "role": "workflow:owner",
+      "workflowId": "fKg-6pvy1ZwUWoRONodhx",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-02-27T19:02:26.268Z",
+  "versionId": "b0004fc3-7015-43c1-a8fd-ad1131354cf4"
+}
