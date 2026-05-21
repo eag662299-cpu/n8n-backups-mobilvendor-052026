@@ -1,0 +1,116 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-20T16:59:54.135Z",
+  "id": "5cfXk12XM2-dzy-aCGaFr",
+  "isArchived": false,
+  "meta": null,
+  "name": "SharePoint BC ZEI - Suscripción -Validation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "sharepoint-bc-zei-soporte-fw",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -128,
+        80
+      ],
+      "id": "692fc3b6-135a-4032-8339-4f26c46e1479",
+      "name": "Webhook1",
+      "webhookId": "f7806dad-e4d7-4750-95d9-6a1b51b5ef92",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Validacion del webhook se activa una sola vez\n",
+        "height": 384,
+        "width": 784
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -192,
+        -64
+      ],
+      "typeVersion": 1,
+      "id": "643de482-f22f-4323-bce0-20cd9d38b9e7",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const token = $json?.query?.validationToken;\n\nif (token) {\n  // Graph exige texto plano, no JSON\n  return [\n    {\n      json: {\n        statusCode: 200,\n        headers: { \"Content-Type\": \"text/plain\" },\n        body: token\n      }\n    }\n  ];\n}\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        80
+      ],
+      "id": "545644f4-30a1-49c3-8231-05f264e0adba",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        288,
+        80
+      ],
+      "id": "8cfd3c78-380e-479c-baca-3f3e6345e664",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-20T16:59:54.150Z",
+      "createdAt": "2026-01-20T16:59:54.150Z",
+      "role": "workflow:owner",
+      "workflowId": "5cfXk12XM2-dzy-aCGaFr",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-01-22T19:14:36.728Z",
+  "versionId": "9ff4acff-742f-4345-b35c-c1727cd0e9bd"
+}
