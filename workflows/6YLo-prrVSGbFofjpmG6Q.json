@@ -1,0 +1,539 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Schedule: Diario 9am (L-V)": {
+      "main": [
+        [
+          {
+            "node": "Sheets: Obtener Leads en Nurturing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets: Obtener Leads en Nurturing": {
+      "main": [
+        [
+          {
+            "node": "Code: Calcular Mensaje del Día",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Calcular Mensaje del Día": {
+      "main": [
+        [
+          {
+            "node": "Switch: Qué Mensaje Enviar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch: Qué Mensaje Enviar": {
+      "main": [
+        [
+          {
+            "node": "Code: Nurturing Msg 1 (Tip Día 2)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Nurturing Msg 2 (Insight Día 5)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Nurturing Msg 3 (Caso Real Día 9)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Nurturing Msg 4 (Tip Día 14)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code: Nurturing Msg 5 (Reactivación Día 21)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Nurturing Msg 1 (Tip Día 2)": {
+      "main": [
+        [
+          {
+            "node": "Code: Merge Mensajes Nurturing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Nurturing Msg 2 (Insight Día 5)": {
+      "main": [
+        [
+          {
+            "node": "Code: Merge Mensajes Nurturing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Nurturing Msg 3 (Caso Real Día 9)": {
+      "main": [
+        [
+          {
+            "node": "Code: Merge Mensajes Nurturing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Nurturing Msg 4 (Tip Día 14)": {
+      "main": [
+        [
+          {
+            "node": "Code: Merge Mensajes Nurturing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Nurturing Msg 5 (Reactivación Día 21)": {
+      "main": [
+        [
+          {
+            "node": "Code: Merge Mensajes Nurturing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Merge Mensajes Nurturing": {
+      "main": [
+        [
+          {
+            "node": "WA: Enviar Nurturing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WA: Enviar Nurturing": {
+      "main": [
+        [
+          {
+            "node": "Sheets: Actualizar Nurturing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sheets: Actualizar Nurturing": {
+      "main": [
+        [
+          {
+            "node": "HTTP: Registrar en Timeline Bitrix",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-04-17T03:17:59.880Z",
+  "id": "6YLo-prrVSGbFofjpmG6Q",
+  "isArchived": false,
+  "meta": null,
+  "name": "Nurturing_Frio",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * 1-5"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -464,
+        304
+      ],
+      "id": "a531a3a6-75b1-4b4d-987a-44da53919278",
+      "name": "Schedule: Diario 9am (L-V)"
+    },
+    {
+      "parameters": {
+        "operation": "getRows",
+        "documentId": {
+          "__rl": true,
+          "value": "1yOx84dLgBTW9D0A4npkB2pf2T-CjnllowxIdvaiCsTg",
+          "mode": "list",
+          "cachedResultName": "MQL LeadFormMeta"
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -240,
+        304
+      ],
+      "id": "0a1cfc4b-276d-4760-8dc0-59c2c0f28b9e",
+      "name": "Sheets: Obtener Leads en Nurturing",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "UH4CavyWfnclTTef",
+          "name": "MKT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Calcula qué mensaje de nurturing enviar según días desde entrada al flujo\nconst lead = $input.item.json;\n\nconst ahora = Date.now();\nconst fechaEntrada = new Date(lead.nurturing_start || lead.wa_last_contact || 0).getTime();\nconst diasTranscurridos = (ahora - fechaEntrada) / (1000 * 60 * 60 * 24);\nconst mensajeYaEnviado = parseInt(lead.nurturing_msg || 0);\n\n// Calendario de nurturing según PDF:\n// Msg 1 (tip):     Día 2\n// Msg 2 (insight): Día 5  \n// Msg 3 (caso):    Día 9\n// Msg 4 (tip2):    Día 14\n// Msg 5 (reactiv): Día 21\nconst calendario = [\n  { msg: 1, diasMinimos: 2 },\n  { msg: 2, diasMinimos: 5 },\n  { msg: 3, diasMinimos: 9 },\n  { msg: 4, diasMinimos: 14 },\n  { msg: 5, diasMinimos: 21 }\n];\n\n// Busca el próximo mensaje a enviar\nconst proximoMensaje = calendario.find(c => \n  c.msg > mensajeYaEnviado && diasTranscurridos >= c.diasMinimos\n);\n\nif (!proximoMensaje) return []; // No hay mensaje que enviar hoy\n\nreturn [{\n  json: {\n    ...lead,\n    nurturing_msg_a_enviar: proximoMensaje.msg,\n    dias_en_nurturing: Math.floor(diasTranscurridos)\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -32,
+        304
+      ],
+      "id": "9c53c733-4d11-4bb9-964a-a36982b9455e",
+      "name": "Code: Calcular Mensaje del Día"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.nurturing_msg_a_enviar }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.nurturing_msg_a_enviar }}",
+                    "rightValue": 2,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.nurturing_msg_a_enviar }}",
+                    "rightValue": 3,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.nurturing_msg_a_enviar }}",
+                    "rightValue": 4,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.nurturing_msg_a_enviar }}",
+                    "rightValue": 5,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        208,
+        304
+      ],
+      "id": "2ed5dd59-5f17-4b1e-9aec-2dc43cb34eee",
+      "name": "Switch: Qué Mensaje Enviar"
+    },
+    {
+      "parameters": {
+        "jsCode": "// MENSAJE 1 (Día 2) - TIP: Liquidación\nconst lead = $input.item.json;\nconst nombre = lead.nombre_completo?.split(' ')[0] || '';\n\nconst mensaje = `Hola ${nombre} 👋\n\nTe dejo un tip rápido:\n\nMuchas empresas pierden control en la liquidación porque no comparan lo vendido vs lo cobrado en el *mismo día*.\n\nEse pequeño cruce ya detecta la mayoría de los errores en tu operación diaria.\n\n¿Hoy lo están haciendo así en tu empresa?`;\n\nreturn [{ json: { ...lead, message: mensaje, nurturing_msg_enviado: 1 } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        -112
+      ],
+      "id": "8487cd11-fe5b-4f0d-9060-c562f76514a3",
+      "name": "Code: Nurturing Msg 1 (Tip Día 2)"
+    },
+    {
+      "parameters": {
+        "jsCode": "// MENSAJE 2 (Día 5) - INSIGHT: Problema oculto\nconst lead = $input.item.json;\nconst nombre = lead.nombre_completo?.split(' ')[0] || '';\n\nconst mensaje = `Hola ${nombre}, algo que vemos mucho 📊\n\nEmpresas con rutas suelen creer que tienen control...\n\nPero cuando revisan, la información llega *tarde o incompleta*.\n\nAhí es donde empiezan los problemas de inventario y ventas.\n\n¿Sabes en cuántas horas llega la información de tus vendedores a tu sistema hoy?`;\n\nreturn [{ json: { ...lead, message: mensaje, nurturing_msg_enviado: 2 } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        64
+      ],
+      "id": "368de611-aeb6-4db8-8e5a-877bad7f0dca",
+      "name": "Code: Nurturing Msg 2 (Insight Día 5)"
+    },
+    {
+      "parameters": {
+        "jsCode": "// MENSAJE 3 (Día 9) - CASO REAL: Prueba social\nconst lead = $input.item.json;\nconst nombre = lead.nombre_completo?.split(' ')[0] || '';\n\nconst mensaje = `Te comparto un caso real 💼\n\n*Marcseal*, una empresa con operación en campo, tenía problemas en el control de ventas y liquidación.\n\nAl ordenar sus procesos lograron:\n✅ Detectar errores que antes no veían\n✅ Rutas optimizadas un 200% con geolocalización\n✅ Cobranza en tiempo real con mayor control de pagos\n\nSi quieres saber cómo replicar estos resultados en tu operación, solo responde con un *Sí* 👇`;\n\nreturn [{ json: { ...lead, message: mensaje, nurturing_msg_enviado: 3 } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        224
+      ],
+      "id": "f9592cee-d257-4f0b-ba3f-f73d810e4751",
+      "name": "Code: Nurturing Msg 3 (Caso Real Día 9)"
+    },
+    {
+      "parameters": {
+        "jsCode": "// MENSAJE 4 (Día 14) - TIP PRÁCTICO: Valor accionable\nconst lead = $input.item.json;\nconst nombre = lead.nombre_completo?.split(' ')[0] || '';\n\nconst mensaje = `${nombre}, un tip útil para tu gestión comercial diaria 💡\n\nSi tienes vendedores en campo, revisa esto:\n\n❓ ¿Puedes ver en el *mismo día* qué vendió cada uno?\n\nSi no, estás tomando decisiones con retraso.\n\nY eso impacta directamente en ventas e inventario.\n\n¿Cuánto tiempo tarda esa información en llegar hoy?`;\n\nreturn [{ json: { ...lead, message: mensaje, nurturing_msg_enviado: 4 } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        384
+      ],
+      "id": "4446ca8b-a06b-4cc0-b039-9ce8c2836e5f",
+      "name": "Code: Nurturing Msg 4 (Tip Día 14)"
+    },
+    {
+      "parameters": {
+        "jsCode": "// MENSAJE 5 (Día 21) - REACTIVACIÓN: Último intento\nconst lead = $input.item.json;\nconst nombre = lead.nombre_completo?.split(' ')[0] || '';\n\nconst mensaje = `Hola ${nombre} 👋\n\nTe escribo por última vez por aquí.\n\nSi en algún momento quieres mejorar el control de tu operación, podemos ayudarte a revisarlo contigo sin ningún compromiso.\n\n¿Te gustaría retomar el diagnóstico?\n\n✅ *SI* - Retomamos\n❌ *NO* - Entendido, hasta pronto`;\n\nreturn [{ json: { ...lead, message: mensaje, nurturing_msg_enviado: 5, es_ultimo_mensaje: true } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        544
+      ],
+      "id": "6c9fa348-25e7-42de-9bcc-6b961adce687",
+      "name": "Code: Nurturing Msg 5 (Reactivación Día 21)"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Merge de todos los mensajes de nurturing\nreturn [{ json: $input.item.json }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        304
+      ],
+      "id": "3edbeef6-e872-486b-8bef-85c42268c676",
+      "name": "Code: Merge Mensajes Nurturing"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "865315756662811",
+        "recipientPhoneNumber": "={{ $json['número_de_teléfono'] }}",
+        "textBody": "={{ $json.message }}",
+        "additionalFields": {
+          "previewUrl": false
+        }
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        864,
+        304
+      ],
+      "id": "cdd9a024-03e5-4b98-a878-102eb6ca3b33",
+      "name": "WA: Enviar Nurturing",
+      "webhookId": "dcd02713-3356-4893-b124-30f21ac913b5",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "iJtDoyn2qJjzpWd5",
+          "name": "WhatsApp account_TEST"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1yOx84dLgBTW9D0A4npkB2pf2T-CjnllowxIdvaiCsTg",
+          "mode": "list",
+          "cachedResultName": "MQL LeadFormMeta"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 886272674,
+          "mode": "list",
+          "cachedResultName": "Formulario campaña FMCG ABR 2026"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "nurturing_msg": "={{ $json.nurturing_msg_enviado }}",
+            "wa_last_contact": "={{ new Date().toISOString() }}",
+            "lead_status": "={{ $json.es_ultimo_mensaje ? 'NURTURING_CERRADO' : 'NURTURING' }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1088,
+        304
+      ],
+      "id": "9d81268a-4122-4617-a968-4a5d569bf095",
+      "name": "Sheets: Actualizar Nurturing",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "UH4CavyWfnclTTef",
+          "name": "MKT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://YOUR_BITRIX_DOMAIN.bitrix24.com/rest/1/YOUR_WEBHOOK_TOKEN/crm.timeline.comment.add.json",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"fields\": {\n    \"ENTITY_ID\": \"{{ $json.bitrix_lead_id }}\",\n    \"ENTITY_TYPE\": \"lead\",\n    \"COMMENT\": \"Nurturing WA enviado: Mensaje {{ $json.nurturing_msg_enviado }}/5 (Día {{ $json.dias_en_nurturing }}) | {{ new Date().toLocaleString('es-EC') }}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1296,
+        304
+      ],
+      "id": "9342649d-b8d8-4f00-b093-1bff31cb4994",
+      "name": "HTTP: Registrar en Timeline Bitrix",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "## META_04 · Nurturing Frío\n\nEjecución automática: lunes a viernes 9am (hora Ecuador).\n\nLee todos los leads con `mql_result = NURTURING` y calcula qué mensaje enviar según los días desde entrada:\n\n| Día | Mensaje | Objetivo |\n|-----|---------|----------|\n| 2 | Tip: liquidación | Abrir conversación con valor |\n| 5 | Insight: problema oculto | Mostrar lo que no ve |\n| 9 | Caso real Marcseal | Prueba social suave |\n| 14 | Tip práctico: vendedores campo | Valor accionable |\n| 21 | Reactivación final | Cerrar o reactivar |\n\n⚡ Si el lead responde en cualquier punto, el flujo META_02 (WA Trigger) detecta la respuesta y lo mueve de vuelta a validación (Fase 1).\n\n⚙️ La columna `nurturing_start` en Sheets debe tener la fecha de entrada al nurturing.\nSi no existe, se usa `wa_last_contact` como fallback.",
+        "height": 660,
+        "width": 440,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        -448
+      ],
+      "id": "efc3191f-062d-415d-866b-658c7137de6b",
+      "name": "Nota META_04"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-04-17T03:17:59.893Z",
+      "createdAt": "2026-04-17T03:17:59.893Z",
+      "role": "workflow:owner",
+      "workflowId": "6YLo-prrVSGbFofjpmG6Q",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [
+    {
+      "updatedAt": "2026-04-10T20:52:51.010Z",
+      "createdAt": "2026-04-10T20:52:51.010Z",
+      "id": "JmKjoDs1VmEL90OO",
+      "name": "meta-leads"
+    },
+    {
+      "updatedAt": "2026-04-10T21:30:09.539Z",
+      "createdAt": "2026-04-10T21:30:09.539Z",
+      "id": "LInNR6TyboS9jDGN",
+      "name": "nurturing"
+    }
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2026-04-17T03:19:16.194Z",
+  "versionId": "68afb95e-12e5-422f-ac03-965bd15a8938"
+}
