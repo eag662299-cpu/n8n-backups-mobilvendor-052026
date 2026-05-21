@@ -1,0 +1,199 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Bitrix Recursive Extractor": {
+      "main": [
+        [
+          {
+            "node": "Append to Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Bitrix Recursive Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append to Sheet": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:46.857Z",
+  "id": "gthWbCIdVaxqQPeu",
+  "isArchived": false,
+  "meta": null,
+  "name": "documentos ISO27001",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// ===============================================\n//  CONFIG\n// ===============================================\nconst BITRIX_URL = \"https://mobilvendor.bitrix24.es/rest/1/ghq4a7p2r32rd5u9/\";\nconst ROOT_FOLDER = \"20123\";   // Carpeta raíz confirmada\n\n// ===============================================\n//  Obtener hijos de carpeta Bitrix (CORRECTO EN CODE NODE)\n// ===============================================\nasync function getChildren(folderId, ctx) {\n  const response = await ctx.helpers.httpRequest({\n    method: \"POST\",\n    url: `${BITRIX_URL}disk.folder.getchildren.json`,\n    body: {\n      id: folderId\n    },\n    json: true\n  });\n\n  return response.result || [];\n}\n\n// ===============================================\n//  Recorrido recursivo\n// ===============================================\nasync function scanFolder(folderId, currentPath, ctx) {\n  let results = [];\n\n  const children = await getChildren(folderId, ctx);\n\n  for (const item of children) {\n\n    // ---------- SUBCARPETA ----------\n    if (item.TYPE === \"folder\") {\n      const newPath = currentPath + item.NAME + \"/\";\n      const sub = await scanFolder(item.ID, newPath, ctx);\n      results.push(...sub);\n    }\n\n    // ---------- ARCHIVO ----------\n    if (item.TYPE === \"file\") {\n      const name = item.NAME || \"\";\n      const ext = name.includes(\".\")\n        ? name.split(\".\").pop().toLowerCase()\n        : \"\";\n\n      results.push({\n        fileName: name,           // nombre + extensión\n        tipo: ext,                // extensión (tipo)\n        extension: ext,           // extensión\n        ubicacion: currentPath,   // ruta completa\n        bitrixId: item.ID,\n        bitrixDetailUrl: item.DETAIL_URL,\n        bitrixViewUrl: `https://mobilvendor.bitrix24.es/bitrix/tools/disk/focus.php?objectId=${item.ID}&cmd=show&action=showObjectInGrid&ncc=1`\n      });\n    }\n  }\n\n  return results;\n}\n\n// ===============================================\n//  EJECUCIÓN\n// ===============================================\nconst output = await scanFolder(ROOT_FOLDER, \"\", this);\n\nreturn output.map(e => ({ json: e }));\n"
+      },
+      "id": "265068a1-d07e-433d-b21f-ea5f974c4dc0",
+      "name": "Bitrix Recursive Extractor",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -128,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1LwGhXktdAPmm1ckrkoJdcpzPiCNbgpIg9vIWBguYlBk",
+          "mode": "list",
+          "cachedResultName": "Documentos_ISO 27001",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LwGhXktdAPmm1ckrkoJdcpzPiCNbgpIg9vIWBguYlBk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LwGhXktdAPmm1ckrkoJdcpzPiCNbgpIg9vIWBguYlBk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fileName": "={{ $json.fileName }}",
+            "extension": "={{ $json.extension }}",
+            "ubicacion": "={{ $json.ubicacion }}",
+            "bitrixId": "={{ $json.bitrixId }}",
+            "  bitrixDetailUrl": "={{ $json.bitrixDetailUrl }}",
+            "source_url": "={{ $json.bitrixViewUrl }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "fileName",
+              "displayName": "fileName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "extension",
+              "displayName": "extension",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ubicacion",
+              "displayName": "ubicacion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "bitrixId",
+              "displayName": "bitrixId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "  bitrixDetailUrl",
+              "displayName": "  bitrixDetailUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "source_url",
+              "displayName": "source_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "rows",
+              "displayName": "rows",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "d2f50515-673c-4f6c-9458-ec542747f13c",
+      "name": "Append to Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        240,
+        -48
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fm3jifX2nPTobuSZ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        -48
+      ],
+      "id": "c9e795a2-a560-403a-b321-e9cc119a4dde",
+      "name": "When clicking ‘Execute workflow’"
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:47.107Z",
+      "createdAt": "2026-01-13T02:49:47.107Z",
+      "role": "workflow:owner",
+      "workflowId": "gthWbCIdVaxqQPeu",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T15:08:20.613Z",
+  "versionId": "3f72b24f-658e-4e3a-9c60-1051c416832b"
+}
