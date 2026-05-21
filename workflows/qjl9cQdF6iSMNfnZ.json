@@ -1,0 +1,178 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "Code - Validate File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Validate File": {
+      "main": [
+        [
+          {
+            "node": "Upload File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload File": {
+      "main": [
+        [
+          {
+            "node": "Code - Notify Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:44.876Z",
+  "id": "qjl9cQdF6iSMNfnZ",
+  "isArchived": false,
+  "meta": null,
+  "name": "My workflow 21",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        128,
+        -96
+      ],
+      "id": "7aafb99d-6407-4840-9426-627692af3607",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "site": {
+          "__rl": true,
+          "value": "mobilvendorcom.sharepoint.com,f545d085-e894-4c08-b06d-fd9559e9391f,6b7b3702-269f-4e6b-8a31-04ffbffff3fd",
+          "mode": "list",
+          "cachedResultName": "zei-mobilvendor"
+        },
+        "folder": {
+          "__rl": true,
+          "value": "01SHM76UG6XUEM2JQ26NFJLDUPTRNQE4DB",
+          "mode": "list",
+          "cachedResultName": "error_web"
+        },
+        "file": {
+          "__rl": true,
+          "value": "01SHM76UAXCIFA35KASRDYMPKCMEB6DKV5",
+          "mode": "list",
+          "cachedResultName": "K00_registro_no_puede_ser_removido-S01.txt"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.microsoftSharePoint",
+      "typeVersion": 1,
+      "position": [
+        368,
+        -96
+      ],
+      "id": "8cbd3287-a9fc-42a7-a379-cda9223341cc",
+      "name": "Download File",
+      "credentials": {
+        "microsoftSharePointOAuth2Api": {
+          "id": "Mk0zfp4BGXet86UQ",
+          "name": "Microsoft SharePoint account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        608,
+        -96
+      ],
+      "id": "207713fa-7454-4320-ba00-4ebbeb5dd17f",
+      "name": "Code - Validate File"
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "bucketName": "s3://mobilvendorzei/knowledge/support/error_web/",
+        "fileName": "K00_registro_no_puede_ser_removido-S01.txt",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.s3",
+      "typeVersion": 1,
+      "position": [
+        848,
+        -96
+      ],
+      "id": "b443eede-f4d4-420d-95cd-136b2985df41",
+      "name": "Upload File",
+      "credentials": {
+        "s3": {
+          "id": "Tsq7aryD3XJlOKHT",
+          "name": "S3 account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1088,
+        -96
+      ],
+      "id": "97a0a088-b4ae-4b4a-9ee4-2546c7850a76",
+      "name": "Code - Notify Result"
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:45.735Z",
+      "createdAt": "2026-01-13T02:49:45.735Z",
+      "role": "workflow:owner",
+      "workflowId": "qjl9cQdF6iSMNfnZ",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T02:49:44.876Z",
+  "versionId": "0434757c-24ab-49f8-96b6-db0bf80afb6f"
+}
