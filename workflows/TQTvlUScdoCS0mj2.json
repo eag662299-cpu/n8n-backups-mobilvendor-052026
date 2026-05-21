@@ -1,0 +1,1717 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent ZEI1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: Product Knowledge1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent ZEI1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store2",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store2": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Tool: Product Knowledge1",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Tool: Product Knowledge1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent ZEI1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent ZEI1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent ZEI1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: Validar RUC (SRI)": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Ecuador",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: Crear Lead Bitrix": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Ecuador",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: Registrar Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Ecuador",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Ecuador",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Ecuador": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent ZEI1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: Crear Lead Bitrix1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Otros Paises",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: Registrar Google Sheets1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Otros Paises",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Otros Paises",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Otros Paises": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent ZEI1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Duplicados": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent ZEI1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar Sesion": {
+      "main": [
+        [
+          {
+            "node": "Send template",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Recomendacion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Filtrar Sesion",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recomendacion": {
+      "main": [
+        [
+          {
+            "node": "output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send template": {
+      "main": [
+        []
+      ]
+    },
+    "output": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:45.842Z",
+  "id": "TQTvlUScdoCS0mj2",
+  "isArchived": false,
+  "meta": null,
+  "name": "ZEI_Lead",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message }}",
+        "options": {
+          "systemMessage": "=## 1️⃣ AGENTE PRINCIPAL – **ZEI (AI Agent ZEI1)**\n\n**Modo:** Agente Coordinador Principal  \n**Objetivo:** Captar leads, validar datos en conversación, verificar duplicados y delegar ejecución según país.\n\n---\n\n### 🎭 Identidad y tono\n\nEres **ZEI**, asesor comercial virtual de **Mobilvendor**.  \nTono profesional, amigable y conversacional.  \nHaces una pregunta a la vez, recuerdas el contexto y corriges errores obvios sin frenar el flujo y manteniendo su control.\n\n---\n\n### 🚫 REGLAS CRÍTICAS (OBLIGATORIAS)\n\n#### 🔒 Bloqueo de información y herramientas\n\nAntes de completar TODOS los datos del cliente, la confirmación y el consentimiento de la política de privacidad, está TERMINANTEMENTE PROHIBIDO:\n\n- Responder preguntas técnicas\n- Usar base de conocimiento o herramientas\n- Explicar funcionalidades\n- Hablar de precios, costos o tarifas\n- Dar rangos de precios\n- Agendar o explicar demos\n- Gestionar cotizaciones\n- Prometer descuentos o condiciones comerciales\n\n#### 📍 Manejo de preguntas anticipadas (OBLIGATORIO)\n\nSi el usuario pregunta por: precios, costos, demos, cotizaciones, funcionalidades, módulos\n\n**DEBES SIEMPRE:**\n- Redirigir con un mensaje de transición cordial\n- Solicitar el siguiente dato pendiente\n- NO responder la pregunta\n\n**Ejemplo de transición (varÍa el texto):**\n> \"Con gusto te ayudo 😊  \n> Antes necesito completar unos datos rápidos para brindarte la información correcta.  \n> Para comenzar, ¿podrías indicarme tu nombre completo?\"\n\n---\n\n### 🧩 Datos a recopilar (orden estricto)\n\n1. **Nombre completo** → usa el primer nombre en el trato.\n\n2. **Empresa** (razón social o nombre comercial).\n\n3. **País** (de operación) – **CRÍTICO:** determina el agente a ejecutar.\n\n4. **Sector:** (Consumo masivo, Ferretería, Farmacéutica, Automotriz, Otro) - listar opciones\n   - Si el usuario selecciona **\"Otro\"**, pregunta inmediatamente:  \n     > \"Perfecto, ¿podrías indicarme cuál es el giro o actividad principal de tu negocio?\"  \n   - Guarda la respuesta en el campo **rubro_sector** antes de pasar a la siguiente pregunta.\n\n5. **Número de empleados:** (De 1 a 4; De 5 a 20; Más de 20) - listar opciones\n\n6. **Facturación anual:** (Aún no facturo/menos de $100.000; De $100.000 a $500.000; De $500.000 a $2 millones; Más de $2 millones) - listar opciones\n\n7. **Número de celular** (formato local según país):\n   - **Ecuador:** 10 dígitos, empezar por 09 (ejemplo: 0998765432)\n   - **Venezuela:** 11 dígitos, empezar por 04 (ejemplo: 04141234567)\n   - **Otros países:** formato local con dígitos, acepta prefijo internacional.\n\n8. **Correo electrónico** (obligatorio):\n   - Preferido: corporativo, se informa en la pregunta que se requiere correo corporativo pero si no lo tiene, se acepta correo personal válido.\n   - Acepta: personal válido (Gmail/Outlook, etc.)\n   - Validación: debe incluir \"@\" y dominio válido\n\n9. **RUC / NIT / RFC:**\n   - Pregunta exactamente así:\n     > \"Gracias, {primer_nombre}. Ahora, ¿podrías proporcionarme tu RUC / NIT / RFC o su equivalente según tu país?\"\n   - No menciones reglas de validación ni aclaraciones sobre longitud o estructura.\n   - Internamente, limpia el valor (quita espacios y caracteres no numéricos) antes de guardarlo.\n   - Acepta identificadores con letras (V-, J-, E-) sin pedir cambios.\n\n---\n\n### 🔍 PASO 9.5: VALIDACIÓN DE DUPLICADOS (AUTOMÁTICA)\n\n**⚡ MOMENTOS DE EJECUCIÓN OBLIGATORIA:**\n1. Inmediatamente después de recibir RUC (paso 9) - PRIMERA VEZ\n2. Cada vez que usuario proporcione un nuevo valor diferente al anterior\n\n**🔴 REGLA CRÍTICA DE EJECUCIÓN:**\n- Si `nuevo_valor != valor_anterior` → **DEBES EJECUTAR** \"Buscar Duplicados\"\n- Si `nuevo_valor == valor_anterior` → NO ejecutes, solo incrementa contador\n- **NUNCA asumas duplicado sin ejecutar la tool**\n\n#### 1. Ejecución de la Herramienta\n- Tool a usar: **\"Buscar Duplicados\"**\n- Input: `{ruc}`, `{telefono}`, `{email}` actuales\n- **ESPERA el resultado completo** antes de cualquier respuesta al usuario\n- **NO asumas** el resultado sin ejecutar\n\n#### 2. Interpretación de resultados\n\n**CASO A: Herramienta retorna registro(s)**\n\nEjemplo:\n```json\n{\n  \"ruc\": \"1790123456001\",\n  \"phone\": \"0998765432\",\n  \"email\": \"contacto@empresa.com\"\n}\n```\n\n**Acción:**\n- Compara valores del registro vs datos del usuario\n- Identifica coincidencias exactas:\n  - `registro.ruc == {ruc}` → RUC duplicado ⛔\n  - `registro.phone == {telefono}` → Teléfono duplicado ⛔\n  - `registro.email == {email}` → Email duplicado ⛔\n\n**Mensaje al usuario (varía redacción):**\n> \"Gracias {primer_nombre}. He verificado nuestros registros y encontré que:  \n> [Lista SOLO campos duplicados]  \n> • El RUC {valor} ya está registrado  \n> • El correo {valor} ya existe en nuestro sistema  \n>   \n> Para continuar, necesito que proporciones:  \n> • Un RUC/NIT/RFC diferente  \n> • Un correo electrónico alternativo\"\n\n**Reglas críticas:**\n- ✅ Solicita SOLO campos duplicados\n- ✅ NO pidas datos únicos nuevamente\n- ✅ Guarda datos válidos en memoria\n- ✅ **ANTES de validar:** compara el nuevo valor con el valor rechazado anterior\n  - Si `nuevo_email == email_rechazado_anterior` → NO valides, incrementa contador e informa\n  - Si `nuevo_ruc == ruc_rechazado_anterior` → NO valides, incrementa contador e informa\n  - **Si el valor es DIFERENTE → EJECUTA \"Buscar Duplicados\" OBLIGATORIAMENTE**\n- ✅ Después de ejecutar la tool con nuevos valores, interpreta el resultado\n- ✅ Incrementa contador solo si la tool confirma que sigue duplicado\n- ❌ **NUNCA incrementes contador sin ejecutar la tool**\n- ❌ **NUNCA asumas que sigue duplicado sin validar**\n\n**CASO B: Herramienta retorna null/error/\"No matching rows\"**\n\n**Acción:**\n- Continúa INMEDIATAMENTE al paso 10 (Interés)\n- NO menciones nada sobre validación\n- Flujo completamente natural\n\n#### 3. Control de intentos\n\nContadores internos (no mostrar):\n```\nintentos_ruc: 0\nintentos_telefono: 0\nintentos_email: 0\n\nvalores_rechazados:\n  ruc_anterior: null\n  telefono_anterior: null\n  email_anterior: null\n```\n\n**Lógica de validación:**\n\n1. **Cuando usuario proporciona nuevo valor:**\n   ```\n   PASO A: Comparar con valor anterior\n   - Si nuevo_valor == valor_anterior → Ir a PASO C\n   - Si nuevo_valor != valor_anterior → Ir a PASO B\n   \n   PASO B: Ejecutar validación\n   - EJECUTAR \"Buscar Duplicados\" con nuevo valor\n   - ESPERAR resultado de la tool\n   - Si tool retorna registro → Ir a PASO D\n   - Si tool retorna null → Ir a PASO E\n   \n   PASO C: Valor repetido (sin ejecutar tool)\n   - Incrementar contador\n   - Informar al usuario que es el mismo valor\n   - Solicitar valor diferente\n   \n   PASO D: Tool encontró duplicado\n   - Guardar nuevo_valor en valores_rechazados\n   - Incrementar contador\n   - Informar al usuario que el nuevo valor también está duplicado\n   - Solicitar otro valor diferente\n   \n   PASO E: Tool NO encontró duplicado (éxito)\n   - Limpiar contador de ese campo\n   - Continuar al siguiente paso del flujo\n   ```\n\n2. **Mensaje para valores repetidos (sin ejecutar tool):**\n   > \"{primer_nombre}, ese {campo} es el mismo que intentaste antes y sigue estando registrado.  \n   > Necesito un {campo} completamente diferente para poder continuar.\"\n\n3. **Mensaje después de ejecutar tool y encontrar duplicado:**\n   > \"He verificado el nuevo {campo} y lamentablemente también está registrado en nuestro sistema.  \n   > ¿Podrías proporcionarme otro {campo} diferente?\"\n\n4. **Actualiza valores rechazados:**\n   - Cada vez que la TOOL confirme duplicado, guarda:\n     ```\n     Si email duplicado → email_anterior = email_proporcionado\n     Si ruc duplicado → ruc_anterior = ruc_proporcionado\n     Si telefono duplicado → telefono_anterior = telefono_proporcionado\n     ```\n\n**Si cualquier contador llega a 3:**\n> \"Lo siento {primer_nombre}, he intentado validar tu {campo} en tres ocasiones pero continúa apareciendo como registrado.  \n>   \n> Te recomiendo contactar directamente con nuestro equipo comercial:  \n> 📞 WhatsApp: +593 99 843 5150  \n> 📧 Email: ventas@mobilvendor.com  \n>   \n> Ellos podrán revisar tu caso específico. ¿Hay algo más en lo que pueda ayudarte?\"\n\n**Después:** ⛔ DETENER flujo de captación\n\n#### 4. Ejemplos rápidos con ejecución de tool\n\n**Ejemplo Completo: Solo RUC duplicado**\n\n**Intento 1:**\n- Usuario: RUC \"1790111111001\"\n- Comparar: ruc_anterior = null (primera vez)\n- Acción: **EJECUTAR \"Buscar Duplicados\"**\n- Tool retorna: `{ruc: \"1790111111001\", phone: \"0987...\", email: \"otro@...\"}` \n- Análisis: ✗ RUC coincide, ✓ phone y email únicos\n- Guardar: ruc_anterior = \"1790111111001\", intentos_ruc = 1\n- Mensaje: \"El RUC 1790111111001 ya está registrado. ¿Podrías proporcionarme un RUC diferente?\"\n\n**Intento 2a (usuario repite MISMO valor):**\n- Usuario: RUC \"1790111111001\" (el mismo)\n- Comparar: \"1790111111001\" == ruc_anterior → TRUE\n- Acción: **NO ejecutar tool**, intentos_ruc = 2\n- Mensaje: \"Esteban, ese RUC es el mismo que intentaste antes...\"\n\n**Intento 2b (usuario proporciona valor DIFERENTE):**\n- Usuario: RUC \"1790222222001\" (diferente)\n- Comparar: \"1790222222001\" != ruc_anterior → FALSE\n- Acción: **EJECUTAR \"Buscar Duplicados\"**\n- Tool retorna: `{ruc: \"1790222222001\", ...}`\n- Análisis: ✗ RUC coincide (otro duplicado)\n- Guardar: ruc_anterior = \"1790222222001\", intentos_ruc = 2\n- Mensaje: \"He verificado el nuevo RUC y lamentablemente también está registrado...\"\n\n**Intento 3 (éxito):**\n- Usuario: RUC \"1790999999001\"\n- Comparar: \"1790999999001\" != ruc_anterior → FALSE\n- Acción: **EJECUTAR \"Buscar Duplicados\"**\n- Tool retorna: null (no encuentra)\n- Análisis: ✅ RUC único\n- Acción: Continuar al paso 10 (Interés)\n\n**Sin duplicados desde el inicio:**\n- Usuario: RUC \"1790888888001\"\n- Comparar: ruc_anterior = null (primera vez)\n- Acción: **EJECUTAR \"Buscar Duplicados\"**\n- Tool retorna: null\n- Acción: Continuar directo a paso 10\n- NO mencionar: validación\n\n---\n\n10. **Interés:**\n    - Pregunta exactamente así:\n      > \"¿Podrías contarme brevemente a qué se dedica tu empresa y cuál es el principal desafío que esperas resolver con Mobilvendor?\"\n    - Guarda la respuesta en: {interes}\n\n---\n\n### ⚙️ Reglas de conversación y validación en vivo\n\n- Una pregunta a la vez; usa el primer nombre.\n- Auto-correcciones permitidas.\n- **Email:** válido si tiene \"@\" y dominio.\n- **Teléfono:**\n  - Ecuador → 10 dígitos, empieza con 09.\n  - Venezuela → 11 dígitos, empieza con 04.\n  - Otros → acepta prefijo internacional.\n- **RUC/NIT/RFC:** no validar formato, solo capturar.\n- Corrige aproximaciones y ofrece opciones válidas.\n- No inventes datos\n- No delegues agentes sin confirmación final\n\n---\n\n### 🧠 Regla de interpretación de valores numéricos (CRÍTICA)\n\n**Cuando el usuario responda con número, símbolo o texto aproximado** (ejemplos: +6, 6, 06, unos 10, alrededor de 5) en preguntas de rangos:\n\n**DEBES:**\n- Interpretar el valor numérico real\n- Asociarlo al rango correcto\n- CONFIRMAR explícitamente con el usuario\n- NO avanzar sin confirmación\n\n**Mapeo para empleados:**\n- 1 a 4 → \"De 1 a 4\"\n- 5 a 20 → \"De 5 a 20\"\n- 21+ → \"Más de 20\"\n\n---\n\n### 🧾 Formato de salida\n\n- El mensaje debe ser texto plano.\n- NO uses Markdown bajo ninguna circunstancia.\n- NO uses [texto](url).\n- Cuando incluyas enlaces, DEBES usar HTML puro <a href=\"...\">...</a>.\n- NO transformes enlaces HTML a Markdown.\n- No uses comillas triples ni code fences.\n\n---\n\n### ✅ Resumen de confirmación (antes de delegar)\n\n> \"Excelente, {primer_nombre}. Permíteme confirmar tu información:  \n> - Nombre: {nombre_completo}  \n> - Empresa: {empresa}  \n> - País: {país}  \n> - Sector: {sector}  \n> - Empleados: {empleados}  \n> - Facturación: {facturación}  \n> - Teléfono: {teléfono_original}  \n> - Email: {email}  \n> - RUC/NIT/RFC: {ruc}  \n>  \n> ¿Es correcta esta información?  \n> (Responde \"Sí\" para confirmar o \"Corregir\" si hay algún error)  \n>  \n> Al confirmar tus datos personales, aceptas el consentimiento de nuestra \n> <a href=\"https://mobilvendor.com/politica-de-privacidad\" target=\"_blank\">política de privacidad</a>.\"\n\n⚠️ El resumen NO es válido si no se muestra explícitamente el enlace a la política de privacidad.\n\n---\n\n### ⛔ Regla absoluta de NO CIERRE (CRÍTICA)\n\nEl Agente Principal ZEI1:\n- NO puede indicar que la información fue registrada\n- NO puede indicar que un asesor se pondrá en contacto\n- NO puede recomendar productos\n- NO puede emitir mensajes de cierre\n\n**HASTA DESPUÉS** de ejecutar exitosamente el agente delegado (Ecuador u Otros Países).\n\nSi no has ejecutado el agente delegado, DEBES seguir preguntando o delegar, pero NUNCA cerrar.\n\n---\n\n### 🔀 Regla de delegación (EJECUCIÓN OBLIGATORIA)\n\nUna vez que el usuario:\n- Confirma que los datos son correctos\n- Acepta explícita o implícitamente la política de privacidad\n\n**DEBES ejecutar INMEDIATAMENTE el agente correspondiente:**\n\n- Si `país == \"Ecuador\"` → EJECUTA \"Agente Ecuador\"\n- Si `país != \"Ecuador\"` → EJECUTA \"Agente Otros Paises\"\n\n**Está TERMINANTEMENTE PROHIBIDO:**\n- Generar mensajes finales antes de ejecutar agente\n- Recomendar productos antes de ejecutar agente\n- Indicar que la información fue registrada antes de ejecutar agente\n\n#### Datos enviados al agente delegado\n\n```json\n{\n  \"nombre\": \"...\",\n  \"email\": \"...\",\n  \"telefono_original\": \"...\",\n  \"empresa\": \"...\",\n  \"pais\": \"...\",\n  \"sector\": \"...\",\n  \"empleados\": \"...\",\n  \"facturacion\": \"...\",\n  \"ruc\": \"...\",\n  \"interes\": \"...\",\n  \"rubro_sector\": \"...\"\n}\n```\n\n---\n\n### 🎯 Mensaje de cierre\n\n**Éxito:**\n> Excelente, muchas gracias {primer_nombre}. He registrado tu información correctamente.  \n> Con base en los datos que me proporcionaste, un miembro de nuestro equipo se pondrá en contacto contigo pronto para agendar una demostración personalizada. 🚀\n\n---\n\n📚 Regla POST-CIERRE: Base de conocimiento SOLO bajo demanda (ANTI-ALUCINACIÓN)\n\nDefinición de estado interno (no mostrar al usuario):\n- Antes del cierre: estado = \"captacion\"\n- Después de enviar el mensaje de cierre: estado = \"post_cierre\"\n\n1) PROHIBICIÓN durante captación (estado = \"captacion\"):\n- Sigue vigente el “Bloqueo de información y herramientas”.\n- Si el usuario pregunta por funcionalidades/módulos/precios antes del cierre:\n  - NO llames tools.\n  - Redirige y pide el siguiente dato pendiente.\n\n2) CIERRE (estado = \"captacion\" → \"post_cierre\"):\n- Debes enviar el mensaje final de cierre (Éxito o Con observaciones) COMPLETO.\n- En ese mismo mensaje NO debes:\n  - llamar query_product_brochure\n  - incluir “Información del folleto (resumen)”\n  - incluir el fallback del folleto\n- Al terminar de enviar el cierre, establece internamente: estado = \"post_cierre\"\n\n3) DESPUÉS DEL CIERRE (estado = \"post_cierre\"):\n- Solo si el usuario realiza una NUEVA consulta relacionada con:\n  - funcionalidades, módulos, características, integraciones, alcance del producto, casos de uso\n  ENTONCES:\n  - DEBES llamar la tool: query_product_brochure (Tool: Product Knowledge1)\n  - Responder usando SOLO lo recuperado de la tool, resumido.\n  - Formato del bloque:\n    Información del folleto (resumen):\n    • (3 a 5 viñetas máximo)\n  - Prohibido inventar, completar, suponer o usar conocimiento externo.\n\n4) Fallback (SOLO si se llamó la tool y devolvió vacío / sin contenido útil):\n- Responder:\n  \"Por ahora no encuentro información específica en nuestro folleto para ese caso. Un asesor puede ampliarlo contigo en la demo.\"\n- No agregar información adicional.\n\n5) Precios y planes (regla fija post-cierre) — SOLO si preguntan por precio\n\nANÁLISIS OBLIGATORIO ANTES DE RESPONDER:\n\nPaso 1: Identificar el tema principal de la consulta\n- ¿El usuario pregunta por características/funcionalidades? → NO es consulta de precio\n- ¿El usuario pregunta explícitamente cuánto cuesta algo? → SÍ es consulta de precio\n\nPaso 2: Aplicar detección de disparadores SOLO si Paso 1 es ambiguo\n\nDisparadores EXCLUSIVOS de precio (keywords que CONFIRMAN consulta de precio):\n- Grupo A (costo directo): precio, precios, costo, costos, cuánto cuesta, cuánto vale, valor comercial, tarifas, tarifa\n- Grupo B (comercial): cotización, cotizar, presupuesto, inversión, cuota, mensualidad, pago, licencia (cuando se pregunta \"cuánto cuesta la licencia\")\n- Grupo C (descuentos): descuento, descuentos, promoción comercial, oferta de precio\n\nNO son disparadores de precio:\n- plan/planes cuando se usa como \"plan de trabajo\", \"plan operativo\", \"planificación\"\n- módulo/módulos (son componentes del producto)\n- implementación (es un proceso, no un costo explícito)\n- licencia (cuando se pregunta \"qué incluye la licencia\", NO \"cuánto cuesta\")\n\nPaso 3: Decisión final\n\nSI la consulta contiene disparadores del Grupo A, B o C Y el contexto confirma pregunta de costo:\n\nResponder SIEMPRE:\n\"Sobre precios y planes comerciales, un asesor se comunicará contigo para cotizar según tu necesidad y el alcance. Si tienes dudas sobre funcionalidades específicas, con gusto puedo ayudarte.\"\n\n- NO llamar query_product_brochure\n- NO dar rangos ni valores\n\nSI la consulta es sobre funcionalidades/módulos/características (aunque mencione \"plan\" o \"módulo\"):\n\nEjemplos válidos que NO son preguntas de precio:\n- \"dame información del módulo logístico\"\n- \"qué incluye el módulo de ventas\"\n- \"cómo funciona el plan de rutas\"\n- \"características del módulo de inventario\"\n- \"qué hace el módulo WMS\"\n- \"explícame la planificación de rutas\"\n\n- EJECUTAR query_product_brochure con la consulta exacta\n- Responder SOLO con lo recuperado (formato: 3-5 viñetas máximo)\n- NO mencionar precios\n\nSI la consulta mezcla ambos temas:\n\nEjemplo: \"cuánto cuesta el módulo logístico\"\n\n- Responder con mensaje de precios (incluye Grupo A)\n- NO usar query_product_brochure\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        688,
+        2096
+      ],
+      "id": "d71fa7a1-38c3-4c9d-9cec-4cf36bcd14f2",
+      "name": "AI Agent ZEI1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        480,
+        2320
+      ],
+      "id": "ef1bdcab-9504-412c-a91b-b82d8fa47884",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "query_product_brochure",
+        "description": "Consulta información del folleto de producto Mobilvendor cuando el usuario pregunte sobre funcionalidades, características o módulos del sistema."
+      },
+      "id": "a736f3c8-016b-493c-b143-8bf797370584",
+      "name": "Tool: Product Knowledge1",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "position": [
+        752,
+        2496
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {}
+      },
+      "id": "8c57b610-4a58-4b63-9f26-75e76f4d8bae",
+      "name": "Embeddings OpenAI2",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [
+        576,
+        2800
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "brochure",
+          "mode": "list",
+          "cachedResultName": "brochure"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        576,
+        2640
+      ],
+      "id": "800d9502-2ca0-4313-9e03-08afd239e791",
+      "name": "Pinecone Vector Store2",
+      "credentials": {
+        "pineconeApi": {
+          "id": "bqNx5oAwXmTYQGz2",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        896,
+        2640
+      ],
+      "id": "8b7f4fb8-b07f-44c6-a7a0-6cca3ad0795f",
+      "name": "OpenAI Chat Model5",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "1c8d45e7-24a6-4d80-b05f-867c33711988",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        304,
+        2096
+      ],
+      "id": "e7427f0d-732e-4afa-9f64-934bf5dae95c",
+      "name": "Webhook",
+      "webhookId": "1c8d45e7-24a6-4d80-b05f-867c33711988"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2288,
+        2112
+      ],
+      "id": "5cc39ed3-b455-48f1-bd62-c6a9dbbfb93e",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.body.sessionId || $json.sessionId || $json.headers[\"x-real-ip\"] || \"anon\" }}",
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        656,
+        2320
+      ],
+      "id": "c0d7db6b-b40c-455c-a044-0ff57217bda5",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Valida si el RUC se encuentra en el SRI",
+        "method": "POST",
+        "url": "https://n8n.mobilvendor.com/webhook/api/sri/consulta",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "*/*"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "ruc",
+              "value": "={{ $fromAI(\"numeroRuc\") }}"
+            },
+            {
+              "name": "pais",
+              "value": "={{ $fromAI('pais') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        1440,
+        2608
+      ],
+      "id": "188df48c-7b39-4b69-a0e0-9ae358f4762e",
+      "name": "Tool: Validar RUC (SRI)"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Crea lead en bitrix",
+        "method": "POST",
+        "url": "https://mobilvendor.bitrix24.es/rest/1/vz55jbu9kzwezk25/crm.lead.add.json",
+        "sendQuery": true,
+        "specifyQuery": "json",
+        "jsonQuery": "={\n  \"fields\": {\n    \"NAME\": \"{{ $fromAI(\"nombre\") }}\",\n    \"EMAIL\": [\n      {\n        \"VALUE\": \"{{ $fromAI(\"email\") }}\",\n        \"VALUE_TYPE\": \"WORK\"\n      }\n    ],\n    \"PHONE\": [\n      {\n        \"VALUE\": \"{{ $fromAI(\"telefono\") }}\",\n        \"VALUE_TYPE\": \"WORK\"\n      }\n    ],\n    \"TITLE\": \"{{ $fromAI(\"empresa\") }}\",\n    \"COMPANY_TITLE\": \"{{ $fromAI(\"empresa\") }}\",\n    \"ADDRESS_COUNTRY\": \"{{ $fromAI(\"pais\") }}\",\n    \"SOURCE_ID\": \"UC_VMEZYJ\",\n    \"ASSIGNED_BY_ID\": 93,\n    \"UF_CRM_1732907229570\": \"{{ $now.format('YYYY-MM-DD') }}\",\n    \"UF_CRM_1756915881203\": {{ (\n      ($fromAI('mql1') === true) ||\n      ($fromAI('mql1') === 1) ||\n      (String($fromAI('mql1')).toLowerCase() === 'true') ||\n      (String($fromAI('mql1')) === '1')\n    ) ? 1 : 0 }},\n    \"UF_CRM_1757018763\":{{ (\n      ($fromAI('ruc_valido') === true) ||\n      ($fromAI('ruc_valido') === 1) ||\n      (String($fromAI('ruc_valido')).toLowerCase() === 'true') ||\n      (String($fromAI('ruc_valido')) === '1')\n    ) ? 1 : 0 }},\n    \"UF_CRM_1764184319112\": {{ (\n    (String($fromAI('sector') || '').trim().toLowerCase()\n      .normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s+/g,' ')\n    === 'consumo masivo') ? 509 :\n  \n    (String($fromAI('sector') || '').trim().toLowerCase()\n      .normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s+/g,' ')\n    === 'ferreteria') ? 511 :\n  \n    (String($fromAI('sector') || '').trim().toLowerCase()\n      .normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s+/g,' ')\n    === 'automotriz') ? 513 :\n  \n    (String($fromAI('sector') || '').trim().toLowerCase()\n      .normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s+/g,' ')\n    === 'farmaceutica') ? 515 :\n  \n    517\n  ) }},\n    \"UF_CRM_1760641598\": \"{{ $fromAI(\"ruc\") }}\",\n    \"COMMENTS\": \"Sector: {{ $fromAI(\"sector\") }}\\nEmpleados: {{ $fromAI(\"empleados\") }}\\nFacturación: {{ $fromAI(\"facturacion\") }}\\nInterés: {{ $fromAI(\"interes\") }}\\nIndustria: {{ $fromAI(\"sector\") }}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        1616,
+        2608
+      ],
+      "id": "354ecbeb-59e5-4bef-bc06-40d83717ba66",
+      "name": "Tool: Crear Lead Bitrix"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "email": "={{ $fromAI(\"email\") }}",
+            "nombre": "={{ $fromAI(\"nombre\") }}",
+            "empresa": "={{ $fromAI(\"empresa\") }}",
+            "industria": "={{ $fromAI(\"industria\") }}",
+            "phone": "={{ $fromAI(\"telefono\") }}",
+            "empleados": "={{ $fromAI(\"empleados\") }}",
+            "MQL1": "={{ $fromAI(\"mql1\") }}",
+            "id_lead": "={{ $fromAI(\"id_bitrix\") }}",
+            "tipo_empresa": "=",
+            "comments": "=Industria: {{ $fromAI(\"industria\")}} \\nUsuarios: {{ $fromAI(\"empleados\")}} \\nRango de facturación: {{ $fromAI(\"facturacion\")}} \\nRUC: {{ $fromAI(\"ruc\")}} \\nInterés: {{ $fromAI(\"interes\")}}",
+            "OK": "={{ $fromAI(\"ruc_validado\") }}",
+            "nombreempresa": "prueba",
+            "interes": "={{ $fromAI(\"interes\") }}",
+            "rubro_sector": "={{ $fromAI(\"rubro_sector\") }}",
+            "fuente": "agente",
+            "pais ": "={{ $fromAI(\"pais\") }}",
+            "ruc": "={{ $fromAI(\"ruc\") }}",
+            "fecha ": "={{ $now.format ('dd-MM-yyyy')}}",
+            "session_id": "={{ $('Webhook').item.json.body.sessionId }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "empresa",
+              "displayName": "empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "industria",
+              "displayName": "industria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "empleados",
+              "displayName": "empleados",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "pais ",
+              "displayName": "pais ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ruc",
+              "displayName": "ruc",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha ",
+              "displayName": "fecha ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fuente",
+              "displayName": "fuente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ip",
+              "displayName": "ip",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "MQL1",
+              "displayName": "MQL1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Presencia en redes",
+              "displayName": "Presencia en redes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "MQL2",
+              "displayName": "MQL2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "OK",
+              "displayName": "OK",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "id_lead",
+              "displayName": "id_lead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "update_lead",
+              "displayName": "update_lead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tipo_empresa",
+              "displayName": "tipo_empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "rubro_sector",
+              "displayName": "rubro_sector",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "alcance_operativo",
+              "displayName": "alcance_operativo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "interes",
+              "displayName": "interes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "correo_corporativo",
+              "displayName": "correo_corporativo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "new_phone",
+              "displayName": "new_phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "attemps",
+              "displayName": "attemps",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "current_step",
+              "displayName": "current_step",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "pending_question",
+              "displayName": "pending_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "mode",
+              "displayName": "mode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "is_new_contac",
+              "displayName": "is_new_contac",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "last_message",
+              "displayName": "last_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "skipUpdate",
+              "displayName": "skipUpdate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "presencia_redes",
+              "displayName": "presencia_redes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "comments",
+              "displayName": "comments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reason",
+              "displayName": "reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "debug",
+              "displayName": "debug",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nombreempresa",
+              "displayName": "nombreempresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "userConfirmedContact",
+              "displayName": "userConfirmedContact",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1776,
+        2608
+      ],
+      "id": "18b7f4c5-2de9-4487-acb7-2ee5902daf86",
+      "name": "Tool: Registrar Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fm3jifX2nPTobuSZ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1280,
+        2608
+      ],
+      "id": "99da2de4-7539-43f8-8a78-4b318ac7dd7c",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={\n  \"nombre\": \"{{ $fromAI('nombre') }}\",\n  \"email\": \"{{ $fromAI('email') }}\",\n  \"telefono_original\": \"{{ $fromAI('telefono') }}\",\n  \"empresa\": \"{{ $fromAI('empresa') }}\",\n  \"pais\": \"{{ $fromAI('pais') }}\",\n  \"sector\": \"{{ $fromAI('sector') }}\",\n  \"empleados\": \"{{ $fromAI('empleados') }}\",\n  \"facturacion\": \"{{ $fromAI('facturacion') }}\",\n  \"ruc\": \"{{ $fromAI('ruc') }}\",\n  \"interes\": \"{{ $fromAI('interes') }}\",\n  \"rubro_sector\": \"{{ $fromAI('rubro_sector') }}\"\n}\n",
+        "options": {
+          "systemMessage": "## 2️⃣ AGENTE ECUADOR — Procesamiento de Leads Ecuador\n\n**Modo:** Agente Ejecutor Especializado  \n**Secuencia:** Validar RUC (SRI) → Crear Lead Bitrix → Obtener ID → Registrar Google Sheets\n\n---\n\n### 🔧 Función\n\n1. Validar el RUC en el SRI.  \n2. `mql1 = false` siempre  \n3. Crear el lead en Bitrix24 y obtener su ID.  \n4. Registrar en Google Sheets (incluyendo ID Bitrix).\n\n---\n\n### 🔍 Secuencia\n\n#### Paso 1: Validar RUC (SRI)\nTool: Validar RUC (SRI)  \n**Input:** `{\"numeroRuc\":\"{ruc}\"}`, `{\"pais\":\"{pais}\"}`  \n> Nota: `{ruc}` debe enviarse limpio (solo dígitos, sin espacios ni signos).\n\n**Interpretación ESTÁNDAR de la respuesta**  \nA partir de la salida cruda del SRI (cualquier formato), determina `ruc_valido` así:\n\n1) **Casos de aceptación (⇒ `ruc_valido = true`):**  \n   - La respuesta contiene la clave `estadoContribuyenteRuc` con valor **ACTIVO** (ignorar mayúsculas/minúsculas y espacios).  \n   - Existe **cualquier** booleano `true` en el payload, por ejemplo:  \n     - `{\"response\": true}`  \n     - `[{\"response\":[true]}]`  \n     - `{\"success\": true}`, `{\"response\":{\"rucExiste\": true}}`, etc.  \n   - Cadenas equivalentes a activo (p. ej., `\"activo\"`, `\"ACTIVO\"`, `\"Activo\"`).\n\n2) **Casos de rechazo (⇒ `ruc_valido = false`):**  \n   - `estadoContribuyenteRuc` distinto de ACTIVO (p. ej., *PASIVO*, *SUSPENDIDO*, *NO REGISTRADO*, etc.).  \n   - Aparece explícitamente `false` en estructuras análogas (p. ej., `{\"response\":{\"rucExiste\": false}}`).  \n   - Errores, timeouts, payload vacío o formato desconocido.\n\n**Variables a emitir para los siguientes pasos**  \n- `ruc_valido` (booleano): `true` / `false`.    \n- `sri_raw` (objeto): respuesta cruda de la herramienta (para auditoría interna; no mostrar al usuario).  \n- `sri_error` (string | null): mensaje breve si hubo error/timeout/formato inválido; de lo contrario `null`.\n\n**Contratos y buenas prácticas**  \n- **No** re-preguntes el RUC aquí; solo interpreta la respuesta.  \n- **No** bloquees el flujo si el SRI falla: continúa con `ruc_valido = false` y registra `sri_error`.  \n\n**Ejemplos de mapeo**  \n- Entrada SRI: `{\"estadoContribuyenteRuc\":\"ACTIVO\",\"ruc\":\"1790012345001\"}` ⇒ `ruc_valido = true`, `ruc_estado = \"ACTIVO\"`.  \n- Entrada SRI: `[`{\"response\":{\"rucExiste\": true}}`}]` ⇒ `ruc_valido = true`.  \n- Entrada SRI: `{\"response\":false}` ⇒ `ruc_valido = false`.  \n- Error/timeout: *(sin datos útiles)* ⇒ `ruc_valido = false`, `sri_error = \"Timeout/Respuesta inválida del SRI\"`.\n\n\n#### Paso 2: Normalizar teléfono (Ecuador)\n`0987654321` → `593987654321`\n\n#### Paso 3: Crear Lead Bitrix\nGuarda `id_bitrix` con el valor del campo `result`.\n\n#### Paso 4: Registrar en Google Sheets\nEsperar `id_bitrix` antes de registrar.  \nTodos los campos son obligatorios.\n\n---\n\n### 📤 Respuesta al agente principal\n\n**Éxito:**\n```json\n{\n  \"status\": \"success\",\n  \"id_bitrix\": \"...\",\n  \"ruc_valido\": true,\n  \"mql1\": false,\n  \"message\": \"Lead procesado correctamente para Ecuador\"\n}\n```\n\n**Error:**\n```json\n{\n  \"status\": \"partial_success\",\n  \"id_bitrix\": \"\",\n  \"ruc_valido\": false,\n  \"mql1\": false,\n  \"message\": \"Lead registrado con observaciones\"\n}\n```"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 2.2,
+      "position": [
+        1280,
+        2352
+      ],
+      "id": "8c878642-d933-421b-8b70-459107f6bc02",
+      "name": "Agente Ecuador"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Crea lead en bitrix",
+        "method": "POST",
+        "url": "https://mobilvendor.bitrix24.es/rest/1/vz55jbu9kzwezk25/crm.lead.add.json",
+        "sendQuery": true,
+        "specifyQuery": "json",
+        "jsonQuery": "={\n  \"fields\": {\n    \"NAME\": \"{{ $fromAI(\"nombre\") }}\",\n    \"EMAIL\": [\n      {\n        \"VALUE\": \"{{ $fromAI(\"email\") }}\",\n        \"VALUE_TYPE\": \"WORK\"\n      }\n    ],\n    \"PHONE\": [\n      {\n        \"VALUE\": \"{{ $fromAI(\"telefono\") }}\",\n        \"VALUE_TYPE\": \"WORK\"\n      }\n    ],\n    \"TITLE\": \"{{ $fromAI(\"empresa\") }}\",\n    \"COMPANY_TITLE\": \"{{ $fromAI(\"empresa\") }}\",\n    \"ADDRESS_COUNTRY\": \"{{ $fromAI(\"pais\") }}\",\n    \"SOURCE_ID\": \"WEBFORM\",\n    \"ASSIGNED_BY_ID\": 93,\n    \"UF_CRM_1732907229570\": \"{{ $now.format('YYYY-MM-DD') }}\",\n    \"UF_CRM_1756915881203\": {{ (\n      ($fromAI('mql1') === true) ||\n      ($fromAI('mql1') === 1) ||\n      (String($fromAI('mql1')).toLowerCase() === 'true') ||\n      (String($fromAI('mql1')) === '1')\n    ) ? 1 : 0 }},\n    \"UF_CRM_1760641598\": \"{{ $fromAI(\"ruc\") }}\",\n    \"COMMENTS\": \"Sector: {{ $fromAI(\"sector\") }}\\nEmpleados: {{ $fromAI(\"empleados\") }}\\nFacturación: {{ $fromAI(\"facturacion\") }}\\nInterés: {{ $fromAI(\"interes\") }}\\nIndustria: {{ $fromAI(\"sector\") }}\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        2288,
+        2624
+      ],
+      "id": "d7e34c46-df4a-44f1-8111-148cff7dec4a",
+      "name": "Tool: Crear Lead Bitrix1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "email": "={{ $fromAI(\"email\") }}",
+            "nombre": "={{ $fromAI(\"nombre\") }}",
+            "empresa": "={{ $fromAI(\"empresa\") }}",
+            "industria": "={{ $fromAI(\"industria\") }}",
+            "phone": "={{ $fromAI(\"telefono\") }}",
+            "empleados": "={{ $fromAI(\"empleados\") }}",
+            "MQL1": "={{ $fromAI(\"mql1\") }}",
+            "id_lead": "={{ $fromAI(\"id_bitrix\") }}",
+            "tipo_empresa": "=",
+            "comments": "=Industria: {{ $fromAI(\"industria\")}} \\nUsuarios: {{ $fromAI(\"empleados\")}} \\nRango de facturación: {{ $fromAI(\"facturacion\")}} \\nRUC: {{ $fromAI(\"ruc\")}} \\nInterés: {{ $fromAI(\"interes\") }}",
+            "OK": "={{ $fromAI(\"ruc_validado\") }}",
+            "nombreempresa": "prueba",
+            "interes": "={{ $fromAI(\"interes\") }}",
+            "rubro_sector": "={{ $fromAI(\"rubro_sector\") }}",
+            "new_phone": "0998435150",
+            "pais ": "={{ $fromAI(\"pais\") }}",
+            "ruc": "={{ $fromAI(\"ruc\") }}",
+            "fecha ": "={{ $now.format ('dd-MM-yyyy')}}",
+            "fuente": "agente",
+            "session_id": "={{ $('Webhook').item.json.body.sessionId }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "empresa",
+              "displayName": "empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "industria",
+              "displayName": "industria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "empleados",
+              "displayName": "empleados",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "pais ",
+              "displayName": "pais ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ruc",
+              "displayName": "ruc",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha ",
+              "displayName": "fecha ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fuente",
+              "displayName": "fuente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ip",
+              "displayName": "ip",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "MQL1",
+              "displayName": "MQL1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Presencia en redes",
+              "displayName": "Presencia en redes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "MQL2",
+              "displayName": "MQL2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "OK",
+              "displayName": "OK",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "id_lead",
+              "displayName": "id_lead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "update_lead",
+              "displayName": "update_lead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tipo_empresa",
+              "displayName": "tipo_empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "rubro_sector",
+              "displayName": "rubro_sector",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "alcance_operativo",
+              "displayName": "alcance_operativo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "interes",
+              "displayName": "interes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "correo_corporativo",
+              "displayName": "correo_corporativo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "new_phone",
+              "displayName": "new_phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "attemps",
+              "displayName": "attemps",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "current_step",
+              "displayName": "current_step",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "pending_question",
+              "displayName": "pending_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "mode",
+              "displayName": "mode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "is_new_contac",
+              "displayName": "is_new_contac",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "last_message",
+              "displayName": "last_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "skipUpdate",
+              "displayName": "skipUpdate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "presencia_redes",
+              "displayName": "presencia_redes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "comments",
+              "displayName": "comments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reason",
+              "displayName": "reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "debug",
+              "displayName": "debug",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nombreempresa",
+              "displayName": "nombreempresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "userConfirmedContact",
+              "displayName": "userConfirmedContact",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        2448,
+        2624
+      ],
+      "id": "3eb5e86c-d678-42b1-bbd0-4ec573f66660",
+      "name": "Tool: Registrar Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fm3jifX2nPTobuSZ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2096,
+        2624
+      ],
+      "id": "28da5642-1af9-4276-a528-1c7b0a392159",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={\n  \"nombre\": \"{{ $fromAI('nombre') }}\",\n  \"email\": \"{{ $fromAI('email') }}\",\n  \"telefono_original\": \"{{ $fromAI('telefono') }}\",\n  \"empresa\": \"{{ $fromAI('empresa') }}\",\n  \"pais\": \"{{ $fromAI('pais') }}\",\n  \"sector\": \"{{ $fromAI('sector') }}\",\n  \"empleados\": \"{{ $fromAI('empleados') }}\",\n  \"facturacion\": \"{{ $fromAI('facturacion') }}\",\n  \"ruc\": \"{{ $fromAI('ruc') }}\",\n  \"interes\": \"{{ $fromAI('interes') }}\",\n  \"rubro_sector\": \"{{ $fromAI('rubro_sector') }}\"\n}\n",
+        "options": {
+          "systemMessage": "## 3️⃣ AGENTE OTROS PAÍSES — Procesamiento Internacional\n\n**Modo:** Agente Ejecutor Especializado  \n**Secuencia:** Calcular MQL1 → Crear Lead Bitrix → Obtener ID → Registrar Google Sheets\n\n---\n\n### ⚙️ Reglas\n\n- `mql1 = false` siempre.  \n- `ruc_valido = false`.  \n- No validar identificadores (RUC/NIT/RFC).  \n- No interactuar con el usuario.\n\n---\n\n### 🔍 Secuencia\n\n#### Paso 1: Calcular MQL1\n```\nmql1 = false  \nruc_valido = false  \nsri_error = \"No aplica: país distinto de Ecuador\"\n```\n\n#### Paso 2: Normalizar teléfono\n- Venezuela → `04141234567` → `584141234567`  \n- Otros → limpiar prefijos y espacios.\n\n#### Paso 3: Crear Lead Bitrix\nExtraer `result` como `id_bitrix`.\n\n#### Paso 4: Registrar en Google Sheets\nEsperar a tener `id_bitrix`.  \nUsar valores `ruc_valido = false` y `mql1 = false`.\n\n---\n\n### 📤 Respuesta al agente principal\n\n**Éxito:**\n```json\n{\n  \"status\": \"success\",\n  \"id_bitrix\": \"...\",\n  \"ruc_valido\": false,\n  \"mql1\": false,\n  \"message\": \"Lead procesado correctamente para {país}\"\n}\n```\n\n---"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 2.2,
+      "position": [
+        2096,
+        2352
+      ],
+      "id": "e8e4cd60-5298-4606-899f-5bdd1cd3e071",
+      "name": "Agente Otros Paises"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=(function(){\n  if (window.MobilvendorWidgetLoaded) return;\n  window.MobilvendorWidgetLoaded = true;\n\n  const WEBHOOK_URL = \"https://n8n.mobilvendor.com/webhook/1c8d45e7-24a6-4d80-b05f-867c33711988\";\n  const BOT_IMG = \"https://ik.imagekit.io/nm4jeymx5/Asistente-03-Mobilvendor.jpg?updatedAt=1760720233657\";\n  const widget = document.createElement(\"div\");\n  widget.id = \"mv-widget\";\n  widget.innerHTML = `\n    <img id=\"mv-bot\" src=\"${BOT_IMG}\" alt=\"Asesor Mobilvendor\"/>\n    <div id=\"mv-chatbox\" style=\"display:none; flex-direction:column;\">\n      <div id=\"mv-header\">\n        <div class=\"mv-header-top\">\n          <img src=\"${BOT_IMG}\" alt=\"ZEI Bot\" class=\"mv-avatar\"/>\n          <span class=\"mv-title\">Asesor Comercial Mobilvendor</span>\n        </div>\n        <div id=\"mv-header-bar\"></div>\n      </div>\n      <div id=\"mv-messages\"></div>\n      <div id=\"mv-footer\">\n        <input id=\"mv-input\" type=\"text\" placeholder=\"Escribe tu mensaje...\" autocomplete=\"off\"/>\n        <button id=\"mv-send\" title=\"Enviar\">\n          <svg width=\"24\" height=\"24\" fill=\"#fff\" viewBox=\"0 0 24 24\"><path d=\"M2 21l21-9L2 3v7l15 2-15 2v7z\"></path></svg>\n        </button>\n      </div>\n    </div>\n  `;\n  document.body.appendChild(widget);\n\n  const style = document.createElement(\"style\");\n  style.textContent = `\n    #mv-widget { position:fixed; bottom:24px; right:24px; z-index:99999; font-family:'Segoe UI',Arial,sans-serif;}\n    \n    #mv-bot {\n      width:72px;height:72px;border-radius:50%;cursor:pointer;\n      box-shadow:0 10px 30px rgba(0,55,255,0.20);\n      transition:transform 0.18s ease, box-shadow 0.18s ease;\n      border:4px solid #fff;background:#fff;\n    }\n    #mv-bot:hover { transform:scale(1.07); box-shadow:0 12px 36px rgba(0,55,255,0.28); }\n    \n    #mv-chatbox {\n      position:fixed; bottom:110px; right:32px; width:380px; background:#fff;\n      border-radius:22px;box-shadow:0 10px 50px rgba(0,0,0,0.15);\n      flex-direction:column;display:none;overflow:hidden;\n    }\n    \n    /* Header con degradado azul */\n    #mv-header {\n      background:linear-gradient(90deg, #0037ff 0%, #063bce 100%);\n      padding:12px 14px 0 14px;\n    }\n    \n    #mv-header .mv-header-top {\n      display:flex;align-items:center;gap:10px;\n      padding:8px 6px 10px 6px;\n    }\n    \n    #mv-header .mv-avatar {\n      width:26px;height:26px;border-radius:50%;\n      border:2px solid rgba(255,255,255,0.75);\n      box-shadow:0 0 0 2px rgba(0,0,0,0.08);\n      background:#fff;\n    }\n    \n    /* Título en blanco sobre degradado */\n    #mv-header .mv-title {\n      color:#ffffff;\n      font-weight:700;font-size:16px;letter-spacing:0.3px;\n      text-shadow:0 1px 3px rgba(0,0,0,0.25);\n    }\n    \n    /* Barra indicadora (normal: #0037ff, activo: #002B49) */\n    #mv-header-bar {\n      height:4px;width:100%;\n      background:#0037ff;\n      transition:background-color 0.15s ease;\n    }\n    #mv-header-bar.active {\n      background:#002B49;\n    }\n    \n    #mv-messages {\n      max-height:420px;min-height:140px;overflow-y:auto;padding:14px 12px;background:#fafafa;\n      display:flex;flex-direction:column;gap:10px;\n    }\n    \n    /* Scrollbar azul */\n    #mv-messages::-webkit-scrollbar { width:8px; }\n    #mv-messages::-webkit-scrollbar-track { background:#e9eefc;border-radius:10px; }\n    #mv-messages::-webkit-scrollbar-thumb {\n      background:#0037ff;border-radius:10px;\n    }\n    #mv-messages::-webkit-scrollbar-thumb:hover { background:#002B49; }\n    \n    .mv-message-container {\n      display:flex;\n      margin-bottom:2px;\n    }\n    .mv-message-container.user {\n      justify-content:flex-end;\n    }\n    .mv-message-container.bot {\n      justify-content:flex-start;\n    }\n    \n    .mv-message {\n      background:#fffde7;border:1px solid rgba(255,179,0,0.15);\n      border-radius:12px 12px 12px 6px;padding:9px 12px 10px 12px;max-width:75%;\n      word-break:break-word;box-shadow:0 1px 2px rgba(0,0,0,0.06);position:relative;\n    }\n    \n    .mv-message-container.user .mv-message {\n      background:#e8f0ff;border:1px solid rgba(0,55,255,0.20);\n      border-radius:12px 12px 6px 12px;\n    }\n    \n    .mv-message-sender {\n      font-size:12px;font-weight:700;color:#0037ff;margin-bottom:4px;display:block;\n    }\n    \n    .mv-message-container.user .mv-message-sender {\n      color:#063bce;\n    }\n    \n    .mv-message-text {\n      font-size:14px;line-height:1.5;color:#333;white-space:pre-wrap;\n      text-align:justify;text-justify:inter-word;\n    }\n    \n    .mv-message-text a {\n      color:#0037ff;text-decoration:underline;\n    }\n    \n    .mv-message-text a:hover {\n      color:#002B49;\n    }\n    \n    .mv-message-time {\n      font-size:10px;color:#999;margin-top:4px;text-align:right;display:block;\n    }\n    \n    #mv-footer {\n      display:flex;align-items:center;gap:8px;\n      border-top:1px solid rgba(0,55,255,0.15);\n      background:#fff;padding:10px 12px 12px;\n    }\n    \n    #mv-input {\n      flex:1;padding:12px;border:1.5px solid #0037ff;\n      border-radius:12px;font-size:15px;outline:none;background:#fff;\n      transition:box-shadow 0.15s ease, border-color 0.15s ease;\n    }\n    #mv-input:focus {\n      border-color:#002B49;\n      box-shadow:0 0 0 3px rgba(0,43,73,0.18);\n    }\n    #mv-input:disabled { opacity:0.6;cursor:not-allowed; }\n    \n    #mv-send {\n      width:44px;height:44px;border:none;border-radius:12px;cursor:pointer;\n      background:#0037ff;color:#fff;display:flex;align-items:center;justify-content:center;\n      box-shadow:0 2px 8px rgba(0,55,255,0.25);\n      transition:transform 0.12s ease, background-color 0.12s ease, box-shadow 0.12s ease;\n    }\n    #mv-send:hover { transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,55,255,0.35); }\n    #mv-send:active { background:#002B49;transform:translateY(0);box-shadow:0 2px 8px rgba(0,43,73,0.35); }\n    #mv-send:disabled { opacity:0.6;cursor:not-allowed; }\n    \n    @media (max-width: 480px){\n      #mv-chatbox{ right:16px; width: calc(100vw - 32px); }\n    }\n  `;\n  document.head.appendChild(style);\n\n  const bot = widget.querySelector(\"#mv-bot\");\n  const chatbox = widget.querySelector(\"#mv-chatbox\");\n  const input = widget.querySelector(\"#mv-input\");\n  const messages = widget.querySelector(\"#mv-messages\");\n  const sendBtn = widget.querySelector(\"#mv-send\");\n  const headerBar = widget.querySelector(\"#mv-header-bar\");\n\n  const sessionKey = \"zeiSessionId\";\n  let sessionId = localStorage.getItem(sessionKey);\n  if (!sessionId) {\n    sessionId = \"session_\" + Date.now() + \"_\" + Math.random().toString(36).substring(2, 8);\n    localStorage.setItem(sessionKey, sessionId);\n  }\n\n  bot.addEventListener(\"click\", () => {\n    const showing = chatbox.style.display !== \"none\";\n    chatbox.style.display = showing ? \"none\" : \"flex\";\n    if (!showing && !chatbox.dataset.greeted) {\n      appendMessage(\"Asesor\", \"¡Hola! 👋 Soy tu asesor comercial de Mobilvendor. ¿En qué puedo ayudarte hoy?\");\n      chatbox.dataset.greeted = true;\n    }\n    if (!showing) input.focus();\n  });\n\n  // Barra activa al enfocar input\n  input.addEventListener(\"focus\", () => headerBar.classList.add(\"active\"));\n  input.addEventListener(\"blur\", () => headerBar.classList.remove(\"active\"));\n\n  function sanitize(text){\n    const div = document.createElement(\"div\");\n    div.textContent = String(text ?? \"\");\n    return div.innerHTML;\n  }\n\n  function sanitizeWithLinks(text){\n    // Permite solo etiquetas <a> con href válidos\n    const tempDiv = document.createElement(\"div\");\n    tempDiv.innerHTML = String(text ?? \"\");\n    \n    // Extraer todos los enlaces válidos\n    const links = tempDiv.querySelectorAll(\"a[href]\");\n    const linkMap = new Map();\n    \n    links.forEach((link, index) => {\n      const href = link.getAttribute(\"href\");\n      const linkText = link.textContent;\n      if (href && href.match(/^https?:\\/\\//)) {\n        const placeholder = `__LINK_${index}__`;\n        linkMap.set(placeholder, { href, text: linkText });\n        link.replaceWith(placeholder);\n      }\n    });\n    \n    // Sanitizar el texto completo\n    let sanitizedText = sanitize(tempDiv.textContent);\n    \n    // Restaurar los enlaces\n    linkMap.forEach((linkData, placeholder) => {\n      const safeHref = sanitize(linkData.href);\n      const safeText = sanitize(linkData.text);\n      const linkHtml = `<a href=\"${safeHref}\" target=\"_blank\" rel=\"noopener noreferrer\">${safeText}</a>`;\n      sanitizedText = sanitizedText.replace(placeholder, linkHtml);\n    });\n    \n    return sanitizedText;\n  }\n\n  function sendMessage() {\n    const userMsg = input.value.trim();\n    if (!userMsg) return;\n    appendMessage(\"Tú\", userMsg, true);\n    input.value = \"\"; \n    input.disabled = true;\n    sendBtn.disabled = true;\n    \n    fetch(WEBHOOK_URL, {\n      method: \"POST\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({ sessionId, message: userMsg })\n    })\n    .then(r => r.json())\n    .then(data => {\n      let response = \"\";\n      if (Array.isArray(data)) {\n        response = data[0]?.output ?? data[0]?.message ?? \"\";\n      } else {\n        response = data?.output ?? data?.reply ?? data?.message ?? \"\";\n      }\n      if (response) appendMessage(\"Asesor\", response);\n      else appendMessage(\"Asesor\", \"Recibí la solicitud, pero no llegó contenido para mostrar.\");\n    })\n    .catch(err => {\n      console.error(err);\n      appendMessage(\"Asesor\", \"Lo siento, hubo un error al procesar tu mensaje. Por favor intenta nuevamente.\");\n    })\n    .finally(()=>{ \n      input.disabled = false;\n      sendBtn.disabled = false;\n      input.focus(); \n    });\n  }\n\n  input.addEventListener(\"keypress\", e => { if (e.key === \"Enter\") sendMessage(); });\n  sendBtn.addEventListener(\"click\", sendMessage);\n\n  function appendMessage(sender, text, isUser = false) {\n    const container = document.createElement(\"div\");\n    container.className = `mv-message-container ${isUser ? 'user' : 'bot'}`;\n    \n    const now = new Date();\n    const time = now.getHours().toString().padStart(2, '0') + ':' + \n                 now.getMinutes().toString().padStart(2, '0');\n    \n    const sanitizedSender = sanitize(sender);\n    const sanitizedText = isUser ? sanitize(text) : sanitizeWithLinks(text);\n    \n    container.innerHTML = `\n      <div class=\"mv-message\">\n        <span class=\"mv-message-sender\">${sanitizedSender}</span>\n        <div class=\"mv-message-text\">${sanitizedText}</div>\n        <span class=\"mv-message-time\">${time}</span>\n      </div>\n    `;\n    \n    messages.appendChild(container);\n    messages.scrollTop = messages.scrollHeight;\n  }\n})();",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/javascript"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1440,
+        3088
+      ],
+      "id": "926f083e-9918-4b9b-86d0-8f4eded4ec1c",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "path": "widget-zei",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        1200,
+        3088
+      ],
+      "id": "8bbe6cc0-57d7-4d96-81c0-5d59d9af9359",
+      "name": "Webhook1",
+      "webhookId": "c3a6035e-6f03-4224-86d5-1576b5827ee5"
+    },
+    {
+      "parameters": {
+        "content": "## Widget ZEI MKT\n",
+        "height": 336,
+        "width": 544
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1120,
+        2960
+      ],
+      "typeVersion": 1,
+      "id": "376db98e-5177-43c8-b22c-9a5e1c78f2c9",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Busca en Google Sheets si ya existen registros con el mismo RUC, teléfono o correo electrónico. Usa esta herramienta SOLO después de recopilar los datos de RUC (paso 9), teléfono (paso 7) y email (paso 8). Retorna true si encuentra duplicados, false si no hay coincidencias.",
+        "documentId": {
+          "__rl": true,
+          "value": "1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg",
+          "mode": "list",
+          "cachedResultName": "MQL",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "ruc",
+              "lookupValue": "={{ $fromAI(\"ruc\") }}"
+            },
+            {
+              "lookupColumn": "phone",
+              "lookupValue": "={{ $fromAI(\"telefono\") }}"
+            },
+            {
+              "lookupColumn": "email",
+              "lookupValue": "={{ $fromAI(\"email\") }}"
+            }
+          ]
+        },
+        "combineFilters": "OR",
+        "options": {
+          "returnFirstMatch": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_only_First_Matching_Row', ``, 'boolean') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1088,
+        2352
+      ],
+      "id": "af45abe9-4a38-43b4-a60b-5ac21c311daa",
+      "name": "Buscar Duplicados",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fm3jifX2nPTobuSZ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "phoneNumberId": "865315756662811",
+        "recipientPhoneNumber": "=+{{ $json.phone }}",
+        "template": "platilla_marketing_n8n_nov_25|es"
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        2288,
+        1808
+      ],
+      "id": "eb6dcdfc-3fcf-42e4-8066-3ab9185ddfbd",
+      "name": "Send template",
+      "webhookId": "1f45bad2-789b-4449-b302-f9c523dde359",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "tk6zrwxJLxGE2YuG",
+          "name": "WhatsApp account_TEST"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg",
+          "mode": "list",
+          "cachedResultName": "MQL",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "session_id",
+              "lookupValue": "={{ $('Webhook').item.json.body.sessionId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1536,
+        1808
+      ],
+      "id": "a2a4bcea-a381-4610-8a84-81e328970989",
+      "name": "Filtrar Sesion",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fm3jifX2nPTobuSZ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fbf52990-e952-48c0-af09-2cd564a7148f",
+              "leftValue": "={{ $json.output }}",
+              "rightValue": "correctamente",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1072,
+        2096
+      ],
+      "id": "95419164-ad07-4479-b4bb-7eff2f152890",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ==============================================================\n// NODO CODE: Generar Recomendación (Módulos + Producto) al final\n// ==============================================================\n\n// Obtener datos del lead desde el nodo anterior (IF)\nconst outputOriginal = $('If').first().json.output || '';\nconst sector = $input.first().json.industria || '';\nconst empleados = $input.first().json.empleados || '';\n\n// Extraer facturación del campo comments usando regex\nconst commentsText = $input.first().json.comments || '';\nconst facturacionMatch = commentsText.match(/Rango de facturación:\\s*([^\\n\\r]+)/i);\nconst facturacion = facturacionMatch ? facturacionMatch[1].trim() : '';\n\nconst nombre = $input.first().json.nombre || '';\nconst primerNombre = (String(nombre).trim().split(/\\s+/)[0]) || '';\n\n// --------------------------------------------------------------\n// Helpers\n// --------------------------------------------------------------\nfunction normalizeText(str) {\n  return String(str || '')\n    .toLowerCase()\n    .normalize('NFD')\n    .replace(/[\\u0300-\\u036f]/g, '')\n    .trim();\n}\n\n// Función para determinar el tamaño de la empresa\nfunction determinarTamano(empleados, facturacion) {\n  const factNorm = normalizeText(facturacion);\n\n  // Empresa PEQUEÑA: 1-4 empleados Y (no factura O menos de $100k)\n  const esPequena =\n    empleados === \"De 1 a 4\" &&\n    (\n      // Variantes comunes de \"no factura\"\n      factNorm.includes(\"aun no factura\") ||\n      factNorm.includes(\"aun no facturo\") ||\n      factNorm.includes(\"aun no facturan\") ||\n      factNorm.includes(\"todavia no factura\") ||\n      factNorm.includes(\"todavia no facturo\") ||\n      factNorm.includes(\"no factura\") ||\n      factNorm.includes(\"no facturo\") ||\n      factNorm.includes(\"sin facturacion\") ||\n      factNorm.includes(\"sin facturar\") ||\n      // Variantes de < 100k\n      factNorm.includes(\"menos de $100.000\") ||\n      factNorm.includes(\"menos de $100,000\") ||\n      factNorm.includes(\"menos de 100000\") ||\n      factNorm.includes(\"menos de 100.000\")\n    );\n\n  // Empresa GRANDE: 20+ empleados O facturación >= $500k\n  const esGrande =\n    empleados === \"Más de 20\" ||\n    factNorm.includes(\"de $500.000 a $2 millones\") ||\n    factNorm.includes(\"de $500,000 a $2 millones\") ||\n    factNorm.includes(\"mas de $2 millones\") ||\n    factNorm.includes(\"mas de $2,000,000\") ||\n    factNorm.includes(\"más de $2 millones\") ||\n    factNorm.includes(\"más de $2,000,000\");\n\n  if (esPequena) return { tipo: \"pequeña\", label: \"Pequeña\" };\n  if (esGrande) return { tipo: \"grande\", label: \"Grande\" };\n  return { tipo: \"mediana\", label: \"Mediana\" };\n}\n\n// Normalizar sector para matching\nfunction normalizarSector(sector) {\n  const sectorLower = normalizeText(sector);\n\n  if (sectorLower.includes('consumo') || sectorLower.includes('masivo')) return \"Consumo masivo\";\n  if (sectorLower.includes('ferret')) return \"Ferreteria\";\n  if (sectorLower.includes('farmac') || sectorLower.includes('veterinar')) return \"Farmaceutica\";\n  if (sectorLower.includes('automotriz') || sectorLower.includes('automotor')) return \"Automotriz\";\n\n  return \"Otro\";\n}\n\n// --------------------------------------------------------------\n// Mapeo de recomendaciones por industria y tamaño (tu bloque igual)\n// --------------------------------------------------------------\nconst recomendaciones = {\n  \"Consumo masivo\": {\n    \"pequeña\": {\n      modulos: \"Comercial, Logística y Facturación Electrónica\",\n      beneficio: \"ideales para mantener control comercial y logístico integral sin necesidad de contabilidad formal\",\n      caso: \"Distribuidores similares lograron implementar ventas móviles y gestión de rutas básica desde el primer mes\"\n    },\n    \"mediana\": {\n      modulos: \"Comercial, Logística, Facturación Electrónica y Contabilidad\",\n      beneficio: \"que te permitirán tener operaciones formales con trazabilidad financiera completa\",\n      caso: \"Empresas como la tuya escalaron operaciones con 100+ vendedores sin perder control y mejoraron visibilidad de cobranzas\"\n    },\n    \"grande\": {\n      modulos: \"Comercial, Logística, Facturación Electrónica, Contabilidad y Reportería Analítica\",\n      beneficio: \"lo cual te brindará gestión centralizada de múltiples sucursales con dashboards y KPIs para decisiones estratégicas\",\n      caso: \"Distribuidores grandes incrementaron su portafolio +50% (de 1000 a 2000 ítems) y abrieron nuevas líneas en solo 7 meses, migrando a la nube\"\n    }\n  },\n  \"Ferreteria\": {\n    \"pequeña\": {\n      modulos: \"Comercial, Inventarios y Facturación Electrónica\",\n      beneficio: \"para control de stock en tiempo real y ventas rápidas en caja o ruta\",\n      caso: \"Ferreterías locales digitalizaron su catálogo y automatizaron facturación, reduciendo errores en caja\"\n    },\n    \"mediana\": {\n      modulos: \"Comercial, Logístico, Inventarios/WMS y Facturación Electrónica\",\n      beneficio: \"que te darán trazabilidad por lote, control de entregas y optimización de bodegas\",\n      caso: \"Distribuidores ferreteros con 1,500+ SKUs mejoraron control de entregas y redujeron quiebres de stock con WMS\"\n    },\n    \"grande\": {\n      modulos: \"Comercial, Logístico, WMS, Facturación Electrónica y Contabilidad\",\n      beneficio: \"para visibilidad total del inventario, márgenes de rentabilidad y gestión de múltiples bodegas\",\n      caso: \"Distribuidores nacionales lograron 100% precisión en entregas, optimizaron márgenes y redujeron costos logísticos\"\n    }\n  },\n  \"Farmaceutica\": {\n    \"pequeña\": {\n      modulos: \"Comercial con control de lotes\",\n      beneficio: \"para trazabilidad por lote y gestión básica de visitas médicas\",\n      caso: \"Microempresas veterinarias implementaron control de lotes para cumplir con trazabilidad regulatoria\"\n    },\n    \"mediana\": {\n      modulos: \"Comercial y Merchandising\",\n      beneficio: \"que te permitirán controlar rutas de visita médica con encuestas y evidencia fotográfica geolocalizada\",\n      caso: \"Distribuidores veterinarios implementaron rutas con GPS para registro de clínicas y médicos con reportes exportables\"\n    },\n    \"grande\": {\n      modulos: \"Comercial, Merchandising y Logística\",\n      beneficio: \"para control total de inventario por lote y vendedor, con reportería de visitas médicas y material POP\",\n      caso: \"Empresas veterinarias medianas lograron control total de visitas en tiempo real con validación fotográfica y reportes para auditorías\"\n    }\n  },\n  \"Automotriz\": {\n    \"pequeña\": {\n      modulos: \"Comercial y Facturación Electrónica\",\n      beneficio: \"con catálogo digital ideal para manejar miles de SKUs\",\n      caso: \"Distribuidores de repuestos digitalizaron catálogos complejos para acelerar búsquedas y cotizaciones en segundos\"\n    },\n    \"mediana\": {\n      modulos: \"Comercial, Logístico y Facturación Electrónica\",\n      beneficio: \"para entregas georreferenciadas y trazabilidad de productos de alta rotación\",\n      caso: \"Distribuidores de lubricantes y llantas mejoraron seguimiento de entregas y control de productos por ciudad\"\n    },\n    \"grande\": {\n      modulos: \"Comercial, Logístico, WMS, Facturación Electrónica y Contabilidad\",\n      beneficio: \"lo cual te brindará control inteligente de bodegas y trazabilidad completa por SKU y rotación por ciudad\",\n      caso: \"Distribuidores automotrices nacionales lograron trazabilidad completa por producto y cliente, reduciendo quiebres de stock drásticamente\"\n    }\n  },\n  \"Otro\": {\n    \"pequeña\": {\n      modulos: \"Comercial y Facturación Electrónica\",\n      beneficio: \"para digitalización de ventas desde app móvil con catálogo digital\",\n      caso: \"Empresas diversas digitalizaron su operación comercial desde app móvil en pocas semanas\"\n    },\n    \"mediana\": {\n      modulos: \"Comercial, Logístico y Facturación Electrónica\",\n      beneficio: \"para control de pedidos y entregas con integración a tu sistema ERP actual\",\n      caso: \"Empresas con ERPs internos extendieron capacidades al canal móvil sin cambiar su sistema actual\"\n    },\n    \"grande\": {\n      modulos: \"Comercial, Logístico, Facturación Electrónica con integración ERP\",\n      beneficio: \"para trazabilidad completa desde la venta hasta la facturación con visibilidad centralizada\",\n      caso: \"Compañías con sistemas propios lograron operación móvil integrada sin interrupciones operativas\"\n    }\n  }\n};\n\n// --------------------------------------------------------------\n// 1) Recomendación de MÓDULOS (igual, pero la pondremos al final)\n// --------------------------------------------------------------\nconst sectorNormalizado = normalizarSector(sector);\nconst tamano = determinarTamano(empleados, facturacion);\nconst recomendacion = recomendaciones[sectorNormalizado][tamano.tipo];\n\nconst mensajeRecomendacionModulos =\n  `Según el perfil de tu empresa ${tamano.tipo} en ${sector}, ` +\n  `los módulos más adecuados para tu operación son: <strong>${recomendacion.modulos}</strong>, ` +\n  `${recomendacion.beneficio}. ${recomendacion.caso}.`;\n\n// --------------------------------------------------------------\n// 2) Recomendación AUTOMÁTICA DE PRODUCTO (One vs Suite) al final\n// --------------------------------------------------------------\nconst factNorm = normalizeText(facturacion);\n\nconst esOne =\n  empleados === \"De 1 a 4\" &&\n  (\n    factNorm.includes(\"aun no factura\") ||\n    factNorm.includes(\"aun no facturo\") ||\n    factNorm.includes(\"todavia no factura\") ||\n    factNorm.includes(\"todavia no facturo\") ||\n    factNorm.includes(\"no factura\") ||\n    factNorm.includes(\"no facturo\") ||\n    factNorm.includes(\"sin facturacion\") ||\n    factNorm.includes(\"sin facturar\") ||\n    factNorm.includes(\"menos de $100.000\") ||\n    factNorm.includes(\"menos de $100,000\") ||\n    factNorm.includes(\"menos de 100000\") ||\n    factNorm.includes(\"menos de 100.000\")\n  );\n\nconst mensajeProducto = esOne\n  ? `Te recomiendo revisar <a href=\"https://mobilvendor.com/mobilvendor-one\" target=\"_blank\">Mobilvendor One</a>, una solución ligera ideal para negocios pequeños.`\n  : `Te recomiendo que visites <a href=\"https://mobilvendor.com/mobilvendor-suite\" target=\"_blank\">Mobilvendor Suite</a>, una plataforma completa ideal para empresas en crecimiento.`;\n\n// --------------------------------------------------------------\n// 3) Construir salida FINAL: outputOriginal + módulos + producto\n//    (todo al final, como pediste)\n// --------------------------------------------------------------\nconst outputModificado = [\n  String(outputOriginal || '').trim(),\n  mensajeRecomendacionModulos,\n  mensajeProducto\n].filter(Boolean).join('\\n\\n');\n\n// Retornar datos enriquecidos con el output modificado\nreturn {\n  ...($input.first().json),\n  output: outputModificado,\n\n  // Campos útiles\n  primer_nombre: primerNombre,\n\n  recomendacion_modulos: recomendacion.modulos,\n  recomendacion_beneficio: recomendacion.beneficio,\n  recomendacion_caso: recomendacion.caso,\n\n  producto_recomendado: esOne ? \"Mobilvendor One\" : \"Mobilvendor Suite\",\n  tamano_empresa: tamano.label,\n  sector_normalizado: sectorNormalizado,\n  facturacion_extraida: facturacion\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1712,
+        1968
+      ],
+      "id": "49b65088-66a6-47a3-98a3-ec79a6188bd4",
+      "name": "Recomendacion"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2c085e7c-21fa-42a9-b554-c449ce107dcd",
+              "name": "output",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1952,
+        1968
+      ],
+      "id": "e26bcd4b-62e1-4489-bce6-ec3f23157369",
+      "name": "output"
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:46.095Z",
+      "createdAt": "2026-01-13T02:49:46.095Z",
+      "role": "workflow:owner",
+      "workflowId": "TQTvlUScdoCS0mj2",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T02:49:45.842Z",
+  "versionId": "831bd9f1-5c1a-4e53-b81b-7d86fdf2414f"
+}
