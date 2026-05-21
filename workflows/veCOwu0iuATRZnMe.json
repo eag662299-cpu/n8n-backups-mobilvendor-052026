@@ -1,0 +1,877 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Extract Sheet by Name": {
+      "main": [
+        [
+          {
+            "node": "texto normalizado1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader1": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter1": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader1",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect File Type1": {
+      "main": [
+        [
+          {
+            "node": "Is Excel?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Excel?1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Britrix File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Detect File Type1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sheet y binary1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "sheet y binary1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "texto normalizado1": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Extract Sheet by Name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Britrix File": {
+      "main": [
+        [
+          {
+            "node": "datos carpeta bitrix",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "datos carpeta bitrix": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:47.237Z",
+  "id": "veCOwu0iuATRZnMe",
+  "isArchived": false,
+  "meta": null,
+  "name": "KB_27001 xlsx",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "binaryPropertyName": "=data",
+        "options": {
+          "sheetName": "={{ $json.sheetName }}"
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -432,
+        816
+      ],
+      "id": "26bec67b-3fc4-45aa-bbe5-b3a3c84b6e63",
+      "name": "Extract Sheet by Name"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        16,
+        1088
+      ],
+      "id": "4f5e7530-2f62-4027-be7e-902dfaf0b6d3",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "E7b7vwKLzPo4JwAR",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "iso-27001xlsx",
+          "mode": "list",
+          "cachedResultName": "iso-27001xlsx"
+        },
+        "embeddingBatchSize": 500,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        16,
+        816
+      ],
+      "id": "86f62eb0-bc8a-4b90-8515-90d0d0512d8d",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "Ne3WU9FiJTVdKcqU",
+          "name": "PineconeApi EA"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1on7syf3V7TZubLaBRZHkhTRcCDVMmgYdzfbKHOrLiWg",
+          "mode": "list",
+          "cachedResultName": "KB ISO27001 xlsx",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1on7syf3V7TZubLaBRZHkhTRcCDVMmgYdzfbKHOrLiWg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "file_name": "={{ $json.data.fileName }}",
+            "file_id": "={{ $json.data.fileId }}",
+            "pinecone_index": "iso-27001-xlsx",
+            "processing_end": "={{ $now.toISO() }}",
+            "status": " success"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "file_name",
+              "displayName": "file_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "file_id",
+              "displayName": "file_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "source_url",
+              "displayName": "source_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "pinecone_index",
+              "displayName": "pinecone_index",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "processing_start",
+              "displayName": "processing_start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "processing_end",
+              "displayName": "processing_end",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "total_page",
+              "displayName": "total_page",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "total_fragments",
+              "displayName": "total_fragments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "total_text_lenght",
+              "displayName": "total_text_lenght",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "avg_fragment_size",
+              "displayName": "avg_fragment_size",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "file_size_bytes",
+              "displayName": "file_size_bytes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "mime_type",
+              "displayName": "mime_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "md5_checksum",
+              "displayName": "md5_checksum",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "useAppend": false
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        512,
+        816
+      ],
+      "id": "8ea94051-d397-4c24-9e88-f973280e38ec",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.text }}",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "hoja",
+                "value": "={{ $json.data.sheetName }}"
+              },
+              {
+                "name": "archivo",
+                "value": "={{ $json.data.fileName }}"
+              },
+              {
+                "name": "archivoId",
+                "value": "={{ $json.data.fileId }}"
+              },
+              {
+                "name": "fila",
+                "value": "={{ $json.data.rowIndex }}"
+              },
+              {
+                "name": "tipo",
+                "value": "={{ $json.data.tipo }}"
+              },
+              {
+                "name": "bitrixId",
+                "value": "={{ $json.data.bitrixId }}"
+              },
+              {
+                "name": "source_url ",
+                "value": "={{ $json.data.bitrixViewUrl }}"
+              },
+              {
+                "name": "bitrixDetailUrl",
+                "value": "={{ $json.data.bitrixDetailUrl }}"
+              },
+              {
+                "name": "ubicacion",
+                "value": "={{ $json.data.ubicacion }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        176,
+        992
+      ],
+      "id": "897ab282-8188-4d81-8d3d-4d7ed62ac8d5",
+      "name": "Default Data Loader1"
+    },
+    {
+      "parameters": {
+        "chunkSize": 4000,
+        "options": {
+          "splitCode": "markdown"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        176,
+        1184
+      ],
+      "id": "51a57be9-c9dc-4142-9fa8-5ef67b33ad6f",
+      "name": "Recursive Character Text Splitter1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const mimeType = $json.mimeType || '';\nconst fileName = $json.originalFilename || $json.name || '';\n\nconst isExcel =\n\tmimeType.includes('spreadsheet') ||\n\tmimeType.includes('excel') ||\n\tmimeType.includes('ms-excel') ||\n\tfileName.toLowerCase().match(/\\.(xlsx|xls)$/);\n\nreturn [\n  {\n    json: {\n      ...$input.first().json,\n      fileType: isExcel ? 'excel' : 'pdf'\n    }\n  }\n];"
+      },
+      "id": "80808101-7a57-466c-bf5d-335013f11093",
+      "name": "Detect File Type1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1728,
+        672
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.fileType }}",
+              "operation": "notEqual",
+              "value2": "excel"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -1584,
+        672
+      ],
+      "id": "240eb9bc-749a-4db0-a101-e66954139c15",
+      "name": "Is Excel?1"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1Lix3SSQR-jZBR-A5PkmG6KbAozKhAGKm",
+          "mode": "list",
+          "cachedResultName": "ISO27001_mobilvendor_KB_gemini",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1Lix3SSQR-jZBR-A5PkmG6KbAozKhAGKm"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1888,
+        672
+      ],
+      "id": "7a339652-1467-4c3c-b17b-ec9d4a6b0e73",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "nZU8LW95ZL0VVPJ9",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nlet sheetData = [];\n\n// Tomar ID y nombre reales del archivo desde el trigger (fuente correcta)\nconst trig = $items(\"Google Drive Trigger\")[0]?.json || {};\nconst fileIdFromTrigger = trig.id || null;\nconst fileNameFromTrigger = trig.name || null;\nconst sourceUrlFromTrigger = trig.webViewLink || null;\n\nfor (const item of items) {\n  const sheetsArray = item.json.sheets;      // viene de HTTP Request1 (Sheets API)\n  const binaryFile  = item.binary?.data;     // viene de Download file (xlsx)\n\n  // Fallbacks por si el trigger no estuviera disponible (raro)\n  const fileId = fileIdFromTrigger || item.json.fileId || item.json.spreadsheetId || item.json.id || null;\n  const fileName = fileNameFromTrigger || item.json.fileName || item.json.title || item.json.name || \"Archivo sin nombre\";\n  const source_url = sourceUrlFromTrigger || item.json.webViewLink || null;\n\n  if (Array.isArray(sheetsArray) && binaryFile) {\n    sheetsArray.forEach((sheet, index) => {\n      const name = sheet.properties?.title;\n      if (!name) return;\n\n      sheetData.push({\n        json: {\n          sheetName: name,\n          sheetId: sheet.properties?.sheetId ?? null,\n          sheetIndex: index,\n          fileName,\n          fileId          \n        },\n        binary: {\n          data: binaryFile\n        }\n      });\n    });\n  }\n}\n\nreturn sheetData;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -816,
+        800
+      ],
+      "id": "4a6f6f98-f561-46ac-a2e9-90b9cf4c237c",
+      "name": "sheet y binary1"
+    },
+    {
+      "parameters": {
+        "url": "=https://sheets.googleapis.com/v4/spreadsheets/{{ $('Google Drive Trigger').item.json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1152,
+        800
+      ],
+      "id": "f37cf43c-d9c4-4a6d-9975-29f622a9b914",
+      "name": "HTTP Request1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Is Excel?1').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "sheetsToFormat": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -992,
+        800
+      ],
+      "id": "567de8dd-90af-4484-91ca-dc6f024b8b92",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "nZU8LW95ZL0VVPJ9",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ===============================\n//  Conversión de fecha Excel → ISO\n// ===============================\nfunction excelDateToISO(serial) {\n  if (!serial || isNaN(serial)) return serial;\n\n  // Excel date system: 1 Jan 1900 = 1 → Unix epoch = serial 25569\n  const utc_days = serial - 25569;\n  const utc_value = utc_days * 86400;\n  const date_info = new Date(utc_value * 1000);\n\n  // Convertir a YYYY-MM-DD\n  return date_info.toISOString().split(\"T\")[0];\n}\n\n// ===============================\n//  Procesamiento general\n// ===============================\n\n// 🛑 MODIFICACIÓN CRÍTICA: Mirar al nodo del bucle, no a la entrada\nconst loopItem = $('Loop Over Items').first().json; \n\nconst currentSheetName = loopItem.sheetName || loopItem.data?.sheetName || \"Hoja desconocida (ERROR)\";\nconst currentFileName = loopItem.fileName || loopItem.data?.fileName || \"Archivo desconocido (ERROR)\";\nconst currentFileId = loopItem.fileId || loopItem.data?.fileId || \"ID desconocido (ERROR)\";\n\n// Obtenemos las filas extraídas (output del nodo Extract)\nconst rows = $input.all().map(i => i.json);\n\n// Buscar fila probable de fecha/encabezados\nlet fechaIndex = rows.findIndex(r => {\n  const vals = Object.values(r).map(v => String(v || '').toLowerCase());\n  return vals.some(v =>\n    v.includes(\"fecha\") ||\n    v.includes(\"actualiz\") ||\n    /^\\d{5}$/.test(v) ||\n    /\\d{1,2}[-/]\\d{1,2}[-/]\\d{2,4}/.test(v)\n  );\n});\n\nif (fechaIndex === -1) fechaIndex = 0;\n\n// Encabezado real\nconst headerRow = rows[fechaIndex + 1] || rows[0];\n\n// Crear mapa limpio de columnas\nconst columnMap = Object.keys(headerRow).map(rawKey => {\n  const rawValue = headerRow[rawKey];\n\n  const cleanName = String(rawValue)\n    .normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\")\n    .toLowerCase()\n    .replace(/[^a-z0-9]+/g, \"_\")\n    .replace(/^_+|_+$/g, \"\") || rawKey;\n\n  return {\n    rawKey: rawKey,\n    fieldName: cleanName\n  };\n});\n\nconst dataRows = rows.slice(fechaIndex + 2);\n\nlet lastKnownValues = {};\nlet output = [];\n\nfor (let index = 0; index < dataRows.length; index++) {\n  let r = dataRows[index];\n  if (Object.values(r).length === 0) continue;\n\n  let rowObj = {};\n  let hasContent = false;\n\n  // Procesar cada columna\n  columnMap.forEach(col => {\n    const rawVal = r[col.rawKey];\n\n    if (rawVal !== undefined && rawVal !== null && String(rawVal).trim() !== \"\") {\n      let finalVal = rawVal;\n\n      // Detectar y convertir fecha serial Excel\n      if (!isNaN(rawVal) && Number(rawVal) > 40000 && Number(rawVal) < 60000) {\n        finalVal = excelDateToISO(Number(rawVal));\n      }\n\n      lastKnownValues[col.fieldName] = finalVal;\n      rowObj[col.fieldName] = finalVal;\n      hasContent = true;\n\n    } else {\n      rowObj[col.fieldName] = lastKnownValues[col.fieldName] || \"\";\n    }\n  });\n\n  if (hasContent || Object.keys(lastKnownValues).length > 0) {\n\n    // Crear texto limpio para embeddings\n    let text = Object.entries(rowObj)\n      .map(([k, v]) => `${k}: ${v}`)\n      .join(\"\\n\");\n\n    // ===============================\n    //  SALIDA FINAL PARA PINECONE\n    // ===============================\n    output.push({\n      json: {\n        data: {\n          ...rowObj,\n          sheetName: currentSheetName,  // ✅ Ahora toma el nombre del bucle\n          fileName: currentFileName,    // ✅ Ahora toma el nombre del bucle\n          fileId: currentFileId,        // ✅ Ahora toma el ID del bucle\n          rowIndex: index + 1,\n          tipo: \"excel\",\n          bitrixId: $('datos carpeta bitrix').first().json.bitrix.bitrixId,\n          bitrixDetailUrl: $('datos carpeta bitrix').first().json.bitrix.bitrixDetailUrl,\n          bitrixViewUrl: $('datos carpeta bitrix').first().json.bitrix.bitrixViewUrl,\n          ubicacion: $('datos carpeta bitrix').first().json.bitrix.ubicacion\n        },\n        text\n      }\n    });\n  }\n}\n\nreturn output;\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -208,
+        816
+      ],
+      "id": "3e5a388c-7de4-4ca5-b968-6d018d50a3a4",
+      "name": "texto normalizado1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1104,
+        1504
+      ],
+      "id": "3dc4876d-6b88-47ae-a578-b48969bc7b19",
+      "name": "When chat message received",
+      "webhookId": "7304fb39-f2d3-4287-b425-17d77184b42e"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=Eres un agente experto en análisis de matrices ISO 27001.  \nRespondes exclusivamente con información recuperada desde Pinecone.  \nRespondes siempre en HTML limpio y en español.\n\nCada vector contiene:\n- metadata: archivo, hoja, fila, archivoId, tipo\n- pageContent: una lista de campos con formato “clave: valor”\n\nLos nombres de los campos pueden cambiar según la hoja.\n\n---------------------------------------------------------------------------\nREGLA PRINCIPAL — IDENTIFICAR UNA COLUMNA\n---------------------------------------------------------------------------\n\nCuando el usuario pida “los activos”, “lista de activos”, \n“elementos de la columna activos”, “nombre de activos”, etc.:\n\n1. Debes buscar en pageContent el campo llamado:\n   “nombre_del_activo_de_informacion”\n   o cualquier clave que contenga:\n   - nombre_del_activo\n   - activo\n   - nombre_de_información\n   - nombre_activo\n\n2. Solo los valores de ESA clave representan activos válidos.\n\n3. No uses valores de otros campos.\n\n---------------------------------------------------------------------------\nVALIDACIÓN DE ACTIVOS\n---------------------------------------------------------------------------\n\nUn valor SOLO es válido si el vector también contiene al menos un campo ISO:\n- tipo_de_informacion\n- ubicacion_fisica_digital\n- clasificacion\n- departamento\n- controles_de_seguridad_implementados\n- responsable\n- fecha_de_revision\n- riesgos_asociados\n\nSi no contiene nada de lo anterior → descartar.\n\nDescarta SIEMPRE:\n- valores de una sola palabra (“Alto”, “Procesos”, “Wallet”)\n- palabras genéricas\n- códigos (“I003”, “I005”)\n- entradas que provienen de contexto, PESTEL, riesgos o análisis\n\n---------------------------------------------------------------------------\nFORMATO DE RESPUESTA PARA LISTA DE ACTIVOS\n---------------------------------------------------------------------------\n\n<h3 class=\"mv-title-h3\">Lista de Activos</h3>\n<ul>\n<li>NOMBRE_DEL_ACTIVO — Archivo: A — Hoja: H — Fila: F</li>\n</ul>\n\n- Ordena alfabéticamente.\n- Quita duplicados.\n- No inventes nada.\n\n---------------------------------------------------------------------------\nDETALLE DE UN ACTIVO\n---------------------------------------------------------------------------\n\nSi el usuario pregunta “detalles de X”:\n\n1. Recupera el vector cuya clave nombre_del_activo_de_informacion coincida.\n2. Extrae TODOS los campos de esa fila.\n3. Muestra tabla campo → valor.\n4. Incluye evidencia: archivo, hoja, fila.\n\n---------------------------------------------------------------------------\nREGLAS FINALES\n---------------------------------------------------------------------------\n\n- Nunca inventes información.\n- Usa únicamente lo que aparece en pageContent.\n- Si no existe la columna solicitada → dilo.\n- Si no hay suficientes resultados:\n  “No se encontró evidencia suficiente para responder.”\n- Siempre responde en HTML limpio.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -784,
+        1504
+      ],
+      "id": "a9730ff8-3eec-4603-bf49-62d7c112dff9",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -912,
+        1712
+      ],
+      "id": "714a50e4-412a-44c5-8181-3748a16c4ee8",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "E7b7vwKLzPo4JwAR",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Base de conocimiento matrices",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "iso-27001xlsx",
+          "mode": "list",
+          "cachedResultName": "iso-27001xlsx"
+        },
+        "topK": 50,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        -656,
+        1776
+      ],
+      "id": "8b89fff5-0a71-4d4a-8abd-41395327a1ad",
+      "name": "Pinecone Vector Store1",
+      "credentials": {
+        "pineconeApi": {
+          "id": "Ne3WU9FiJTVdKcqU",
+          "name": "PineconeApi EA"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -656,
+        1984
+      ],
+      "id": "1530875f-3912-4eb7-a618-75ae78bba4de",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "E7b7vwKLzPo4JwAR",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -608,
+        800
+      ],
+      "id": "4d096194-7539-44c9-8c15-572d79177e2f",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://mobilvendor.bitrix24.es/rest/1/ghq4a7p2r32rd5u9/disk.folder.getchildren.json",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"id\": \"20143\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1456,
+        800
+      ],
+      "id": "76277d21-00ca-460a-9cd3-10943cee405b",
+      "name": "Britrix File"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Nombre desde Google Drive Trigger\nlet googleFile = $('Google Drive Trigger').first().json.name || \"\";\ngoogleFile = googleFile.trim().toLowerCase();\n\nif (!googleFile) {\n  throw new Error(\"No se encontró el nombre del archivo para hacer el match.\");\n}\n\n// Lista Bitrix\nconst bitrixList = $('Britrix File').first().json.result || [];\n\n// Match basado en nombre SIN EXTENSIÓN\nconst match = bitrixList.find(f => {\n  const bitrixName = f.NAME.trim().toLowerCase();\n  const bitrixBase = bitrixName.replace(/\\.(xlsx|xls|pdf|docx)$/i, \"\");\n  return bitrixBase === googleFile;\n});\n\nif (!match) {\n  return [{\n    json: {\n      bitrix: {\n        error: \"No se encontró match en Bitrix\",\n        googleFileOriginal: $('Google Drive Trigger').first().json.name,\n        googleFileNormalizado: googleFile\n      }\n    }\n  }];\n}\n\n// Visual URL\nconst objectId = match.ID;\nconst visualUrl = `https://mobilvendor.bitrix24.es/bitrix/tools/disk/focus.php?objectId=${objectId}&cmd=show&action=showObjectInGrid&ncc=1`;\n\n// Ubicación\nconst detail = match.DETAIL_URL || \"\";\nlet ubicacion = \"\";\n\nif (detail.includes(\"ISO27001_2022/\")) {\n  const part = detail.split(\"ISO27001_2022/\")[1];\n  ubicacion = part.replace(match.NAME, \"\").replace(/\\/$/, \"\");\n}\n\n// Output final\nreturn [{\n  json: {\n    bitrix: {\n      bitrixId: match.ID,\n      bitrixFileName: match.NAME,\n      bitrixDetailUrl: match.DETAIL_URL,\n      bitrixViewUrl: visualUrl,\n      ubicacion\n    }\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1312,
+        800
+      ],
+      "id": "0ee5f75a-66e1-41af-933d-fcbca19336fe",
+      "name": "datos carpeta bitrix"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:48.149Z",
+      "createdAt": "2026-01-13T02:49:48.149Z",
+      "role": "workflow:owner",
+      "workflowId": "veCOwu0iuATRZnMe",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": {
+    "node:Google Drive Trigger": {
+      "lastTimeChecked": "2025-11-26T03:01:32Z"
+    }
+  },
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-02-19T14:47:18.715Z",
+  "versionId": "e5b7f524-04be-4ec5-abe0-0119af74526d"
+}
