@@ -1,0 +1,259 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read Empleado_Modulo_Progress1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Empleado_Recursos_Progress1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Empleado_Modulo_Progress1": {
+      "main": [
+        [
+          {
+            "node": "Read Empleado_Recursos_Progress1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-02-24T20:32:34.612Z",
+  "id": "XBVK7eciDdP4jdtVpsYMs",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "My workflow 29",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        560
+      ],
+      "id": "5dded6d3-f50a-400c-9fdd-aae242ebb918",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n.mobilvendor.com/webhook/mvlearning/progress/topic/update",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "empleado_id",
+              "value": "emp_19c791e242e-27815b74-2defecbc-24f1b880"
+            },
+            {
+              "name": "modulo_id",
+              "value": "01EDRT2NMXGUZDO5RWFFALC7U5VTJKIG7K"
+            },
+            {
+              "name": "modulo_nombre",
+              "value": "1. BASE DE DATOS"
+            },
+            {
+              "name": "area_id",
+              "value": "01EDRT2NM6H3IKBBMC3JDJOY3MCD3JXQF2"
+            },
+            {
+              "name": "topic_id",
+              "value": "01EDRT2NJJFEPGSL2SKRB2Q7AKGPMQRL7Q"
+            },
+            {
+              "name": "topic_nombre",
+              "value": "CLIENTES INGRESOS Y PRUEBAS"
+            },
+            {
+              "name": "status",
+              "value": "EN_PROGRESO"
+            },
+            {
+              "name": "progress_pct",
+              "value": "40"
+            },
+            {
+              "name": "attempts",
+              "value": "2"
+            },
+            {
+              "name": "event_source",
+              "value": "WEB_UI"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          },
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "bba648c0-b327-408d-ab29-7d6bf4796ac9",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 656455680,
+          "mode": "list",
+          "cachedResultName": "Empleado_Recursos_Progreso",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=656455680"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "employee_id",
+              "lookupValue": "emp_d9d7f1e2-0651-498d-b32a-00425703ff7d"
+            },
+            {
+              "lookupColumn": "modulo_id",
+              "lookupValue": "01EDRT2NMXGUZDO5RWFFALC7U5VTJKIG7K"
+            }
+          ]
+        },
+        "combineFilters": "AND",
+        "options": {
+          "returnAllMatches": "returnAllMatches"
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        368,
+        496
+      ],
+      "id": "b178f416-7ea9-4f7d-ac4d-95eb222ea066",
+      "name": "Read Empleado_Recursos_Progress1",
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 876577961,
+          "mode": "list",
+          "cachedResultName": "Empleado_Modulo_Progreso",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=876577961"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "employee_id",
+              "lookupValue": "emp_d9d7f1e2-0651-498d-b32a-00425703ff7d"
+            },
+            {
+              "lookupColumn": "modulo_id",
+              "lookupValue": "01EDRT2NMXGUZDO5RWFFALC7U5VTJKIG7K"
+            }
+          ]
+        },
+        "combineFilters": "AND",
+        "options": {
+          "returnAllMatches": "returnAllMatches"
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        160,
+        496
+      ],
+      "id": "d3fc634e-068a-41da-969d-50afdf550844",
+      "name": "Read Empleado_Modulo_Progress1",
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const modulos = $items('Read Empleado_Modulo_Progress1').map(i => i.json);\nconst recursos = $items('Read Empleado_Recursos_Progress1').map(i => i.json);\n\nconst employee_id =\n  modulos[0]?.employee_id ||\n  recursos[0]?.employee_id ||\n  '';\n\nreturn [{\n  json: {\n    employee_id,\n    modulos,\n    recursos\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        496
+      ],
+      "id": "d31f0107-a04d-4b32-a86d-f18fe0470e47",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-02-24T20:32:34.626Z",
+      "createdAt": "2026-02-24T20:32:34.626Z",
+      "role": "workflow:owner",
+      "workflowId": "XBVK7eciDdP4jdtVpsYMs",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-03-10T00:28:52.748Z",
+  "versionId": "8b8c5025-bfd0-42e6-8b04-07fe97dd1da0"
+}
