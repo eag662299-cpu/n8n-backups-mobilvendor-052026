@@ -1,0 +1,865 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AI LLama",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AI Restriccion alta",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AI Restriccion baja",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI LLama",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI LLama",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Answer questions with a vector store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI LLama",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store1": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Restriccion alta",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory2": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Restriccion alta",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Answer questions with a vector store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Restriccion alta",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store2": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Answer questions with a vector store1",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Answer questions with a vector store1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store2",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reranker Cohere": {
+      "ai_reranker": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_reranker",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model6": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Restriccion baja",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory3": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Restriccion baja",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Answer questions with a vector store2": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Restriccion baja",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store3": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Answer questions with a vector store2",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model7": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Answer questions with a vector store2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI3": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store3",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:47.078Z",
+  "id": "tHsVo2cZ529uTmZN",
+  "isArchived": false,
+  "meta": null,
+  "name": "Pruebas_KB",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -688,
+        864
+      ],
+      "id": "2be33f26-0f39-4a91-80bf-eb27b88587b6",
+      "name": "When chat message received",
+      "webhookId": "91d2f24e-a39e-45d1-bd2a-8b72a791fcb3"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Eres un asistente virtual especializado que trabaja para Mobilvendor, empresa dedicada al desarrollo de soluciones tecnológicas para la gestión empresarial.\n\nReglas de funcionamiento:\n\nResponde únicamente con la información proporcionada internamente.\n\nSi no tienes información disponible para responder, di de forma breve y clara:\n“Lo siento, no dispongo de esa información en este momento.”\n\nNunca inventes respuestas ni uses información externa.\n\nTu objetivo no es facilitar una venta. Sin embargo, si el usuario solicita información de contacto, demos, reuniones o asesoría comercial, dirígelo de manera clara a:\n👉 https://outlook.office365.com/book/Mobilvendor_Comercial@mobilvendor.com/?ismsaljsauthenabled=true\n\nEstilo de respuesta:\n\nProfesional, conciso y confiable.\n\nTono cercano, natural y corporativo."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -32,
+        -128
+      ],
+      "id": "1a14c3d9-0198-414d-ae5f-d1bf3bd85c21",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -176,
+        80
+      ],
+      "id": "da259329-46d5-473c-ac35-7155e4cac309",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -32,
+        80
+      ],
+      "id": "db255f5c-646d-4ed2-90ec-96485aeb9a6a",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        128,
+        208
+      ],
+      "id": "b69f665b-d91e-4ff5-bc18-6340867c5001",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -160,
+        864
+      ],
+      "id": "11ad8c01-c0ea-4c7c-91de-468c68ae69f5",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        16,
+        864
+      ],
+      "id": "33e22309-0a49-4f75-bacf-b0cac3959bd4",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "description": "Llama a esta herramienta para consultar el folleto del producto."
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1.1,
+      "position": [
+        144,
+        864
+      ],
+      "id": "32424a14-8d48-44b5-bae3-56d12f4161e2",
+      "name": "Answer questions with a vector store"
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "brochure-index-llama",
+          "mode": "list",
+          "cachedResultName": "brochure-index-llama"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        48,
+        1008
+      ],
+      "id": "7d1cd459-9259-4e4a-b8fa-49f772f155ac",
+      "name": "Pinecone Vector Store1",
+      "credentials": {
+        "pineconeApi": {
+          "id": "bqNx5oAwXmTYQGz2",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        352,
+        1008
+      ],
+      "id": "ee7b4c73-1d43-4f5e-8795-44f9d3d49cac",
+      "name": "OpenAI Chat Model3",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        48,
+        1152
+      ],
+      "id": "c45c2799-d6f2-400e-9c2d-e5cf7c6043c7",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## INDEX DIRECTA A PINECONE",
+        "height": 752,
+        "width": 816,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -272,
+        -192
+      ],
+      "typeVersion": 1,
+      "id": "47c03fa0-77ab-4111-b490-d268f82c68a0",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Llama a herramientas del base de conocimiento brochure",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "brochure",
+          "mode": "list",
+          "cachedResultName": "brochure"
+        },
+        "useReranker": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        160,
+        64
+      ],
+      "id": "1234aef5-e298-4ca7-9f69-91724c900c8a",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "bqNx5oAwXmTYQGz2",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## INDEX OPTIMIZADO ELIMNACIÒN DE CARACTERES EXTRAÑÓS",
+        "height": 752,
+        "width": 816
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -272,
+        592
+      ],
+      "typeVersion": 1,
+      "id": "ae0a9b22-5590-499a-971f-3399e0e01067",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -48,
+        1712
+      ],
+      "id": "a200510f-811f-4b57-9c66-80e938d8d5a7",
+      "name": "OpenAI Chat Model4",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        128,
+        1712
+      ],
+      "id": "24d8fe4e-8f1d-4d37-a792-3ba83d38a283",
+      "name": "Simple Memory2"
+    },
+    {
+      "parameters": {
+        "description": "Llama a esta herramienta para consultar el folleto del producto."
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1.1,
+      "position": [
+        256,
+        1712
+      ],
+      "id": "fc203222-4786-4765-8a71-4cccfcf43e38",
+      "name": "Answer questions with a vector store1"
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "brochure",
+          "mode": "list",
+          "cachedResultName": "brochure"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        160,
+        1856
+      ],
+      "id": "3db2c9ba-07a3-4252-bc74-5e03b473c6b7",
+      "name": "Pinecone Vector Store2",
+      "credentials": {
+        "pineconeApi": {
+          "id": "bqNx5oAwXmTYQGz2",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        464,
+        1856
+      ],
+      "id": "8e47a63f-8e88-4dc9-90eb-46d9b6b38f0d",
+      "name": "OpenAI Chat Model5",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        160,
+        2000
+      ],
+      "id": "4f1610eb-09c0-4a68-898d-11e64e09d3a3",
+      "name": "Embeddings OpenAI2",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.rerankerCohere",
+      "typeVersion": 1,
+      "position": [
+        272,
+        192
+      ],
+      "id": "04631cbe-a491-419e-ae95-a7ff4401b796",
+      "name": "Reranker Cohere",
+      "credentials": {
+        "cohereApi": {
+          "id": "oSI4c68gzgFmzAC2",
+          "name": "CohereApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Eres un asistente virtual especializado que trabaja para Mobilvendor, empresa dedicada al desarrollo de soluciones tecnológicas para la gestión empresarial.\n\nReglas de funcionamiento:\n\nResponde únicamente con la información proporcionada internamente.\n\nSi no tienes información disponible para responder, di de forma breve y clara:\n“Lo siento, no dispongo de esa información en este momento.”\n\nNunca inventes respuestas ni uses información externa.\n\nTu objetivo no es facilitar una venta. Sin embargo, si el usuario solicita información de contacto, demos, reuniones o asesoría comercial, dirígelo de manera clara a:\n👉 https://outlook.office365.com/book/Mobilvendor_Comercial@mobilvendor.com/?ismsaljsauthenabled=true\n\nEstilo de respuesta:\n\nProfesional, conciso y confiable.\n\nTono cercano, natural y corporativo."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -16,
+        656
+      ],
+      "id": "3a251085-1bf3-4d1a-8aeb-021818dca076",
+      "name": "AI LLama"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Eres un asistente virtual especializado que trabaja para Mobilvendor, empresa dedicada al desarrollo de soluciones tecnológicas para la gestión empresarial.\n\nReglas de funcionamiento:\n\nResponde únicamente con la información proporcionada internamente.\n\nSi no tienes información disponible para responder, di de forma breve y clara:\n“Lo siento, no dispongo de esa información en este momento.”\n\nNunca inventes respuestas ni uses información externa.\n\nTu objetivo no es facilitar una venta. Sin embargo, si el usuario solicita información de contacto, demos, reuniones o asesoría comercial, dirígelo de manera clara a:\n👉 https://outlook.office365.com/book/Mobilvendor_Comercial@mobilvendor.com/?ismsaljsauthenabled=true\n\nEstilo de respuesta:\n\nProfesional, conciso y confiable.\n\nTono cercano, natural y corporativo."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        96,
+        1504
+      ],
+      "id": "a09a1e39-dfae-4bca-9d80-656ea1fbab77",
+      "name": "AI Restriccion alta"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        2448
+      ],
+      "id": "3a39e0b1-bfcd-4044-98ea-0b68fa7d9cd3",
+      "name": "OpenAI Chat Model6",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        176,
+        2448
+      ],
+      "id": "9dc3b675-9fd2-4752-b388-6340d7a42ddd",
+      "name": "Simple Memory3"
+    },
+    {
+      "parameters": {
+        "description": "Llama a esta herramienta para consultar el folleto del producto."
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1.1,
+      "position": [
+        304,
+        2448
+      ],
+      "id": "a537f0de-885a-45ad-a43a-7b6bdb7f7315",
+      "name": "Answer questions with a vector store2"
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "brochure-metadata-low",
+          "mode": "list",
+          "cachedResultName": "brochure-metadata-low"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        208,
+        2592
+      ],
+      "id": "ccebf732-555f-4a68-a23a-a5bf6e1307f9",
+      "name": "Pinecone Vector Store3",
+      "credentials": {
+        "pineconeApi": {
+          "id": "bqNx5oAwXmTYQGz2",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        512,
+        2592
+      ],
+      "id": "f2090d43-b4ef-4f76-90ba-521aed60a6d1",
+      "name": "OpenAI Chat Model7",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        2736
+      ],
+      "id": "ee0dfd46-5709-4fb9-a678-7d3373920d24",
+      "name": "Embeddings OpenAI3",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Eres un asistente virtual especializado que trabaja para Mobilvendor, empresa dedicada al desarrollo de soluciones tecnológicas para la gestión empresarial.\n\nReglas de funcionamiento:\n\nResponde únicamente con la información proporcionada internamente.\n\nSi no tienes información disponible para responder, di de forma breve y clara:\n“Lo siento, no dispongo de esa información en este momento.”\n\nNunca inventes respuestas ni uses información externa.\n\nTu objetivo no es facilitar una venta. Sin embargo, si el usuario solicita información de contacto, demos, reuniones o asesoría comercial, dirígelo de manera clara a:\n👉 https://outlook.office365.com/book/Mobilvendor_Comercial@mobilvendor.com/?ismsaljsauthenabled=true\n\nEstilo de respuesta:\n\nProfesional, conciso y confiable.\n\nTono cercano, natural y corporativo."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        144,
+        2240
+      ],
+      "id": "895e44c2-83eb-4db0-80e7-66a8d19db7ac",
+      "name": "AI Restriccion baja"
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:47.237Z",
+      "createdAt": "2026-01-13T02:49:47.237Z",
+      "role": "workflow:owner",
+      "workflowId": "tHsVo2cZ529uTmZN",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T02:49:47.078Z",
+  "versionId": "ee9028ef-90fd-4bb5-ad5a-ce7c123a4f95"
+}
