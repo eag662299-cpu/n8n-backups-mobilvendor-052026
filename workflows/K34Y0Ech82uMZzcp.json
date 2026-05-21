@@ -1,0 +1,85 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:46.542Z",
+  "id": "K34Y0Ech82uMZzcp",
+  "isArchived": false,
+  "meta": null,
+  "name": "SEG_widget",
+  "nodes": [
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=(function(){\n  if (window.MobilvendorWidgetLoaded) return;\n  window.MobilvendorWidgetLoaded = true;\n\n  const WEBHOOK_URL = \"https://n8n.mobilvendor.com/webhook/agentISO27001\";\n  const BOT_IMG = \"https://ik.imagekit.io/nm4jeymx5/Asistente-03-Mobilvendor.jpg?updatedAt=1760720233657\";\n\n  const widget = document.createElement(\"div\");\n  widget.id = \"mv-widget\";\n  widget.innerHTML = `\n    <img id=\"mv-bot\" src=\"${BOT_IMG}\" alt=\"Agente ISO27001 Mobilvendor\"/>\n    <div id=\"mv-chatbox\" style=\"display:none; flex-direction:column;\">\n      <div id=\"mv-header\">\n        <div class=\"mv-header-top\">\n          <img src=\"${BOT_IMG}\" alt=\"ZEI Bot\" class=\"mv-avatar\"/>\n          <span class=\"mv-title\">Agente ISO27001 Mobilvendor</span>\n        </div>\n        <div id=\"mv-header-bar\"></div>\n      </div>\n      <div id=\"mv-messages\"></div>\n      <div id=\"mv-footer\">\n        <input id=\"mv-input\" type=\"text\" placeholder=\"Escribe tu mensaje...\" autocomplete=\"off\"/>\n        <button id=\"mv-send\" title=\"Enviar\">\n          <svg width=\"24\" height=\"24\" fill=\"#fff\" viewBox=\"0 0 24 24\"><path d=\"M2 21l21-9L2 3v7l15 2-15 2v7z\"></path></svg>\n        </button>\n      </div>\n    </div>\n  `;\n  document.body.appendChild(widget);\n\n  const style = document.createElement(\"style\");\n  style.textContent = `\n    #mv-widget { position:fixed; bottom:24px; right:24px; z-index:99999; font-family:'Segoe UI',Arial,sans-serif;}\n\n    #mv-bot {\n      width:72px;height:72px;border-radius:50%;cursor:pointer;\n      box-shadow:0 10px 30px rgba(0,55,255,0.20);\n      transition:transform 0.18s ease, box-shadow 0.18s ease;\n      border:4px solid #fff;background:#fff;\n    }\n    #mv-bot:hover { transform:scale(1.07); box-shadow:0 12px 36px rgba(0,55,255,0.28); }\n\n    #mv-chatbox {\n      position:fixed; bottom:110px; right:32px; width:380px; background:#fff;\n      border-radius:22px;box-shadow:0 10px 50px rgba(0,0,0,0.15);\n      flex-direction:column;display:none;overflow:hidden;\n    }\n\n    #mv-header { background:linear-gradient(90deg, #0037ff 0%, #063bce 100%); padding:12px 14px 0 14px; }\n    #mv-header .mv-header-top { display:flex;align-items:center;gap:10px; padding:8px 6px 10px 6px; }\n    #mv-header .mv-avatar { width:26px;height:26px;border-radius:50%; border:2px solid rgba(255,255,255,0.75); background:#fff; }\n    #mv-header .mv-title { color:#ffffff; font-weight:700;font-size:16px; }\n    #mv-header-bar { height:4px;width:100%; background:#0037ff; }\n    #mv-header-bar.active { background:#002B49; }\n\n    #mv-messages {\n      max-height:420px;min-height:140px;overflow-y:auto;padding:14px 12px;background:#fafafa;\n      display:flex;flex-direction:column;gap:10px;\n    }\n\n    /* Caja evidencia */\n    .mv-evidence-box {\n      background:#f4f7ff;\n      border:1.5px solid #0037ff33;\n      border-radius:14px;\n      padding:14px 16px;\n      margin-top:8px;\n      margin-bottom:12px;\n      width: 100%;\n      box-sizing: border-box;\n      overflow-wrap: break-word;\n    }\n\n    .mv-title-h3 { font-size:16px; font-weight:700; color:#0037ff; margin-bottom:6px; margin-top:10px; }\n\n    .mv-fragment {\n      background:#ffffff;\n      border-left:4px solid #063bce;\n      padding:10px 14px;\n      margin-top:10px;\n      border-radius:10px;\n      font-size:14px;\n      line-height:1.45;\n      color:#333;\n      box-sizing: border-box;\n    }\n\n    .mv-evidence-table { \n      width:100%; \n      border-collapse:collapse; \n      margin-top:6px; \n      font-size:14px; \n      table-layout: fixed;\n    }\n\n    /* --- CAMBIO AQUÍ: Justificación del texto --- */\n    .mv-evidence-table td { \n      padding:6px 4px; \n      border-bottom:1px solid #e1e7ff; \n      word-wrap: break-word;\n      overflow-wrap: break-word;\n      text-align: justify; /* Justifica el texto del contenido */\n      -webkit-hyphens: auto; /* Ayuda a cortar palabras largas elegantemente */\n      hyphens: auto;\n    }\n\n    /* La primera columna (etiquetas) se mantiene a la izquierda */\n    .mv-evidence-table td:first-child { \n      font-weight:600; \n      color:#063bce; \n      width: 35%; \n      text-align: left; \n    }\n\n    /* Render HTML */\n    .mv-message-text table { width: 100%; border-collapse: collapse; margin-top: 10px; }\n    .mv-message-text td { padding: 6px 4px; }\n    .mv-message-text ul { margin-left: 18px; margin-top: 10px; margin-bottom: 10px; }\n    .mv-message-text li { margin-bottom: 6px; }\n    .mv-message-text p { margin-bottom: 8px; line-height: 1.45; }\n\n    #mv-messages::-webkit-scrollbar { width:8px; }\n    #mv-messages::-webkit-scrollbar-thumb { background:#0037ff;border-radius:10px; }\n\n    .mv-message-container { display:flex; width: 100%; }\n\n    /* Alineación */\n    .mv-message-container.user { justify-content:flex-end; }\n    .mv-message-container.bot { justify-content:flex-start; }\n\n    /* Burbujas */\n    .mv-message {\n      border-radius:12px;\n      padding:12px 14px;\n      max-width: 85%;\n      box-sizing: border-box;\n      position: relative;\n    }\n    \n    .mv-message-container.bot .mv-message {\n       max-width: 90%;\n    }\n\n    .mv-message-text { \n      text-align: left; \n      white-space: pre-wrap; \n      font-size:14px; \n      word-break: break-word;\n      width: 100%;\n    }\n    .mv-message-text a { color:#0037ff;text-decoration:underline; word-break: break-all; }\n\n    #mv-footer { display:flex;align-items:center;gap:8px; padding:10px 12px 12px; background:#fff; }\n    #mv-input { flex:1;padding:12px;border:1.5px solid #0037ff;border-radius:12px; font-size:15px; }\n    #mv-send { width:44px;height:44px;border:none;border-radius:12px;background:#0037ff;color:#fff; cursor:pointer; }\n\n    /* =================== PERSONALIZACIONES =================== */\n\n    .mv-message-sender {\n      font-weight: 700;\n      margin-bottom: 6px;\n      display: block;\n    }\n\n    /* Usuario: azul pastel */\n    .mv-message-container.user .mv-message {\n      background:#dbe7ff;\n      border:1px solid #b4ccff;\n      color:#003b8e;\n      border-radius:16px 16px 4px 16px;\n    }\n\n    /* Agente: violeta pastel */\n    .mv-message-container.bot .mv-message {\n      background:#efe6ff;\n      border:1px solid #d8c8ff;\n      color:#4a2b8a;\n      border-radius:16px 16px 16px 4px;\n    }\n\n    .mv-message-time {\n      font-size:11px !important;\n      opacity:0.65;\n      margin-top:8px;\n      display:block;\n      text-align:right;\n    }\n  `;\n  document.head.appendChild(style);\n\n  // Sanitizador\n  function sanitizeWithLinks(html) {\n    const allowedTags = [\"a\",\"p\",\"strong\",\"b\",\"i\",\"em\",\"u\",\"div\",\"span\",\"br\",\"hr\",\"h3\",\"ul\",\"ol\",\"li\",\"table\",\"thead\",\"tbody\",\"tr\",\"td\",\"th\"];\n    const allowedAttrs = [\"href\",\"target\",\"rel\",\"class\"];\n    const div = document.createElement(\"div\");\n    div.innerHTML = html;\n    const walker = document.createTreeWalker(div, NodeFilter.SHOW_ELEMENT, null);\n    const toRemove = [];\n    while (walker.nextNode()) {\n      const el = walker.currentNode;\n      if (!allowedTags.includes(el.tagName.toLowerCase())) { toRemove.push(el); continue; }\n      [...el.attributes].forEach(attr => {\n        if (!allowedAttrs.includes(attr.name.toLowerCase())) el.removeAttribute(attr.name);\n      });\n      if (el.tagName.toLowerCase() === \"a\") {\n        el.setAttribute(\"target\",\"_blank\");\n        el.setAttribute(\"rel\",\"noopener noreferrer\");\n      }\n    }\n    toRemove.forEach(el => el.remove());\n    return div.innerHTML;\n  }\n\n  function sanitize(text){\n    const div=document.createElement(\"div\");\n    div.textContent=String(text ?? \"\");\n    return div.innerHTML;\n  }\n\n  function appendMessage(sender, text, isUser=false){\n    const container=document.createElement(\"div\");\n    container.className=`mv-message-container ${isUser?'user':'bot'}`;\n\n    const now=new Date();\n    const time=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');\n\n    const safeSender=sanitize(sender);\n    const safeText=isUser?sanitize(text):sanitizeWithLinks(text);\n\n    container.innerHTML=`\n      <div class=\"mv-message\">\n        <span class=\"mv-message-sender\">${safeSender}</span>\n        <div class=\"mv-message-text\">${safeText}</div>\n        <span class=\"mv-message-time\">${time}</span>\n      </div>\n    `;\n\n    messages.appendChild(container);\n    messages.scrollTop=messages.scrollHeight;\n  }\n\n  const bot = widget.querySelector(\"#mv-bot\");\n  const chatbox = widget.querySelector(\"#mv-chatbox\");\n  const input = widget.querySelector(\"#mv-input\");\n  const messages = widget.querySelector(\"#mv-messages\");\n  const sendBtn = widget.querySelector(\"#mv-send\");\n  const headerBar = widget.querySelector(\"#mv-header-bar\");\n\n  const sessionKey=\"zeiSessionId\";\n  let sessionId=localStorage.getItem(sessionKey);\n  if(!sessionId){\n    sessionId=\"session_\"+Date.now()+\"_\"+Math.random().toString(36).substring(2,8);\n    localStorage.setItem(sessionKey,sessionId);\n  }\n\n  bot.addEventListener(\"click\",()=>{\n    const showing = chatbox.style.display !== \"none\";\n    chatbox.style.display = showing ? \"none\" : \"flex\";\n\n    if(!showing && !chatbox.dataset.greeted){\n      appendMessage(\"Agente\",\"¡Hola! 👋 Soy tu agente ISO27001 Mobilvendor. ¿En qué puedo ayudarte hoy?\");\n      chatbox.dataset.greeted=true;\n    }\n    if(!showing) input.focus();\n  });\n\n  input.addEventListener(\"focus\",()=>headerBar.classList.add(\"active\"));\n  input.addEventListener(\"blur\",()=>headerBar.classList.remove(\"active\"));\n\n  function sendMessage(){\n    const msg=input.value.trim();\n    if(!msg) return;\n\n    appendMessage(\"Tú\",msg,true);\n\n    input.value=\"\";\n    input.disabled=true;\n    sendBtn.disabled=true;\n\n    fetch(WEBHOOK_URL,{\n      method:\"POST\",\n      headers:{\"Content-Type\":\"application/json\"},\n      body:JSON.stringify({sessionId,message:msg})\n    })\n    .then(r=>r.json())\n    .then(data=>{\n      const out=data.output || data.message || \"Sin respuesta\";\n      appendMessage(\"Agente\",out);\n    })\n    .catch(err=>{\n      appendMessage(\"Agente\",\"❌ Ocurrió un error procesando tu mensaje.\");\n    })\n    .finally(()=>{\n      input.disabled=false;\n      sendBtn.disabled=false;\n      input.focus();\n    });\n  }\n\n  input.addEventListener(\"keypress\",e=>{ if(e.key===\"Enter\") sendMessage(); });\n  sendBtn.addEventListener(\"click\",sendMessage);\n\n})();",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/javascript"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        112,
+        -64
+      ],
+      "id": "b162946e-9756-4188-9ee0-c6b76bdcfccc",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "path": "widget-seg",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -128,
+        -64
+      ],
+      "id": "468df096-2f82-4719-a40a-92c85559f000",
+      "name": "Webhook",
+      "webhookId": "c3a6035e-6f03-4224-86d5-1576b5827ee5"
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:46.856Z",
+      "createdAt": "2026-01-13T02:49:46.856Z",
+      "role": "workflow:owner",
+      "workflowId": "K34Y0Ech82uMZzcp",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T15:07:56.511Z",
+  "versionId": "8c5987c5-c342-4d2d-8ac2-3ff763e34212"
+}
