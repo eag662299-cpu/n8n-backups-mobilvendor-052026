@@ -1,0 +1,333 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-01-13T16:46:02.000Z",
+    "createdAt": "2026-01-13T02:49:46.782Z",
+    "versionId": "eb5fde00-5145-40ac-952a-8434c46fcb3d",
+    "workflowId": "ZPY4GucDyMIPgStg",
+    "nodes": [
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "5f496695-ccb4-4ff2-9de1-b16592d5d2fc",
+                "name": "body.text",
+                "value": "={{ $json.body.text }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          240,
+          0
+        ],
+        "id": "c5d8a236-7510-4c9d-810f-1a6372887160",
+        "name": "Pregunta"
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "d3561acf-1981-41ec-b0d8-9ad109e1e9ae",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          0,
+          0
+        ],
+        "id": "a3c77355-2e91-4ab7-b045-d8cb02efe9e2",
+        "name": "ChromeTrascripcion",
+        "webhookId": "d3561acf-1981-41ec-b0d8-9ad109e1e9ae"
+      },
+      {
+        "parameters": {
+          "agent": "conversationalAgent",
+          "promptType": "define",
+          "text": "={{ $json.body.text }}",
+          "options": {
+            "systemMessage": "**Objetivo:** Actuar como un supervisor de ventas inteligente y proactivo que asiste a un ejecutivo de cuenta (vendedor) durante una reunión de alcance comercial en vivo. El sistema debe escuchar el audio de la reunión, identificar los puntos clave discutidos y, si es necesario, sugerir al vendedor módulos, características o preguntas que pueda haber olvidado, basándose en la estructura del documento \"Alcance Comercial Básico\" de Mobilvendor. El objetivo es asegurar que la propuesta sea lo más completa y detallada posible para el cliente.\n\n---\n\n#### **1. Detección de Fases de la Reunión**\n\nEl sistema debe identificar las siguientes fases en el audio de la reunión:\n\n* **Fase 1: Introducción y Contexto General.** Se discute el nombre del cliente, la fecha, el lugar y la vigencia de la propuesta. El sistema debe confirmar la recepción de estos datos iniciales.\n* **Fase 2: Alcance Global.** El vendedor y el cliente discuten qué módulos generales están en el alcance. El sistema debe estar atento a la mención de \"Módulo Comercial,\" \"Módulo Logístico,\" \"Módulo Merchandising,\" \"Facturación Electrónica,\" \"Desarrollos Personalizados\" e \"Integración.\"\n* **Fase 3: Alcance Detallado por Módulo.** Esta es la fase más crítica. El sistema debe escuchar atentamente cada sección del documento \"Alcance Detallado por Módulo\" y sus subsecciones.\n\n#### **2. Módulos y Puntos de Control Clave**\n\nEl sistema debe tener un checklist dinámico basado en el documento proporcionado. A medida que se discute un tema, el sistema lo marca como \"discutido.\" Si se pasa a una nueva sección sin que se haya discutido un punto clave de la sección anterior, el sistema debe generar una sugerencia.\n\n**Puntos de Control Específicos:**\n\n* **Módulo Comercial:**\n    * **Tipos de Operación:** ¿Se mencionó si el cliente necesita \"Vendedor preventa\" o \"Vendedor autoventa\"?\n    * **Tipos de Usuarios:** ¿Se habló de los roles de \"Gerente / Administrador,\" \"Facturador,\" \"Cobranzas,\" etc.? ¿Se preguntó el número de usuarios para la web y la app?\n    * **Menú Catálogo:** ¿Se discutieron los \"Artículos\" (productos, servicios, combos), las \"Unidades de venta\" y las \"Promociones\"? Para las promociones, es crucial verificar si el cliente tiene requisitos especiales (descuentos, regalos, condiciones fijas o acumuladas).\n    * **Menú Inventario:** ¿Se habló de la creación de \"Bodegas\" y de la necesidad de \"Stock de seguridad\"? ¿Se especificó si las bodegas serán \"Normal,\" \"Local,\" \"Virtual,\" o \"Mal estado\"?\n    * **Menú Clientes:** ¿Se mencionaron las \"Listas de precios,\" los \"Términos y métodos de pago,\" y la necesidad de administrar \"Rutas\" para vendedores y supervisores?\n* **Facturación Electrónica:**\n    * **Configuración:** ¿Se preguntó sobre la \"Firma electrónica en archivo p12\" y las \"Secuencias electrónicas por oficinas\"?\n    * **Volumen de Documentos:** Es fundamental que se haya discutido el rango de documentos electrónicos (ej. 0-1000, 1001-2000, etc.) para la propuesta.\n* **Módulo Logístico:**\n    * **Guías de Entrega:** ¿Se abordó el tema de la generación de guías de entrega y el proceso de Cross Docking?\n    * **Optimización de Entregas:** Si el cliente muestra interés en optimización, el sistema debe recordar al vendedor que pregunte por el \"peso y volumen de cada artículo\" y la \"capacidad de carga y volumen de los vehículos de despacho.\"\n* **Módulo Merchandising:**\n    * **Generalidades:** Si se menciona este módulo, el sistema debe verificar si se discutió la necesidad de \"Uso de app móvil\" para los mercaderistas.\n    * **Funcionalidades:** ¿Se habló de la creación de \"Formas\" (preguntas para encuestas) y \"Encuestas\"? ¿Se discutieron actividades específicas como \"Inventarios\" o \"Acciones de la competencia\"?\n* **Desarrollos Personalizados e Integración:**\n    * El sistema debe estar preparado para identificar cualquier mención de necesidades que se salgan del alcance estándar. Si el cliente describe una funcionalidad que no está en los módulos predefinidos, el sistema debe sugerir al vendedor que lo documente bajo la sección de \"Desarrollos Personalizados.\"\n\n#### **3. Mecanismo de Intervención (Sugerencias Proactivas)**\n\nEl sistema debe generar sugerencias al vendedor de manera sutil y contextual.\n\n* **Formato de Sugerencia:** El output debe ser una sugerencia clara y concisa, formulada como una pregunta o un recordatorio para el vendedor.\n    * [cite_start]*Ejemplo:* \"Vendedor, parece que están hablando de la creación de artículos. ¿Le preguntaste al cliente si necesitan crear combos de productos? [cite: 74]\"\n    * *Ejemplo:* \"Vendedor, el cliente mencionó que quieren optimizar las rutas. [cite_start]Asegúrate de preguntar si tienen los datos de peso y volumen de los artículos, y la capacidad de sus vehículos. [cite: 245, 246]\"\n    * [cite_start]*Ejemplo:* \"No olvides preguntarle al cliente sobre el número de documentos electrónicos que emiten mensualmente para seleccionar el rango adecuado. [cite: 235]\"\n\n#### **4. Ponderación y Prioridad**\n\n* **Alta Prioridad:** Recordatorios sobre costos (volumen de facturación electrónica), puntos críticos de integración y desarrollos personalizados.\n* **Media Prioridad:** Preguntas sobre la configuración detallada de los módulos (ej. tipos de bodegas, condiciones de promociones).\n* **Baja Prioridad:** Verificación de datos básicos ya discutidos.\n\n---\n\n**Resumen del Flujo del Sistema:**\n\n1.  **Entrada:** Audio en tiempo real de la reunión de alcance comercial.\n2.  **Procesamiento:**\n    * Transcripción del audio y análisis de palabras clave y contexto.\n    * Detección de la fase de la reunión actual.\n    * Comparación de la discusión con el checklist dinámico de módulos y funcionalidades.\n    * Identificación de omisiones o puntos clave no discutidos.\n3.  **Salida (Si es necesario):**\n    * Generación de una sugerencia proactiva y contextual para el vendedor, en un formato claro y con las citas correspondientes del documento de alcance.\n- **Formato de salida:**  \n  - Responde siempre en **Markdown**.\n  - Usa encabezados (`#`), negritas (`**`), listas (`-`), bloques de código (```) cuando sea necesario.\n  - Para respuestas con código, envuélvelo en bloques de código de **Markdown**."
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.7,
+        "position": [
+          464,
+          0
+        ],
+        "id": "f3bcab39-fb2c-4c0b-9ed1-34d4bcd6b57a",
+        "name": "AI Agent"
+      },
+      {
+        "parameters": {
+          "respondWith": "text",
+          "responseBody": "={{ $json.output }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          832,
+          0
+        ],
+        "id": "25584f6f-ffdb-4f23-88b2-efe2d9fb2da4",
+        "name": "Respond to Webhook",
+        "alwaysOutputData": false
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-4.1-mini",
+            "mode": "list",
+            "cachedResultName": "gpt-4.1-mini"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          464,
+          208
+        ],
+        "id": "39714f1a-26bf-46d1-ba7b-88bc5dd8b4a8",
+        "name": "OpenAI Chat Model",
+        "credentials": {
+          "openAiApi": {
+            "id": "ESQcfuiJYPWo7F8F",
+            "name": "OpenAi account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "ChromeTrascripcion": {
+        "main": [
+          [
+            {
+              "node": "Pregunta",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Pregunta": {
+        "main": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "ZEI MOBILVENDOR",
+    "name": "Version 1",
+    "description": "Sin cambios en flujo.\nCambio de version de n8n.",
+    "autosaved": false
+  },
+  "activeVersionId": "eb5fde00-5145-40ac-952a-8434c46fcb3d",
+  "connections": {
+    "ChromeTrascripcion": {
+      "main": [
+        [
+          {
+            "node": "Pregunta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pregunta": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:46.133Z",
+  "id": "ZPY4GucDyMIPgStg",
+  "isArchived": false,
+  "meta": null,
+  "name": "TranscritorTiempoReal",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5f496695-ccb4-4ff2-9de1-b16592d5d2fc",
+              "name": "body.text",
+              "value": "={{ $json.body.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        0
+      ],
+      "id": "c5d8a236-7510-4c9d-810f-1a6372887160",
+      "name": "Pregunta"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "d3561acf-1981-41ec-b0d8-9ad109e1e9ae",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a3c77355-2e91-4ab7-b045-d8cb02efe9e2",
+      "name": "ChromeTrascripcion",
+      "webhookId": "d3561acf-1981-41ec-b0d8-9ad109e1e9ae"
+    },
+    {
+      "parameters": {
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "={{ $json.body.text }}",
+        "options": {
+          "systemMessage": "**Objetivo:** Actuar como un supervisor de ventas inteligente y proactivo que asiste a un ejecutivo de cuenta (vendedor) durante una reunión de alcance comercial en vivo. El sistema debe escuchar el audio de la reunión, identificar los puntos clave discutidos y, si es necesario, sugerir al vendedor módulos, características o preguntas que pueda haber olvidado, basándose en la estructura del documento \"Alcance Comercial Básico\" de Mobilvendor. El objetivo es asegurar que la propuesta sea lo más completa y detallada posible para el cliente.\n\n---\n\n#### **1. Detección de Fases de la Reunión**\n\nEl sistema debe identificar las siguientes fases en el audio de la reunión:\n\n* **Fase 1: Introducción y Contexto General.** Se discute el nombre del cliente, la fecha, el lugar y la vigencia de la propuesta. El sistema debe confirmar la recepción de estos datos iniciales.\n* **Fase 2: Alcance Global.** El vendedor y el cliente discuten qué módulos generales están en el alcance. El sistema debe estar atento a la mención de \"Módulo Comercial,\" \"Módulo Logístico,\" \"Módulo Merchandising,\" \"Facturación Electrónica,\" \"Desarrollos Personalizados\" e \"Integración.\"\n* **Fase 3: Alcance Detallado por Módulo.** Esta es la fase más crítica. El sistema debe escuchar atentamente cada sección del documento \"Alcance Detallado por Módulo\" y sus subsecciones.\n\n#### **2. Módulos y Puntos de Control Clave**\n\nEl sistema debe tener un checklist dinámico basado en el documento proporcionado. A medida que se discute un tema, el sistema lo marca como \"discutido.\" Si se pasa a una nueva sección sin que se haya discutido un punto clave de la sección anterior, el sistema debe generar una sugerencia.\n\n**Puntos de Control Específicos:**\n\n* **Módulo Comercial:**\n    * **Tipos de Operación:** ¿Se mencionó si el cliente necesita \"Vendedor preventa\" o \"Vendedor autoventa\"?\n    * **Tipos de Usuarios:** ¿Se habló de los roles de \"Gerente / Administrador,\" \"Facturador,\" \"Cobranzas,\" etc.? ¿Se preguntó el número de usuarios para la web y la app?\n    * **Menú Catálogo:** ¿Se discutieron los \"Artículos\" (productos, servicios, combos), las \"Unidades de venta\" y las \"Promociones\"? Para las promociones, es crucial verificar si el cliente tiene requisitos especiales (descuentos, regalos, condiciones fijas o acumuladas).\n    * **Menú Inventario:** ¿Se habló de la creación de \"Bodegas\" y de la necesidad de \"Stock de seguridad\"? ¿Se especificó si las bodegas serán \"Normal,\" \"Local,\" \"Virtual,\" o \"Mal estado\"?\n    * **Menú Clientes:** ¿Se mencionaron las \"Listas de precios,\" los \"Términos y métodos de pago,\" y la necesidad de administrar \"Rutas\" para vendedores y supervisores?\n* **Facturación Electrónica:**\n    * **Configuración:** ¿Se preguntó sobre la \"Firma electrónica en archivo p12\" y las \"Secuencias electrónicas por oficinas\"?\n    * **Volumen de Documentos:** Es fundamental que se haya discutido el rango de documentos electrónicos (ej. 0-1000, 1001-2000, etc.) para la propuesta.\n* **Módulo Logístico:**\n    * **Guías de Entrega:** ¿Se abordó el tema de la generación de guías de entrega y el proceso de Cross Docking?\n    * **Optimización de Entregas:** Si el cliente muestra interés en optimización, el sistema debe recordar al vendedor que pregunte por el \"peso y volumen de cada artículo\" y la \"capacidad de carga y volumen de los vehículos de despacho.\"\n* **Módulo Merchandising:**\n    * **Generalidades:** Si se menciona este módulo, el sistema debe verificar si se discutió la necesidad de \"Uso de app móvil\" para los mercaderistas.\n    * **Funcionalidades:** ¿Se habló de la creación de \"Formas\" (preguntas para encuestas) y \"Encuestas\"? ¿Se discutieron actividades específicas como \"Inventarios\" o \"Acciones de la competencia\"?\n* **Desarrollos Personalizados e Integración:**\n    * El sistema debe estar preparado para identificar cualquier mención de necesidades que se salgan del alcance estándar. Si el cliente describe una funcionalidad que no está en los módulos predefinidos, el sistema debe sugerir al vendedor que lo documente bajo la sección de \"Desarrollos Personalizados.\"\n\n#### **3. Mecanismo de Intervención (Sugerencias Proactivas)**\n\nEl sistema debe generar sugerencias al vendedor de manera sutil y contextual.\n\n* **Formato de Sugerencia:** El output debe ser una sugerencia clara y concisa, formulada como una pregunta o un recordatorio para el vendedor.\n    * [cite_start]*Ejemplo:* \"Vendedor, parece que están hablando de la creación de artículos. ¿Le preguntaste al cliente si necesitan crear combos de productos? [cite: 74]\"\n    * *Ejemplo:* \"Vendedor, el cliente mencionó que quieren optimizar las rutas. [cite_start]Asegúrate de preguntar si tienen los datos de peso y volumen de los artículos, y la capacidad de sus vehículos. [cite: 245, 246]\"\n    * [cite_start]*Ejemplo:* \"No olvides preguntarle al cliente sobre el número de documentos electrónicos que emiten mensualmente para seleccionar el rango adecuado. [cite: 235]\"\n\n#### **4. Ponderación y Prioridad**\n\n* **Alta Prioridad:** Recordatorios sobre costos (volumen de facturación electrónica), puntos críticos de integración y desarrollos personalizados.\n* **Media Prioridad:** Preguntas sobre la configuración detallada de los módulos (ej. tipos de bodegas, condiciones de promociones).\n* **Baja Prioridad:** Verificación de datos básicos ya discutidos.\n\n---\n\n**Resumen del Flujo del Sistema:**\n\n1.  **Entrada:** Audio en tiempo real de la reunión de alcance comercial.\n2.  **Procesamiento:**\n    * Transcripción del audio y análisis de palabras clave y contexto.\n    * Detección de la fase de la reunión actual.\n    * Comparación de la discusión con el checklist dinámico de módulos y funcionalidades.\n    * Identificación de omisiones o puntos clave no discutidos.\n3.  **Salida (Si es necesario):**\n    * Generación de una sugerencia proactiva y contextual para el vendedor, en un formato claro y con las citas correspondientes del documento de alcance.\n- **Formato de salida:**  \n  - Responde siempre en **Markdown**.\n  - Usa encabezados (`#`), negritas (`**`), listas (`-`), bloques de código (```) cuando sea necesario.\n  - Para respuestas con código, envuélvelo en bloques de código de **Markdown**."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        464,
+        0
+      ],
+      "id": "f3bcab39-fb2c-4c0b-9ed1-34d4bcd6b57a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        832,
+        0
+      ],
+      "id": "25584f6f-ffdb-4f23-88b2-efe2d9fb2da4",
+      "name": "Respond to Webhook",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        464,
+        208
+      ],
+      "id": "39714f1a-26bf-46d1-ba7b-88bc5dd8b4a8",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:46.472Z",
+      "createdAt": "2026-01-13T02:49:46.472Z",
+      "role": "workflow:owner",
+      "workflowId": "ZPY4GucDyMIPgStg",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-01-13T15:08:27.594Z",
+  "versionId": "eb5fde00-5145-40ac-952a-8434c46fcb3d"
+}
