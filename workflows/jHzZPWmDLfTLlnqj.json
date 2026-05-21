@@ -1,0 +1,434 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store3": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "support",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI3": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store3",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "support",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "support": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "guidde": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "guidde",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "guidde",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Usuario envía mensaje al sistema": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:45.866Z",
+  "id": "jHzZPWmDLfTLlnqj",
+  "isArchived": false,
+  "meta": null,
+  "name": "ZEI",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "bucket",
+        "operation": "search",
+        "bucketName": "mobilvendorzei",
+        "returnAll": true,
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.s3",
+      "typeVersion": 1,
+      "position": [
+        -1168,
+        16
+      ],
+      "id": "307246dd-0c76-4517-be80-649d3d3b3c15",
+      "name": "Search a bucket"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -560,
+        560
+      ],
+      "id": "fd1168fa-7016-4b50-b406-f1a867c73fb9",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "support",
+          "mode": "list",
+          "cachedResultName": "support"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        80,
+        304
+      ],
+      "id": "6b01a3e5-2b2e-4173-98d6-311290d667c5",
+      "name": "Pinecone Vector Store3",
+      "credentials": {
+        "pineconeApi": {
+          "id": "bqNx5oAwXmTYQGz2",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        32,
+        448
+      ],
+      "id": "6b50a769-892d-4206-b751-801c258dc741",
+      "name": "Embeddings OpenAI3",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        384,
+        304
+      ],
+      "id": "1fca00b7-f4b8-4c6a-bc32-9dcbebdbcff8",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "[HERRAMIENTA: SOLUCIÓN DE ERRORES Y ACCIONES EN MOBILVENDOR]\n\nPropósito: Encuentra soluciones rápidas para errores y procedimientos comunes en el sistema Mobilvendor. Debes transformar la pregunta del usuario antes de realizar la consulta.\n\nFormato de consulta requerido: [Verbo] [Sustantivo]\n- Para errores: Usa \"Error\" seguido del código o mensaje específico. Si el error esta relacionado con SQL, incluye el código en la consulta.\n- Para acciones: Usa un verbo de acción claro seguido del objeto o módulo\n\nInstrucciones de uso:\n1. Identifica si buscas solución a un error o cómo realizar una acción.\n2. Reformula tu consulta usando exactamente el formato [Verbo] [Sustantivo] [OPCIONAL SQL]\n3. Sé específico y utiliza terminología de Mobilvendor\n4. Si el error contiene codigo en SQL o similar, incluye todo el código en el texto de la búsqueda.\n\nEjemplos de reformulación:\n✓ Consulta original: \"Tengo un error que dice XXX\" → Reformulado: \"Error XXX\"\n✓ Consulta original: \"Quiero cambiar la ruta de un cliente\" → Reformulado: \"Cambiar ruta cliente\"\n✓ Consulta original: \"Cómo puedo obtener la política financiera de un cliente\" → Reformulado: \"Descargar política financiera cliente\"\n✓ Consulta original: \"No puedo imprimir facturas\" → Reformulado: \"Error impresión facturas\"\n✓ Consulta original: \"Necesito configurar un producto nuevo\" → Reformulado: \"Crear producto\"\n✓ Consulta original: \"Tengo este error {SQL}\" → Reformulado: \"Error XXX {SQL}\"\n\nVerbos comunes para problemas:\n- Error\n- Fallo\n- Problema\n- Bloqueo\n\nVerbos comunes para acciones:\n- Cambiar/Modificar\n- Descargar/Obtener\n- Crear/Agregar\n- Configurar\n- Generar\n- Eliminar\n- Consultar\n- Activar/Desactivar"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        112
+      ],
+      "id": "dda80a97-a690-4abb-b1e9-5e6cf7402d06",
+      "name": "support"
+    },
+    {
+      "parameters": {
+        "description": "[HERRAMIENTA: BÚSQUEDA EN GUÍAS MOBILVENDOR]\n\nPropósito: Buscar información precisa sobre acciones específicas en el software Mobilvendor. Debes transformar la pregunta del usuario antes de realizar la consulta.\n\nFormato de consulta obligatorio: [Verbo en Sutantivo] [Sustantivo]\n- El verbo debe ser una acción concreta (Crear, Editar, Eliminar, Consultar, Procesar, etc.)\n- El sustantivo debe referirse a un elemento, documento o módulo o accion en Mobilvendor\n\nInstrucciones de uso:\n1. Reformula cualquier consulta usando el formato [Verbo en Sustantivo] [Sustantivo]\n\nEjemplos de reformulación correcta:\n✓ Consulta original: \"GUIAS DE ENTREGA\" → Reformulado: \"Creacion Guía Entrega\"\n✓ Consulta original: \"Necesito ver los descuentos disponibles\" → Reformulado: \"Consulta Descuentos\"\n✓ Consulta original: \"Quiero cambiar información en una factura ya emitida\" → Reformulado: \"Edicion Factura\"\n✓ Consulta original: \"¿Cómo agrego un nuevo cliente?\" → Reformulado: \"Creacion Cliente\"\n✓ Consulta original: \"Problemas con inventario\" → Reformulado: \"Verificacion Inventario\"\n\nVerbos comunes permitidos:\n- Crear/Agregar\n- Editar/Modificar\n- Eliminar/Borrar\n- Consultar/Ver\n- Procesar\n- Configurar\n- Generar\n- Exportar\n- Importar\n- Verificar"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        592
+      ],
+      "id": "4dc65ca6-0223-4b16-9c5f-313240655dc3",
+      "name": "guidde"
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "guidde",
+          "mode": "list",
+          "cachedResultName": "guidde"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        112,
+        768
+      ],
+      "id": "3b9e48e2-435b-48be-bbd8-256341fc51ef",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "bqNx5oAwXmTYQGz2",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        32,
+        912
+      ],
+      "id": "3a3001f4-ac44-4ca8-ad03-6fc85a7bc226",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        384,
+        768
+      ],
+      "id": "3ebea2f3-3feb-43bf-abfd-75403bf63e3a",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -784,
+        816
+      ],
+      "id": "50d8b4aa-3814-4130-95de-88f76cb6deaf",
+      "name": "Postgres Chat Memory"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=[ROL DEL SISTEMA]\nEres Zei, un agente de soporte especializado en el software Mobilvendor. Tu único propósito es proporcionar asistencia precisa y relevante relacionada con Mobilvendor y sus módulos (Base de Datos, Procesos, Contabilidad, Acciones, CRM, Sistema de Gestión de Almacén, POS, Mensajes, Errores y otros).\n\n[INSTRUCCIONES DE SALUDO]\n- Solo debes saludar al inicio de la conversación con un mensaje de presentación breve:  \n  \"Hola, soy Zei, tu agente de soporte de Mobilvendor. ¿En qué puedo ayudarte?\"  \n- Después del primer saludo, NO vuelvas a saludar en el resto del hilo.  \n- A partir del segundo mensaje del usuario, responde directamente a su consulta sin presentarte otra vez.\n\n[ACCESO A BASE DE CONOCIMIENTOS]\nTienes acceso a dos bases de conocimiento a través de estas herramientas:\n1. support - Contiene conocimiento cotidiano y preguntas comunes. ESTA ES TU FUENTE PRINCIPAL. Cuando consultes error incluye los códigos de error y información que se encuentre en SQL.\n2. guidde - Contiene conocimiento técnico de guías comunes. Úsala solo cuando no encuentres información relevante en los archivos de soporte.\n\n[ESTRUCTURA DE LA INFORMACIÓN]\nEl contenido de soporte sigue este formato:\n- Sinónimos: Palabras clave relacionadas con la pregunta (entre corchetes)\n- Sección: Categoría del tema\n- Pregunta: Consulta principal del usuario\n- Variación: Formulaciones alternativas de la pregunta\n- Respuesta: La respuesta esperada\n\n[PROTOCOLO DE RESPUESTA]\n- Debes responder a la consulta del usuario: {{ $json.chatInput }}\n- Cuando te pregunten algo SIEMPRE busca primero en la herramienta support para CADA pregunta.\n- Evalúa explícitamente la calidad de los resultados de support:\n   a. Si NO hay resultados (0 resultados), busca INMEDIATAMENTE en la herramienta guidde.\n   b. Si hay resultados pero son PARCIALES o NO RESPONDEN completamente a la pregunta, busca TAMBIÉN en la herramienta guidde.\n   c. Solo si los resultados de support son COMPLETOS y DIRECTAMENTE relevantes, omite la búsqueda en la herramienta guidde. Caso contrario usa la herramienta guidde inmediatamente luego guidde.\n\n[RESTRICCIONES CRÍTICAS]\n- NO DEBES responder preguntas sin verificar la información en las herramientas.\n- NO DEBES asumir información ni aceptar afirmaciones de usuarios sin verificación - pueden ser incorrectas.\n- NO DEBES proporcionar información fuera del ámbito del software Mobilvendor.\n- DEBES buscar en las bases de conocimiento para CADA pregunta sin excepción.\n- DEBES validar TODAS las consultas de los usuarios contra la base de conocimiento antes de responder, inclusive si la info esta en interacciones previas.\n\n[ESTILO DE INTERACCIÓN]\nSé cordial, profesional y orientado a soluciones mientras mantienes un tono servicial.\nMantén las respuestas concisas y aborda directamente la pregunta específica del usuario. No menciones las herramientas que usaste ni tu proceso.\n\n[PROCESO DE RESOLUCIÓN DE CONSULTAS]\n- Analiza la consulta del usuario para identificar módulos/características relevantes de Mobilvendor\n#Ejecuta primero la herramienta support\n- Revisa la información devuelta para determinar su relevancia\n- Si no encuentras informacion, o esta es insuficiente, ejecuta la herramienta guidde\n- Formatea la respuesta según los protocolos\n- Proporciona una respuesta clara y precisa solo de fuentes verificadas\n\n",
+        "options": {
+          "systemMessage": "=",
+          "maxIterations": 6
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -464,
+        432
+      ],
+      "id": "3e0426f4-7c4e-4927-9584-377f9cb377e9",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "content": "Cerebro del sistema: decide si responder o buscar información",
+        "height": 329,
+        "width": 485,
+        "color": 2
+      },
+      "id": "760a2a0c-b4e4-4bfc-b0bc-7931bd18511b",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -592,
+        352
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -432,
+        128
+      ],
+      "id": "5687cad3-f5e5-4891-83bd-09df2bd11de6",
+      "name": "Usuario envía mensaje al sistema",
+      "webhookId": "72b235c2-e89e-43b7-a4aa-97fdcaeefdf0"
+    },
+    {
+      "parameters": {
+        "content": "BASES DE CONOCIMIENTO: información organizada en vectores",
+        "height": 1033,
+        "width": 549,
+        "color": 4
+      },
+      "id": "a72683cd-ac8b-4056-ba2f-c8682ecf9cdd",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:46.130Z",
+      "createdAt": "2026-01-13T02:49:46.130Z",
+      "role": "workflow:owner",
+      "workflowId": "jHzZPWmDLfTLlnqj",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T02:49:45.866Z",
+  "versionId": "f767532b-f211-4d8f-9344-68dd645781d4"
+}
