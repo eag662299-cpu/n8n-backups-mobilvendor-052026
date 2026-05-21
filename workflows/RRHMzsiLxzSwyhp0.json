@@ -1,0 +1,188 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "1": {
+      "main": [
+        [
+          {
+            "node": "2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2": {
+      "main": [
+        [
+          {
+            "node": "3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3": {
+      "main": [
+        [
+          {
+            "node": "4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4": {
+      "main": [
+        [
+          {
+            "node": "5",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:46.394Z",
+  "id": "RRHMzsiLxzSwyhp0",
+  "isArchived": false,
+  "meta": null,
+  "name": "My workflow",
+  "nodes": [
+    {
+      "id": "1",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "sales-transcription",
+        "responseMode": "onReceived",
+        "options": {
+          "responseData": "OK"
+        }
+      }
+    },
+    {
+      "id": "2",
+      "name": "Normalize Text",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "functionCode": "try {\n  const data = $json;\n  // Assuming transcription is in data.transcription or data.text\n  let text = data.transcription || data.text || '';\n  // Normalize text: trim, remove excessive whitespace, lowercase\n  text = text.trim().replace(/\\s+/g, ' ');\n\n  return [{ json: { normalizedText: text } }];\n} catch (error) {\n  return [{ json: { error: error.message } }];\n}"
+      }
+    },
+    {
+      "id": "3",
+      "name": "Sales Process AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1,
+      "position": [
+        750,
+        300
+      ],
+      "parameters": {
+        "model": "chatgpt-4o-latest",
+        "promptType": "define",
+        "responseFormat": "json_object",
+        "prompt": {
+          "value": "You are an expert sales coach AI. Analyze the provided conversation transcription chunk to identify the sales process steps detected and if any key steps are missing. The key sales steps to check for are: greeting, product presentation, objection handling, and closing.\n\nTasks:\n1. Detect which steps are present in this text.\n2. Detect if any steps are missing.\n3. Identify any important topics not discussed but that should be covered before closing.\n\nReturn a JSON with the format:\n{\n  \"detectedSteps\": [\"greeting\", \"product presentation\"],\n  \"missingSteps\": [\"objection handling\", \"closing\"],\n  \"recommendations\": [\n    \"Please handle objections regarding price.\",\n    \"Make sure to close the deal before ending the meeting.\"\n  ]\n}\n\nTranscription text:\n\"{{ $json[\"normalizedText\"] }}\""
+        }
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "id": "4",
+      "name": "Prepare Notification Text",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        950,
+        300
+      ],
+      "parameters": {
+        "functionCode": "try {\n  const aiResponse = $json;\n\n  // Defensive JSON parse for AI Agent output if needed\n  const detectedSteps = aiResponse.detectedSteps || [];\n  const missingSteps = aiResponse.missingSteps || [];\n  const recommendations = aiResponse.recommendations || [];\n\n  let message = '*Ventas - Análisis en tiempo real de la reunión*\\n\\n';\n  message += '*Pasos detectados:*\\n';\n  if(detectedSteps.length) {\n    message += detectedSteps.map(step => `- ${step}`).join('\\n') + '\\n';\n  } else {\n    message += '- Ninguno detectado\\n';\n  }\n\n  message += '\\n*Pasos faltantes:*\\n';\n  if(missingSteps.length) {\n    message += missingSteps.map(step => `- ${step}`).join('\\n') + '\\n';\n  } else {\n    message += '- Ninguno\\n';\n  }\n\n  message += '\\n*Recomendaciones:*\\n';\n  if(recommendations.length) {\n    message += recommendations.map(rec => `- ${rec}`).join('\\n') + '\\n';\n  } else {\n    message += '- Ninguna\\n';\n  }\n\n  return [{ json: { message } }];\n} catch (error) {\n  return [{ json: { error: error.message } }];\n}"
+      }
+    },
+    {
+      "id": "5",
+      "name": "Slack Notify Sales Team",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [
+        1150,
+        300
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "post",
+        "channel": "sales-team",
+        "text": "={{$json[\"message\"]}}"
+      },
+      "credentials": {
+        "slackApi": {
+          "id": "{{ myCredentials.slackApi }}"
+        }
+      }
+    },
+    {
+      "id": "6",
+      "name": "Log Recommendations",
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        1350,
+        300
+      ],
+      "parameters": {
+        "fileName": "sales_recommendations_log_{{$now.format(\"YYYY-MM-DD_HH-mm-ss\")}}.txt",
+        "dataPropertyName": "message",
+        "options": {
+          "append": true
+        }
+      }
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:46.693Z",
+      "createdAt": "2026-01-13T02:49:46.693Z",
+      "role": "workflow:owner",
+      "workflowId": "RRHMzsiLxzSwyhp0",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T02:49:46.394Z",
+  "versionId": "72b608aa-6f6c-4e4f-ae3a-e1d45decb042"
+}
