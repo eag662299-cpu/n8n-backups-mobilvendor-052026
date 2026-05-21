@@ -1,0 +1,5199 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-03-06T03:28:38.000Z",
+    "createdAt": "2026-03-06T03:27:42.135Z",
+    "versionId": "ea8eba18-b59a-4bce-8be3-d14d121af8fc",
+    "workflowId": "YHYfu0jRlCBHekMQrXn4L",
+    "nodes": [
+      {
+        "parameters": {
+          "pollTimes": {
+            "item": [
+              {
+                "mode": "everyMinute"
+              }
+            ]
+          },
+          "triggerOn": "specificFolder",
+          "folderToWatch": {
+            "__rl": true,
+            "value": "1TW1dAn5k6Qfv5j618EKlf3FStaklHN8V",
+            "mode": "id"
+          },
+          "event": "fileCreated",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleDriveTrigger",
+        "typeVersion": 1,
+        "position": [
+          -1312,
+          32
+        ],
+        "id": "eb5d96f6-03b8-464f-b4c7-49f097242359",
+        "name": "Google Drive Trigger",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "nZU8LW95ZL0VVPJ9",
+            "name": "Google Drive account"
+          }
+        },
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "operation": "download",
+          "fileId": "={{ $json.id }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          -1072,
+          32
+        ],
+        "id": "b10cb14e-e984-452b-bf5f-ad76d1220983",
+        "name": "Download file",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "nZU8LW95ZL0VVPJ9",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "keepOnlySet": true,
+          "values": {
+            "string": [
+              {
+                "name": "folder_id",
+                "value": "1TW1dAn5k6Qfv5j618EKlf3FStaklHN8V"
+              },
+              {
+                "name": "file_id",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "name": "file_name",
+                "value": "={{ $json.originalFilename }}"
+              },
+              {
+                "name": "created_time",
+                "value": "={{ $json.createdTime }}"
+              },
+              {
+                "name": "modified_time",
+                "value": "={{ $json.modifiedTime || $json.createdTime }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 2,
+        "position": [
+          -832,
+          32
+        ],
+        "id": "ee8149ce-91fa-4767-95d5-710c4bfd4897",
+        "name": "Set File Metadata"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.cloud.llamaindex.ai/api/v1/parsing/upload",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "accept",
+                "value": "application/json"
+              },
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{$env.LLAMACLOUD_API_KEY}}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "contentType": "multipart-form-data",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "parameterType": "formBinaryData",
+                "name": "file",
+                "inputDataFieldName": "data"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -592,
+          32
+        ],
+        "id": "d352fff4-f8fb-4023-8929-9c4ab9cdf44f",
+        "name": "Upload to Llama Cloud"
+      },
+      {
+        "parameters": {
+          "amount": 30
+        },
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          -352,
+          32
+        ],
+        "id": "180067a5-c8b2-4912-b780-03b399129831",
+        "name": "Wait 30s",
+        "webhookId": "591efeb8-8cbb-49c9-ba39-abc943abff1b"
+      },
+      {
+        "parameters": {
+          "url": "=https://api.cloud.llamaindex.ai/api/v1/parsing/job/{{ $('Upload to Llama Cloud').item.json.id }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "accept",
+                "value": "application/json"
+              },
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{$env.LLAMACLOUD_API_KEY}}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -112,
+          32
+        ],
+        "id": "46233c64-de5a-44ce-aadf-a8b898bb5e76",
+        "name": "Check Parsing Status"
+      },
+      {
+        "parameters": {
+          "values": {
+            "number": [
+              {
+                "name": "attempt",
+                "value": 1
+              },
+              {
+                "name": "max_attempts",
+                "value": 12
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 2,
+        "position": [
+          -112,
+          -128
+        ],
+        "id": "81da9c7c-056a-48fa-ae6c-755f228e3030",
+        "name": "Init Attempts"
+      },
+      {
+        "parameters": {
+          "jsCode": "const attempt = ($json.attempt ?? 1) + 1;\nreturn [{ json: { ...$json, attempt } }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          128,
+          192
+        ],
+        "id": "6490954e-5435-462a-9191-3f6448ba0e85",
+        "name": "Increment Attempts"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "c1",
+                "leftValue": "={{ $json.status }}",
+                "rightValue": "SUCCESS",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          128,
+          32
+        ],
+        "id": "b92a6161-af7f-4454-b255-728b4ea8d3c7",
+        "name": "If SUCCESS"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "c2",
+                "leftValue": "={{ $json.attempt }}",
+                "rightValue": "={{ $json.max_attempts }}",
+                "operator": {
+                  "type": "number",
+                  "operation": "lte"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          368,
+          192
+        ],
+        "id": "8c909a9b-de73-4e0c-8c90-65f5b1a4629f",
+        "name": "If attempts left"
+      },
+      {
+        "parameters": {
+          "amount": 60
+        },
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          368,
+          352
+        ],
+        "id": "0ea63d48-9abd-40ca-a031-9159a7d3e060",
+        "name": "Wait 60s",
+        "webhookId": "13a70e06-13d5-4a5f-bf08-1e6e1f36570d"
+      },
+      {
+        "parameters": {
+          "url": "=https://api.cloud.llamaindex.ai/api/v1/parsing/job/{{ $('Upload to Llama Cloud').item.json.id }}/result/markdown",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{$env.LLAMACLOUD_API_KEY}}"
+              }
+            ]
+          },
+          "options": {
+            "response": {}
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          368,
+          32
+        ],
+        "id": "ea2c704c-3e55-455b-90c9-01c858d1ee33",
+        "name": "Get Markdown (string)"
+      },
+      {
+        "parameters": {
+          "jsCode": "const markdown = $json.body || '';\nreturn [{ json: { markdown } }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          608,
+          32
+        ],
+        "id": "c35622ad-79c5-490c-a6a1-2b75b15278ef",
+        "name": "Normalize Markdown"
+      },
+      {
+        "parameters": {
+          "jsCode": "// CLEAN + SEMANTIC CHUNKING\nconst input = $json.markdown || '';\nlet text = input\n  .replace(/Página\\s*\\d+/gi, '')\n  .replace(/^\\s*\\d+\\s*$/gm, '')\n  .replace(/[-=_]{3,}/g, '\\n')\n  .replace(/&nbsp;/g, ' ')\n  .replace(/[●■♦▪✓•–—]/g, '-')\n  .replace(/[ \\t]+/g, ' ')\n  .replace(/\\n{2,}/g, '\\n\\n')\n  .trim();\n\nlet sections = text.split(/(?=^m[oó]dulo|^caso(s)? de [ée]xito|^roadmap|^soporte|^¿quiénes somos\\?|^ecosistema mobilvendor|^nuestros beneficios|^censos m[oó]viles|^m[oó]dulo ecommerce)/gmi);\nif (sections.length <= 1) sections = [text];\n\nconst MAX_CHUNK = 1100;\nconst OVERLAP = 150;\nconst out = [];\n\nsections.forEach((section, sectionIndex) => {\n  const s = (section || '').trim();\n  if (!s) return;\n\n  const title = (s.split('\\n')[0] || `Seccion ${sectionIndex+1}`).slice(0, 120);\n\n  if (s.length <= MAX_CHUNK) {\n    out.push({ json: { sectionText: `# ${title}\\n\\n${s}`, sectionIndex, chunkIndex: 0 } });\n    return;\n  }\n\n  let start = 0;\n  let chunkIndex = 0;\n  while (start < s.length) {\n    const end = Math.min(start + MAX_CHUNK, s.length);\n    const chunk = s.slice(start, end).trim();\n    if (chunk) {\n      out.push({ json: { sectionText: `# ${title}\\n\\n${chunk}`, sectionIndex, chunkIndex } });\n    }\n    start += (MAX_CHUNK - OVERLAP);\n    chunkIndex++;\n  }\n});\n\nreturn out;"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          848,
+          32
+        ],
+        "id": "dbf213fb-4b67-4e17-bcb8-4de1e2543808",
+        "name": "Clean + Chunk"
+      },
+      {
+        "parameters": {
+          "jsCode": "const file = $('Set File Metadata').item.json;\nconst now = new Date().toISOString();\n\nreturn $input.all().map((item) => {\n  const sectionText = item.json.sectionText || '';\n  const sectionIndex = item.json.sectionIndex ?? 0;\n  const chunkIndex = item.json.chunkIndex ?? 0;\n\n  const metadata = {\n    kb: 'brochure',\n    folder_id: file.folder_id,\n    file_id: file.file_id,\n    file_name: file.file_name,\n    modified_time: file.modified_time,\n    created_time: file.created_time,\n    sectionIndex,\n    chunkIndex,\n    language: 'es',\n    content_source: 'google_drive_brochure',\n    last_indexed_at: now\n  };\n\n  // ID determinístico por chunk (opcional, pero útil)\n  const chunk_id = `${file.file_id}:${sectionIndex}:${chunkIndex}`;\n\n  return {\n    json: {\n      text: sectionText,\n      metadata,\n      chunk_id\n    }\n  };\n});"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1088,
+          32
+        ],
+        "id": "4e52ed72-46f9-48fd-88cb-3eb25b0af68f",
+        "name": "Enrich + Merge File Metadata"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://{{$env.PINECONE_INDEX_HOST}}/vectors/delete",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Api-Key",
+                "value": "={{ $env.PINECONE_API_KEY }}"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "namespace",
+                "value": "={{ $env.PINECONE_NAMESPACE || 'brochure' }}"
+              },
+              {
+                "name": "filter",
+                "value": "={{ { file_id: { $eq: $('Set File Metadata').item.json.file_id } } }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1328,
+          32
+        ],
+        "id": "756451e3-a060-4d80-be2d-aa7c9b77981a",
+        "name": "Pinecone Delete by file_id"
+      },
+      {
+        "parameters": {
+          "mode": "insert",
+          "pineconeIndex": {
+            "__rl": true,
+            "value": "iso-27001",
+            "mode": "list",
+            "cachedResultName": "iso-27001"
+          },
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+        "typeVersion": 1.3,
+        "position": [
+          1568,
+          32
+        ],
+        "id": "fed227ba-56e5-40b1-9c2f-dfa6d52867a0",
+        "name": "Pinecone Upsert (Vectors)",
+        "credentials": {
+          "pineconeApi": {
+            "id": "Ne3WU9FiJTVdKcqU",
+            "name": "PineconeApi EA"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          1568,
+          224
+        ],
+        "id": "359508eb-0d2c-4878-94de-d7873438344d",
+        "name": "Embeddings OpenAI",
+        "credentials": {
+          "openAiApi": {
+            "id": "E7b7vwKLzPo4JwAR",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const file = $('Set File Metadata').item.json;\nconst chunks = $input.all();\nconst now = new Date().toISOString();\n\nlet totalChars = 0;\nfor (const c of chunks) totalChars += (c.json.text || '').length;\n\nreturn [{\n  json: {\n    folder_id: file.folder_id,\n    file_id: file.file_id,\n    file_name: file.file_name,\n    modified_time: file.modified_time,\n    status: 'ACTIVE',\n    chunk_count: chunks.length,\n    total_chars: totalChars,\n    last_seen_at: now,\n    last_indexed_at: now,\n    last_error: ''\n  }\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1872,
+          32
+        ],
+        "id": "a6f69d5b-16b3-4670-992c-e2f5ca7a7b17",
+        "name": "Build Catalog Row"
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1hyRC7SStMMYIvx-QtqYInXHYgGTEfQPHH5HLPBlYk8U",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "Hoja 1",
+            "mode": "name"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "file_id": "={{ $json.file_id }}",
+              "file_name": "={{ $json.file_name }}",
+              "status": "={{ $json.status }}"
+            },
+            "matchingColumns": [
+              "file_id"
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          2048,
+          32
+        ],
+        "id": "0efa53bc-385b-4d64-a7f6-dbc0f433121d",
+        "name": "Catalog Upsert (Google Sheets)",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "## Ingest/Update + Replace\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+          "height": 960,
+          "width": 3600
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -1360,
+          -272
+        ],
+        "typeVersion": 1,
+        "id": "b5fe2215-e984-405b-9697-79b48ae6a43f",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "triggerTimes": {
+            "item": [
+              {
+                "hour": 2,
+                "minute": 5
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.cron",
+        "typeVersion": 1,
+        "position": [
+          -688,
+          928
+        ],
+        "id": "556e00ef-24c5-4a27-8583-e791746dbdbd",
+        "name": "Cron Daily",
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "operation": "list"
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          -448,
+          928
+        ],
+        "id": "e5fafdf3-63a3-4d7c-8361-4873835289bd",
+        "name": "Google Drive - List Folder Files",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "nZU8LW95ZL0VVPJ9",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1hyRC7SStMMYIvx-QtqYInXHYgGTEfQPHH5HLPBlYk8U",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "Hoja 1",
+            "mode": "name"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          -448,
+          1120
+        ],
+        "id": "f548f297-4be2-4d6e-a431-42f9ee653a47",
+        "name": "Google Sheets - Read Catalog",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "mode": "mergeByIndex"
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3,
+        "position": [
+          -208,
+          1008
+        ],
+        "id": "2fb20eac-0d16-4149-8c22-d9ba55cf2fbc",
+        "name": "Merge (Drive + Sheet)"
+      },
+      {
+        "parameters": {
+          "jsCode": "const driveItems = $('Google Drive - List Folder Files').all();\nconst alive = new Set(driveItems.map(i => i.json.id).filter(Boolean));\n\nconst sheetItems = $('Google Sheets - Read Catalog').all();\nconst now = new Date().toISOString();\n\nconst missing = [];\nfor (const r of sheetItems) {\n  const fileId = r.json.file_id;\n  const status = String(r.json.status || '').toUpperCase();\n  const folderId = String(r.json.folder_id || '');\n\n  if (!fileId) continue;\n  if (folderId && folderId !== '1TW1dAn5k6Qfv5j618EKlf3FStaklHN8V') continue;\n  if (status !== 'ACTIVE') continue;\n\n  if (!alive.has(fileId)) {\n    missing.push({\n      json: {\n        file_id: fileId,\n        file_name: r.json.file_name || '',\n        folder_id: r.json.folder_id || '1TW1dAn5k6Qfv5j618EKlf3FStaklHN8V',\n        status: 'DELETED',\n        deleted_at: now,\n        last_indexed_at: now,\n        last_error: ''\n      }\n    });\n  }\n}\n\nreturn missing;"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          32,
+          1008
+        ],
+        "id": "0e62aa2b-f2b7-4d1b-9916-5e374ece6a88",
+        "name": "Diff Missing (ACTIVE not in Drive)"
+      },
+      {
+        "parameters": {
+          "batchSize": 25,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          272,
+          1008
+        ],
+        "id": "c26c994d-78cc-46ef-bd99-3d0b94f57b2e",
+        "name": "Split In Batches"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://{{$env.PINECONE_INDEX_HOST}}/vectors/delete",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Api-Key",
+                "value": "={{ $env.PINECONE_API_KEY }}"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "namespace",
+                "value": "={{ $env.PINECONE_NAMESPACE || 'brochure' }}"
+              },
+              {
+                "name": "filter",
+                "value": "={{ { file_id: { $eq: $json.file_id } } }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          512,
+          1008
+        ],
+        "id": "ad0b573a-6ec6-4d8f-83e5-d6718bfe5809",
+        "name": "Pinecone Delete (missing file_id)"
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "1hyRC7SStMMYIvx-QtqYInXHYgGTEfQPHH5HLPBlYk8U",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "Hoja 1",
+            "mode": "name"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "file_id": "={{ $json.file_id }}",
+              "status": "DELETED"
+            },
+            "matchingColumns": [
+              "file_id"
+            ],
+            "schema": [
+              {
+                "id": "file_name",
+                "displayName": "file_name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "file_id",
+                "displayName": "file_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "processing_start",
+                "displayName": "processing_start",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "pinecone_index",
+                "displayName": "pinecone_index",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "processing_end",
+                "displayName": "processing_end",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "processing_time_seconds",
+                "displayName": "processing_time_seconds",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "basic_vectorization",
+                "displayName": "basic_vectorization",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "llama_vectorization",
+                "displayName": "llama_vectorization",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "processed_text_length",
+                "displayName": "processed_text_length",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "status",
+                "displayName": "status",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          752,
+          1008
+        ],
+        "id": "399f71a2-24b4-48c9-9ed8-14f4edf96b4b",
+        "name": "Catalog Mark DELETED",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "content": "## Sync/Cleanup\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+          "height": 576,
+          "width": 1888
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          -800,
+          784
+        ],
+        "typeVersion": 1,
+        "id": "6e787369-6432-405f-84ed-774a8ccf785a",
+        "name": "Sticky Note1"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+        "typeVersion": 1.1,
+        "position": [
+          1712,
+          240
+        ],
+        "id": "7f02d264-c9b4-4856-a95b-a4be8e186d90",
+        "name": "Default Data Loader"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "Recursos",
+            "mode": "name"
+          },
+          "options": {}
+        },
+        "id": "bcf74ff4-946b-4a0e-b64b-6b6a877cde32",
+        "name": "Read Recursos",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          -1840,
+          2192
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "leftValue": "={{ ($json.type || '').toLowerCase() }}",
+                "rightValue": "pdf",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                },
+                "id": "994ca332-f706-40ea-b399-ed71e1ef3b8e"
+              },
+              {
+                "leftValue": "={{ ['PENDING','ERROR','ACTIVE'].includes(($json.processing_status || 'PENDING').toUpperCase()) }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                },
+                "id": "9521c2f9-f923-4419-954b-3aebc660fe42"
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "8b3566cb-e1d1-4fed-85dd-0e3e2bee832c",
+        "name": "IF PDF Candidate",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          -1360,
+          2192
+        ]
+      },
+      {
+        "parameters": {
+          "values": {
+            "string": [
+              {
+                "name": "processing_status",
+                "value": "SKIPPED_NON_PDF"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "41dbe785-2313-4d6f-85c4-18e80410b4ec",
+        "name": "Mark Skipped",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 2,
+        "position": [
+          -1168,
+          2384
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "Recursos",
+            "mode": "name"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "doc_id": "={{ $json.doc_id }}"
+            },
+            "matchingColumns": [
+              "doc_id"
+            ],
+            "schema": [
+              {
+                "id": "doc_id",
+                "displayName": "doc_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "topic_id",
+                "displayName": "topic_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "modulo_id",
+                "displayName": "modulo_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "area_id",
+                "displayName": "area_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "name",
+                "displayName": "name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "type",
+                "displayName": "type",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "source_url",
+                "displayName": "source_url",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "path",
+                "displayName": "path",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "modified_at",
+                "displayName": "modified_at",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "activo",
+                "displayName": "activo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "sp_item_id",
+                "displayName": "sp_item_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "web_url",
+                "displayName": "web_url",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "source",
+                "displayName": "source",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": true,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "1ee9994d-ef73-4e64-a02d-2673b9a7f010",
+        "name": "Upsert Skipped",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          -944,
+          2384
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "=https://graph.microsoft.com/v1.0/drives/{{ $json.path.match(/\\/drives\\/([^\\/]+)\\//)?.[1] }}/items/{{ $json.doc_id }}/content",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "oAuth2Api",
+          "options": {
+            "response": {}
+          }
+        },
+        "id": "4d15f1f2-5631-4324-8b18-27089def799e",
+        "name": "Download PDF",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -1168,
+          2192
+        ],
+        "credentials": {
+          "oAuth2Api": {
+            "id": "RG10kjbUr62FvezS",
+            "name": "Conexion SharePoint"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "pdf",
+          "options": {}
+        },
+        "id": "049e5b48-483f-480b-a12f-7a5d62137ad1",
+        "name": "Extract From File",
+        "type": "n8n-nodes-base.extractFromFile",
+        "typeVersion": 1,
+        "position": [
+          -944,
+          2192
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const resource = $('IF PDF Candidate').item.json;\nconst text = ($json.text || $json.extractedText || '').trim();\nconst alpha = (text.match(/[A-Za-zÁÉÍÓÚáéíóúÑñ]/g) || []).length;\nconst density = text.length ? alpha / text.length : 0;\nconst use_llama = text.length < 900 || density < 0.45;\n\nreturn [{\n  json: {\n    ...resource,\n    extracted_text: text,\n    text_chars: text.length,\n    text_density: density,\n    use_llama,\n    parser_selected: use_llama ? 'llama' : 'n8n_extract'\n  },\n  binary: $binary\n}];"
+        },
+        "id": "528724d6-98c6-4070-b027-6f0816f00624",
+        "name": "Assess Text Quality",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -720,
+          2192
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "leftValue": "={{ $json.use_llama }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                },
+                "id": "e42aa851-6ffc-4bc0-bb0c-89e2ae6e9e10"
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "54ca9a48-580d-4915-ad29-49023db86791",
+        "name": "IF Use Llama",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          -496,
+          2192
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.cloud.llamaindex.ai/api/v1/parsing/upload",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "accept",
+                "value": "application/json"
+              },
+              {
+                "name": "Authorization",
+                "value": "=Bearer llx-7gl0VrHRB8dzykWVlgsnafemTct2O1L0aNt1JMEJy3crv7eS"
+              }
+            ]
+          },
+          "sendBody": true,
+          "contentType": "multipart-form-data",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "parameterType": "formBinaryData",
+                "name": "file",
+                "inputDataFieldName": "data"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "35d0af8b-0aca-423b-81a0-817be1d44ae7",
+        "name": "Upload to Llama",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -272,
+          2096
+        ]
+      },
+      {
+        "parameters": {
+          "amount": 20
+        },
+        "id": "e89932f1-928c-4f03-8f76-163dcfc96c52",
+        "name": "Wait 20s",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          -48,
+          2096
+        ],
+        "webhookId": "c5c2265c-f562-4866-9218-7ff044aa4d0b"
+      },
+      {
+        "parameters": {
+          "url": "=https://api.cloud.llamaindex.ai/api/v1/parsing/job/{{ $('Upload to Llama').item.json.id }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "accept",
+                "value": "application/json"
+              },
+              {
+                "name": "Authorization",
+                "value": "=Bearer llx-7gl0VrHRB8dzykWVlgsnafemTct2O1L0aNt1JMEJy3crv7eS"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "bbb1f097-883d-4d14-bd8d-3877a45c108c",
+        "name": "Check Llama Status",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          176,
+          2096
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "version": 2
+            },
+            "conditions": [
+              {
+                "leftValue": "={{ $json.status }}",
+                "rightValue": "SUCCESS",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "4104f2db-adb8-451b-a6a9-b057d271ffa9",
+        "name": "IF Llama Success",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          400,
+          2096
+        ]
+      },
+      {
+        "parameters": {
+          "amount": 15
+        },
+        "id": "3aa386fe-ff62-49c9-8dbe-975a517f59b1",
+        "name": "Wait Retry",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          624,
+          2224
+        ],
+        "webhookId": "9c939fd5-f2e2-4fad-9df2-87101a01eaef"
+      },
+      {
+        "parameters": {
+          "url": "=https://api.cloud.llamaindex.ai/api/v1/parsing/job/{{ $('Upload to Llama').item.json.id }}/result/markdown",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "=Bearer llx-7gl0VrHRB8dzykWVlgsnafemTct2O1L0aNt1JMEJy3crv7eS"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "e0de3353-f255-4428-9af7-91975310c17e",
+        "name": "Get Llama Markdown",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          624,
+          2096
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const base = $('Assess Text Quality').item.json;\nconst markdown = $json.body || $json.data || $json.markdown || '';\nreturn [{ json: { ...base, normalized_text: markdown } }];"
+        },
+        "id": "562579ab-1561-458f-ab91-104ef8652663",
+        "name": "Normalize Llama Text",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          848,
+          2096
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const text = ($json.extracted_text || '').trim();\nreturn [{ json: { ...$json, normalized_text: text } }];"
+        },
+        "id": "ba8353cb-4d05-4940-a129-473e230974f3",
+        "name": "Normalize Native Text",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -272,
+          2304
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const now = new Date().toISOString();\nreturn [{\n  json: {\n    namespace: 'kbmvlearning',\n    filter: { doc_id: { $eq: $json.doc_id } },\n    doc_id: $json.doc_id,\n    name: $json.name,\n    area_id: $json.area_id,\n    modulo_id: $json.modulo_id,\n    topic_id: $json.topic_id,\n    path: $json.path,\n    web_url: $json.web_url,\n    ext: $json.ext,\n    modified_at: $json.modified_at,\n    parser_selected: $json.parser_selected,\n    last_indexed_at: now\n  }\n}];"
+        },
+        "id": "7ae23df8-a6f1-4da7-88cb-ad8457300bec",
+        "name": "Build Delete Filter",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1424,
+          2192
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://onboardingmv-5cpuohd.svc.aped-4627-b74a.pinecone.io/vectors/delete",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Api-Key",
+                "value": "=pcsk_6Vr7bC_Dd8umZf21xvTPf6zE2SkpvGvFbm8FEuQ6qoRPdK9CZyRhihfWFna3Bz9DhVRSQg"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ { namespace: $json.namespace, filter: $json.filter } }}",
+          "options": {}
+        },
+        "id": "03d31d16-a6e5-4a34-9ef1-12ac9cf780a5",
+        "name": "Pinecone Delete by doc_id",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1584,
+          2192
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const m = $('Build Delete Filter').item.json;\nconst chunks = $items('Chunk Text', 0);\n\nreturn chunks.map((c) => ({\n  json: {\n    id: `${m.doc_id}:${c.json.chunk_index}`,\n    pageContent: c.json.chunk_text,     // <-- CLAVE\n    metadata: {\n      kb: 'kbmvlearning',\n      source: 'sharepoint',\n      doc_id: m.doc_id,\n      file_name: m.name,\n      ext: m.type || m.ext,\n      area_id: m.area_id,\n      modulo_id: m.modulo_id,\n      topic_id: m.topic_id,\n      path: m.path,\n      web_url: m.web_url,\n      modified_at: m.modified_at,\n      parser_selected: m.parser_selected,\n      chunk_index: c.json.chunk_index,\n      language: 'es',\n      last_indexed_at: m.last_indexed_at\n    }\n  }\n}));"
+        },
+        "id": "9a843fd9-e78e-4c0d-abdc-2b38700f6041",
+        "name": "Build Vector Docs",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1760,
+          2192
+        ]
+      },
+      {
+        "parameters": {
+          "mode": "insert",
+          "pineconeIndex": {
+            "__rl": true,
+            "value": "onboardingmv",
+            "mode": "list",
+            "cachedResultName": "onboardingmv"
+          },
+          "options": {
+            "pineconeNamespace": "kbmvlearning"
+          }
+        },
+        "id": "cab04cf0-d130-4dcd-88aa-8706399874af",
+        "name": "Pinecone Upsert",
+        "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+        "typeVersion": 1.3,
+        "position": [
+          1968,
+          2192
+        ],
+        "credentials": {
+          "pineconeApi": {
+            "id": "Ne3WU9FiJTVdKcqU",
+            "name": "PineconeApi EA"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const base = $('Build Delete Filter').item.json;\n\n// Usar el id del chunk actual para conteo correcto\nconst currentChunk = $input.item.json;\n\nreturn [{\n  json: {\n    doc_id:            base.doc_id,\n    processing_status: 'ACTIVE',\n    parser_selected:   base.parser_selected,\n    chunk_count:       (base.doc_id ? 1 : 0),   // se acumula en Sheets\n    total_chars:       (currentChunk.pageContent || '').length,\n    last_indexed_at:   base.last_indexed_at,\n    last_error:        ''\n  }\n}];\n"
+        },
+        "id": "69f89a62-c51a-465d-ba94-002f664d25e3",
+        "name": "Build Success Row",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2256,
+          2208
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "Recursos",
+            "mode": "name"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "doc_id": "={{ $json.doc_id }}",
+              "sp_item_id": "upsert"
+            },
+            "matchingColumns": [
+              "doc_id"
+            ],
+            "schema": [
+              {
+                "id": "doc_id",
+                "displayName": "doc_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "topic_id",
+                "displayName": "topic_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "modulo_id",
+                "displayName": "modulo_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "area_id",
+                "displayName": "area_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "name",
+                "displayName": "name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "type",
+                "displayName": "type",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "source_url",
+                "displayName": "source_url",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "path",
+                "displayName": "path",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "modified_at",
+                "displayName": "modified_at",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "activo",
+                "displayName": "activo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "sp_item_id",
+                "displayName": "sp_item_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "web_url",
+                "displayName": "web_url",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "source",
+                "displayName": "source",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": true,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "id": "f0cc4db1-a7a8-495c-8bb1-a0f3b071b17b",
+        "name": "Upsert Success",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          2416,
+          2192
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "id": "e7792cbb-d1ef-42b6-a5f6-01dfed63c8da",
+        "name": "Split In Batches1",
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          -1616,
+          2192
+        ]
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "id": "f9ea1084-717f-4107-a26c-44f1b619d87e",
+        "name": "Embeddings OpenAI1",
+        "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          1968,
+          2464
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "E7b7vwKLzPo4JwAR",
+            "name": "OpenAi account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsonMode": "expressionData",
+          "jsonData": "={{ $json.pageContent }}",
+          "options": {
+            "metadata": {
+              "metadataValues": [
+                {
+                  "name": "doc_id",
+                  "value": "={{ $json.metadata.doc_id }}"
+                },
+                {
+                  "name": "file_name",
+                  "value": "={{ $json.metadata.file_name }}"
+                },
+                {
+                  "name": "area",
+                  "value": "={{ decodeURIComponent((($json.metadata.path || '').split('root:/ONBOARDING/')[1] || '').split('/')[0] || '') }}"
+                },
+                {
+                  "name": "modulo",
+                  "value": "={{ decodeURIComponent((($json.metadata.path || '').split('root:/ONBOARDING/')[1] || '').split('/')[1] || '') }}\n"
+                },
+                {
+                  "name": "topic",
+                  "value": "={{ decodeURIComponent((($json.metadata.path || '').split('root:/ONBOARDING/')[1] || '').split('/')[2] || '') }}\n"
+                },
+                {
+                  "name": "namespace",
+                  "value": "={{ $json.metadata.kb }}"
+                }
+              ]
+            }
+          }
+        },
+        "id": "66e2f28b-a155-4ab7-b920-19d10343d4eb",
+        "name": "Default Data Loader1",
+        "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+        "typeVersion": 1.1,
+        "position": [
+          2160,
+          2352
+        ]
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -1696,
+          3776
+        ],
+        "id": "3e6b62e2-785f-4d46-8c46-d80d436c1ffa",
+        "name": "When clicking ‘Execute workflow’"
+      },
+      {
+        "parameters": {
+          "jsCode": "const input = ($json.normalized_text || '').replace(/\\r/g, '');\nconst clean = input\n  .replace(/[ \\t]+/g, ' ')\n  .replace(/\\n{3,}/g, '\\n\\n')\n  .trim();\n\nif (!clean) return [];\n\nconst MAX_CHUNK = 1200;\nconst OVERLAP = 180;\nconst out = [];\nlet i = 0;\nlet start = 0;\n\nwhile (start < clean.length) {\n  const end = Math.min(start + MAX_CHUNK, clean.length);\n  const chunk = clean.slice(start, end).trim();\n  if (chunk) out.push({ json: { ...$json, chunk_text: chunk, chunk_index: i } });\n  start += (MAX_CHUNK - OVERLAP);\n  i += 1;\n}\n\nreturn out;"
+        },
+        "id": "02ded726-1c5c-49cd-b8e6-00e62c4b3866",
+        "name": "Chunk Text",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1232,
+          2192
+        ]
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "mvlearning/admin/update_kb",
+          "responseMode": "lastNode",
+          "options": {
+            "responseCode": {
+              "values": {}
+            }
+          }
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -2176,
+          2192
+        ],
+        "id": "2d121a3d-9a6c-4675-8f11-d792a5d4bdb9",
+        "name": "Webhook",
+        "webhookId": "d5d7b65c-f2e3-4880-887a-54c84292ac40"
+      },
+      {
+        "parameters": {
+          "jsCode": "const items = $input.all();\n\nconst grouped = {};\n\nfor (const item of items) {\n  const area = item.json.area_id;\n  if (!grouped[area]) {\n    grouped[area] = [];\n  }\n  grouped[area].push({\n    employee_id: item.json.employee_id,\n    email: item.json.email,\n    completed_at: item.json.completed_at,\n    role: item.json.role\n  });\n}\n\nreturn Object.entries(grouped).map(([area_id, employees]) => ({\n  json: { area_id, employees }\n}));"
+        },
+        "id": "c318fea9-9ec2-4e54-ad68-0bdcd46178ae",
+        "name": "Group by Area",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -896,
+          3776
+        ]
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+            "mode": "list",
+            "cachedResultName": "MVLEARNING_Onboarding",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1665653218,
+            "mode": "list",
+            "cachedResultName": "Empleado_Area",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=1665653218"
+          },
+          "options": {}
+        },
+        "id": "1186336e-5450-4eae-bc93-dd5a410fc2ca",
+        "name": "Read Empleado Area1",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.4,
+        "position": [
+          -1424,
+          3776
+        ],
+        "executeOnce": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "mode": "raw",
+          "jsonOutput": "={{ (() => {\n  const managerMap = {\n    'OPERACIONES': 'e.andrade@mobilvendor.com',\n    'PASSAPORTE':  'e.andrade@mobilvendor.com',\n    'SEGURIDAD':   'e.andrade@mobilvendor.com'\n  };\n  return {\n    area_id: $json.area_id,\n    employees: $json.employees,\n    manager_email: managerMap[$json.area_id] ?? 'default@mobilvendor.com'\n  };\n})() }}",
+          "options": {}
+        },
+        "id": "53539ab4-db5b-4962-9774-268613c61631",
+        "name": "Set Manager Email por Area1",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          -656,
+          3776
+        ]
+      },
+      {
+        "parameters": {
+          "toRecipients": "={{ $json.manager_email }}",
+          "subject": "=⚠️ SEGUIMIENTO DE ONBOARDING - {{ $json.area_id }}",
+          "bodyContent": "=<h2>Reporte de Onboarding Incompleto - {{ $json.area_id }}</h2><p>Los siguientes empleados tienen su onboarding pendiente de completar:</p><table border=\"1\" cellpadding=\"6\" cellspacing=\"0\"><thead><tr><th>Email</th><th>Progreso</th></tr></thead><tbody>{{ $json.employees.map(e => `<tr><td>${e.email}</td><td>${e.completed_at}%</td></tr>`).join('') }}</tbody></table><p>Por favor, haz seguimiento con tu equipo.</p>",
+          "additionalFields": {
+            "bodyContentType": "html"
+          }
+        },
+        "type": "n8n-nodes-base.microsoftOutlook",
+        "typeVersion": 2,
+        "position": [
+          -320,
+          3776
+        ],
+        "id": "743b9fd5-6d2d-4696-87f8-507d71901657",
+        "name": "Send a message1",
+        "webhookId": "d4945f99-850a-41b8-b016-739e0730e5ae",
+        "credentials": {
+          "microsoftOutlookOAuth2Api": {
+            "id": "JySFgjY3Gqtx7Gdo",
+            "name": "Microsoft Outlook account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "filter-completed",
+                "leftValue": "={{ $json.completed_at }}",
+                "rightValue": 100,
+                "operator": {
+                  "type": "number",
+                  "operation": "lt"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "3e1bc88f-09c8-4507-9065-8a3ef635c828",
+        "name": "Filter completed_at < 100",
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2,
+        "position": [
+          -1136,
+          3776
+        ]
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "triggerAtHour": 8
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.3,
+        "position": [
+          -1712,
+          3616
+        ],
+        "id": "fd4a3496-6712-4b53-81d9-c8285ad44af9",
+        "name": "Schedule Trigger"
+      }
+    ],
+    "connections": {
+      "Google Drive Trigger": {
+        "main": [
+          [
+            {
+              "node": "Download file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download file": {
+        "main": [
+          [
+            {
+              "node": "Set File Metadata",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Upload to Llama Cloud",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload to Llama Cloud": {
+        "main": [
+          [
+            {
+              "node": "Init Attempts",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Init Attempts": {
+        "main": [
+          [
+            {
+              "node": "Wait 30s",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait 30s": {
+        "main": [
+          [
+            {
+              "node": "Check Parsing Status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check Parsing Status": {
+        "main": [
+          [
+            {
+              "node": "If SUCCESS",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If SUCCESS": {
+        "main": [
+          [
+            {
+              "node": "Get Markdown (string)",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Increment Attempts",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Increment Attempts": {
+        "main": [
+          [
+            {
+              "node": "If attempts left",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If attempts left": {
+        "main": [
+          [
+            {
+              "node": "Wait 60s",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait 60s": {
+        "main": [
+          [
+            {
+              "node": "Check Parsing Status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Markdown (string)": {
+        "main": [
+          [
+            {
+              "node": "Normalize Markdown",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize Markdown": {
+        "main": [
+          [
+            {
+              "node": "Clean + Chunk",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Clean + Chunk": {
+        "main": [
+          [
+            {
+              "node": "Enrich + Merge File Metadata",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Enrich + Merge File Metadata": {
+        "main": [
+          [
+            {
+              "node": "Pinecone Delete by file_id",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Pinecone Delete by file_id": {
+        "main": [
+          [
+            {
+              "node": "Pinecone Upsert (Vectors)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Embeddings OpenAI": {
+        "ai_embedding": [
+          [
+            {
+              "node": "Pinecone Upsert (Vectors)",
+              "type": "ai_embedding",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Catalog Row": {
+        "main": [
+          [
+            {
+              "node": "Catalog Upsert (Google Sheets)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Pinecone Upsert (Vectors)": {
+        "main": [
+          [
+            {
+              "node": "Build Catalog Row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Cron Daily": {
+        "main": [
+          [
+            {
+              "node": "Google Drive - List Folder Files",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Google Sheets - Read Catalog",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Drive - List Folder Files": {
+        "main": [
+          [
+            {
+              "node": "Merge (Drive + Sheet)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Google Sheets - Read Catalog": {
+        "main": [
+          [
+            {
+              "node": "Merge (Drive + Sheet)",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Merge (Drive + Sheet)": {
+        "main": [
+          [
+            {
+              "node": "Diff Missing (ACTIVE not in Drive)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Diff Missing (ACTIVE not in Drive)": {
+        "main": [
+          [
+            {
+              "node": "Split In Batches",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split In Batches": {
+        "main": [
+          [
+            {
+              "node": "Pinecone Delete (missing file_id)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Pinecone Delete (missing file_id)": {
+        "main": [
+          [
+            {
+              "node": "Catalog Mark DELETED",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Default Data Loader": {
+        "ai_document": [
+          [
+            {
+              "node": "Pinecone Upsert (Vectors)",
+              "type": "ai_document",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read Recursos": {
+        "main": [
+          [
+            {
+              "node": "Split In Batches1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "IF PDF Candidate": {
+        "main": [
+          [
+            {
+              "node": "Download PDF",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Mark Skipped",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Mark Skipped": {
+        "main": [
+          [
+            {
+              "node": "Upsert Skipped",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download PDF": {
+        "main": [
+          [
+            {
+              "node": "Extract From File",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extract From File": {
+        "main": [
+          [
+            {
+              "node": "Assess Text Quality",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Assess Text Quality": {
+        "main": [
+          [
+            {
+              "node": "IF Use Llama",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "IF Use Llama": {
+        "main": [
+          [
+            {
+              "node": "Upload to Llama",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Normalize Native Text",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload to Llama": {
+        "main": [
+          [
+            {
+              "node": "Wait 20s",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait 20s": {
+        "main": [
+          [
+            {
+              "node": "Check Llama Status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check Llama Status": {
+        "main": [
+          [
+            {
+              "node": "IF Llama Success",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "IF Llama Success": {
+        "main": [
+          [
+            {
+              "node": "Get Llama Markdown",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Wait Retry",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait Retry": {
+        "main": [
+          [
+            {
+              "node": "Check Llama Status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Llama Markdown": {
+        "main": [
+          [
+            {
+              "node": "Normalize Llama Text",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize Native Text": {
+        "main": [
+          [
+            {
+              "node": "Chunk Text",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize Llama Text": {
+        "main": [
+          [
+            {
+              "node": "Chunk Text",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Delete Filter": {
+        "main": [
+          [
+            {
+              "node": "Pinecone Delete by doc_id",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Pinecone Delete by doc_id": {
+        "main": [
+          [
+            {
+              "node": "Build Vector Docs",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Vector Docs": {
+        "main": [
+          [
+            {
+              "node": "Pinecone Upsert",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Pinecone Upsert": {
+        "main": [
+          [
+            {
+              "node": "Build Success Row",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Build Success Row": {
+        "main": [
+          [
+            {
+              "node": "Upsert Success",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upsert Skipped": {
+        "main": [
+          [
+            {
+              "node": "Split In Batches1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upsert Success": {
+        "main": [
+          [
+            {
+              "node": "Split In Batches1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split In Batches1": {
+        "main": [
+          [],
+          [
+            {
+              "node": "IF PDF Candidate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Embeddings OpenAI1": {
+        "ai_embedding": [
+          [
+            {
+              "node": "Pinecone Upsert",
+              "type": "ai_embedding",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Default Data Loader1": {
+        "ai_document": [
+          [
+            {
+              "node": "Pinecone Upsert",
+              "type": "ai_document",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Execute workflow’": {
+        "main": [
+          [
+            {
+              "node": "Read Empleado Area1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Chunk Text": {
+        "main": [
+          [
+            {
+              "node": "Build Delete Filter",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Read Recursos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Group by Area": {
+        "main": [
+          [
+            {
+              "node": "Set Manager Email por Area1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read Empleado Area1": {
+        "main": [
+          [
+            {
+              "node": "Filter completed_at < 100",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Manager Email por Area1": {
+        "main": [
+          [
+            {
+              "node": "Send a message1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter completed_at < 100": {
+        "main": [
+          [
+            {
+              "node": "Group by Area",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Read Empleado Area1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "ZEI MOBILVENDOR",
+    "name": "Version 2",
+    "description": "Se agrega flujo  para envio automatico de seguimiento de onboarding por areas",
+    "autosaved": false
+  },
+  "activeVersionId": "ea8eba18-b59a-4bce-8be3-d14d121af8fc",
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Set File Metadata",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upload to Llama Cloud",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to Llama Cloud": {
+      "main": [
+        [
+          {
+            "node": "Init Attempts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Init Attempts": {
+      "main": [
+        [
+          {
+            "node": "Wait 30s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 30s": {
+      "main": [
+        [
+          {
+            "node": "Check Parsing Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Parsing Status": {
+      "main": [
+        [
+          {
+            "node": "If SUCCESS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If SUCCESS": {
+      "main": [
+        [
+          {
+            "node": "Get Markdown (string)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Increment Attempts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Increment Attempts": {
+      "main": [
+        [
+          {
+            "node": "If attempts left",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If attempts left": {
+      "main": [
+        [
+          {
+            "node": "Wait 60s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 60s": {
+      "main": [
+        [
+          {
+            "node": "Check Parsing Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Markdown (string)": {
+      "main": [
+        [
+          {
+            "node": "Normalize Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Markdown": {
+      "main": [
+        [
+          {
+            "node": "Clean + Chunk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean + Chunk": {
+      "main": [
+        [
+          {
+            "node": "Enrich + Merge File Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enrich + Merge File Metadata": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Delete by file_id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Delete by file_id": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Upsert (Vectors)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Upsert (Vectors)",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Catalog Row": {
+      "main": [
+        [
+          {
+            "node": "Catalog Upsert (Google Sheets)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Upsert (Vectors)": {
+      "main": [
+        [
+          {
+            "node": "Build Catalog Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cron Daily": {
+      "main": [
+        [
+          {
+            "node": "Google Drive - List Folder Files",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Sheets - Read Catalog",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive - List Folder Files": {
+      "main": [
+        [
+          {
+            "node": "Merge (Drive + Sheet)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Read Catalog": {
+      "main": [
+        [
+          {
+            "node": "Merge (Drive + Sheet)",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge (Drive + Sheet)": {
+      "main": [
+        [
+          {
+            "node": "Diff Missing (ACTIVE not in Drive)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Diff Missing (ACTIVE not in Drive)": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split In Batches": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Delete (missing file_id)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Delete (missing file_id)": {
+      "main": [
+        [
+          {
+            "node": "Catalog Mark DELETED",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Upsert (Vectors)",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Recursos": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF PDF Candidate": {
+      "main": [
+        [
+          {
+            "node": "Download PDF",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark Skipped",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Skipped": {
+      "main": [
+        [
+          {
+            "node": "Upsert Skipped",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download PDF": {
+      "main": [
+        [
+          {
+            "node": "Extract From File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract From File": {
+      "main": [
+        [
+          {
+            "node": "Assess Text Quality",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assess Text Quality": {
+      "main": [
+        [
+          {
+            "node": "IF Use Llama",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Use Llama": {
+      "main": [
+        [
+          {
+            "node": "Upload to Llama",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Normalize Native Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to Llama": {
+      "main": [
+        [
+          {
+            "node": "Wait 20s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 20s": {
+      "main": [
+        [
+          {
+            "node": "Check Llama Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Llama Status": {
+      "main": [
+        [
+          {
+            "node": "IF Llama Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Llama Success": {
+      "main": [
+        [
+          {
+            "node": "Get Llama Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait Retry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Retry": {
+      "main": [
+        [
+          {
+            "node": "Check Llama Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Llama Markdown": {
+      "main": [
+        [
+          {
+            "node": "Normalize Llama Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Native Text": {
+      "main": [
+        [
+          {
+            "node": "Chunk Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Llama Text": {
+      "main": [
+        [
+          {
+            "node": "Chunk Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Delete Filter": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Delete by doc_id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Delete by doc_id": {
+      "main": [
+        [
+          {
+            "node": "Build Vector Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Vector Docs": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Upsert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Upsert": {
+      "main": [
+        [
+          {
+            "node": "Build Success Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Success Row": {
+      "main": [
+        [
+          {
+            "node": "Upsert Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Skipped": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Success": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split In Batches1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "IF PDF Candidate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Upsert",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader1": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Upsert",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read Empleado Area1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chunk Text": {
+      "main": [
+        [
+          {
+            "node": "Build Delete Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Read Recursos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Group by Area": {
+      "main": [
+        [
+          {
+            "node": "Set Manager Email por Area1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Empleado Area1": {
+      "main": [
+        [
+          {
+            "node": "Filter completed_at < 100",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Manager Email por Area1": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter completed_at < 100": {
+      "main": [
+        [
+          {
+            "node": "Group by Area",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Read Empleado Area1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-03-01T00:44:24.953Z",
+  "id": "YHYfu0jRlCBHekMQrXn4L",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "01 - SP Catalog Sync",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1TW1dAn5k6Qfv5j618EKlf3FStaklHN8V",
+          "mode": "id"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1312,
+        32
+      ],
+      "id": "eb5d96f6-03b8-464f-b4c7-49f097242359",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "nZU8LW95ZL0VVPJ9",
+          "name": "Google Drive account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": "={{ $json.id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1072,
+        32
+      ],
+      "id": "b10cb14e-e984-452b-bf5f-ad76d1220983",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "nZU8LW95ZL0VVPJ9",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "folder_id",
+              "value": "1TW1dAn5k6Qfv5j618EKlf3FStaklHN8V"
+            },
+            {
+              "name": "file_id",
+              "value": "={{ $json.id }}"
+            },
+            {
+              "name": "file_name",
+              "value": "={{ $json.originalFilename }}"
+            },
+            {
+              "name": "created_time",
+              "value": "={{ $json.createdTime }}"
+            },
+            {
+              "name": "modified_time",
+              "value": "={{ $json.modifiedTime || $json.createdTime }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        -832,
+        32
+      ],
+      "id": "ee8149ce-91fa-4767-95d5-710c4bfd4897",
+      "name": "Set File Metadata"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cloud.llamaindex.ai/api/v1/parsing/upload",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.LLAMACLOUD_API_KEY}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -592,
+        32
+      ],
+      "id": "d352fff4-f8fb-4023-8929-9c4ab9cdf44f",
+      "name": "Upload to Llama Cloud"
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -352,
+        32
+      ],
+      "id": "180067a5-c8b2-4912-b780-03b399129831",
+      "name": "Wait 30s",
+      "webhookId": "591efeb8-8cbb-49c9-ba39-abc943abff1b"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.cloud.llamaindex.ai/api/v1/parsing/job/{{ $('Upload to Llama Cloud').item.json.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.LLAMACLOUD_API_KEY}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -112,
+        32
+      ],
+      "id": "46233c64-de5a-44ce-aadf-a8b898bb5e76",
+      "name": "Check Parsing Status"
+    },
+    {
+      "parameters": {
+        "values": {
+          "number": [
+            {
+              "name": "attempt",
+              "value": 1
+            },
+            {
+              "name": "max_attempts",
+              "value": 12
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        -112,
+        -128
+      ],
+      "id": "81da9c7c-056a-48fa-ae6c-755f228e3030",
+      "name": "Init Attempts"
+    },
+    {
+      "parameters": {
+        "jsCode": "const attempt = ($json.attempt ?? 1) + 1;\nreturn [{ json: { ...$json, attempt } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        128,
+        192
+      ],
+      "id": "6490954e-5435-462a-9191-3f6448ba0e85",
+      "name": "Increment Attempts"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "SUCCESS",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        128,
+        32
+      ],
+      "id": "b92a6161-af7f-4454-b255-728b4ea8d3c7",
+      "name": "If SUCCESS"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c2",
+              "leftValue": "={{ $json.attempt }}",
+              "rightValue": "={{ $json.max_attempts }}",
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        368,
+        192
+      ],
+      "id": "8c909a9b-de73-4e0c-8c90-65f5b1a4629f",
+      "name": "If attempts left"
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        368,
+        352
+      ],
+      "id": "0ea63d48-9abd-40ca-a031-9159a7d3e060",
+      "name": "Wait 60s",
+      "webhookId": "13a70e06-13d5-4a5f-bf08-1e6e1f36570d"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.cloud.llamaindex.ai/api/v1/parsing/job/{{ $('Upload to Llama Cloud').item.json.id }}/result/markdown",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.LLAMACLOUD_API_KEY}}"
+            }
+          ]
+        },
+        "options": {
+          "response": {}
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        368,
+        32
+      ],
+      "id": "ea2c704c-3e55-455b-90c9-01c858d1ee33",
+      "name": "Get Markdown (string)"
+    },
+    {
+      "parameters": {
+        "jsCode": "const markdown = $json.body || '';\nreturn [{ json: { markdown } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        608,
+        32
+      ],
+      "id": "c35622ad-79c5-490c-a6a1-2b75b15278ef",
+      "name": "Normalize Markdown"
+    },
+    {
+      "parameters": {
+        "jsCode": "// CLEAN + SEMANTIC CHUNKING\nconst input = $json.markdown || '';\nlet text = input\n  .replace(/Página\\s*\\d+/gi, '')\n  .replace(/^\\s*\\d+\\s*$/gm, '')\n  .replace(/[-=_]{3,}/g, '\\n')\n  .replace(/&nbsp;/g, ' ')\n  .replace(/[●■♦▪✓•–—]/g, '-')\n  .replace(/[ \\t]+/g, ' ')\n  .replace(/\\n{2,}/g, '\\n\\n')\n  .trim();\n\nlet sections = text.split(/(?=^m[oó]dulo|^caso(s)? de [ée]xito|^roadmap|^soporte|^¿quiénes somos\\?|^ecosistema mobilvendor|^nuestros beneficios|^censos m[oó]viles|^m[oó]dulo ecommerce)/gmi);\nif (sections.length <= 1) sections = [text];\n\nconst MAX_CHUNK = 1100;\nconst OVERLAP = 150;\nconst out = [];\n\nsections.forEach((section, sectionIndex) => {\n  const s = (section || '').trim();\n  if (!s) return;\n\n  const title = (s.split('\\n')[0] || `Seccion ${sectionIndex+1}`).slice(0, 120);\n\n  if (s.length <= MAX_CHUNK) {\n    out.push({ json: { sectionText: `# ${title}\\n\\n${s}`, sectionIndex, chunkIndex: 0 } });\n    return;\n  }\n\n  let start = 0;\n  let chunkIndex = 0;\n  while (start < s.length) {\n    const end = Math.min(start + MAX_CHUNK, s.length);\n    const chunk = s.slice(start, end).trim();\n    if (chunk) {\n      out.push({ json: { sectionText: `# ${title}\\n\\n${chunk}`, sectionIndex, chunkIndex } });\n    }\n    start += (MAX_CHUNK - OVERLAP);\n    chunkIndex++;\n  }\n});\n\nreturn out;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        848,
+        32
+      ],
+      "id": "dbf213fb-4b67-4e17-bcb8-4de1e2543808",
+      "name": "Clean + Chunk"
+    },
+    {
+      "parameters": {
+        "jsCode": "const file = $('Set File Metadata').item.json;\nconst now = new Date().toISOString();\n\nreturn $input.all().map((item) => {\n  const sectionText = item.json.sectionText || '';\n  const sectionIndex = item.json.sectionIndex ?? 0;\n  const chunkIndex = item.json.chunkIndex ?? 0;\n\n  const metadata = {\n    kb: 'brochure',\n    folder_id: file.folder_id,\n    file_id: file.file_id,\n    file_name: file.file_name,\n    modified_time: file.modified_time,\n    created_time: file.created_time,\n    sectionIndex,\n    chunkIndex,\n    language: 'es',\n    content_source: 'google_drive_brochure',\n    last_indexed_at: now\n  };\n\n  // ID determinístico por chunk (opcional, pero útil)\n  const chunk_id = `${file.file_id}:${sectionIndex}:${chunkIndex}`;\n\n  return {\n    json: {\n      text: sectionText,\n      metadata,\n      chunk_id\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1088,
+        32
+      ],
+      "id": "4e52ed72-46f9-48fd-88cb-3eb25b0af68f",
+      "name": "Enrich + Merge File Metadata"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://{{$env.PINECONE_INDEX_HOST}}/vectors/delete",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Api-Key",
+              "value": "={{ $env.PINECONE_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "namespace",
+              "value": "={{ $env.PINECONE_NAMESPACE || 'brochure' }}"
+            },
+            {
+              "name": "filter",
+              "value": "={{ { file_id: { $eq: $('Set File Metadata').item.json.file_id } } }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1328,
+        32
+      ],
+      "id": "756451e3-a060-4d80-be2d-aa7c9b77981a",
+      "name": "Pinecone Delete by file_id"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "iso-27001",
+          "mode": "list",
+          "cachedResultName": "iso-27001"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        1568,
+        32
+      ],
+      "id": "fed227ba-56e5-40b1-9c2f-dfa6d52867a0",
+      "name": "Pinecone Upsert (Vectors)",
+      "credentials": {
+        "pineconeApi": {
+          "id": "Ne3WU9FiJTVdKcqU",
+          "name": "PineconeApi EA"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1568,
+        224
+      ],
+      "id": "359508eb-0d2c-4878-94de-d7873438344d",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "E7b7vwKLzPo4JwAR",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const file = $('Set File Metadata').item.json;\nconst chunks = $input.all();\nconst now = new Date().toISOString();\n\nlet totalChars = 0;\nfor (const c of chunks) totalChars += (c.json.text || '').length;\n\nreturn [{\n  json: {\n    folder_id: file.folder_id,\n    file_id: file.file_id,\n    file_name: file.file_name,\n    modified_time: file.modified_time,\n    status: 'ACTIVE',\n    chunk_count: chunks.length,\n    total_chars: totalChars,\n    last_seen_at: now,\n    last_indexed_at: now,\n    last_error: ''\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1872,
+        32
+      ],
+      "id": "a6f69d5b-16b3-4670-992c-e2f5ca7a7b17",
+      "name": "Build Catalog Row"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1hyRC7SStMMYIvx-QtqYInXHYgGTEfQPHH5HLPBlYk8U",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Hoja 1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "file_id": "={{ $json.file_id }}",
+            "file_name": "={{ $json.file_name }}",
+            "status": "={{ $json.status }}"
+          },
+          "matchingColumns": [
+            "file_id"
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2048,
+        32
+      ],
+      "id": "0efa53bc-385b-4d64-a7f6-dbc0f433121d",
+      "name": "Catalog Upsert (Google Sheets)",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Ingest/Update + Replace\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 960,
+        "width": 3600
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1360,
+        -272
+      ],
+      "typeVersion": 1,
+      "id": "b5fe2215-e984-405b-9697-79b48ae6a43f",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "hour": 2,
+              "minute": 5
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        -688,
+        928
+      ],
+      "id": "556e00ef-24c5-4a27-8583-e791746dbdbd",
+      "name": "Cron Daily",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "list"
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -448,
+        928
+      ],
+      "id": "e5fafdf3-63a3-4d7c-8361-4873835289bd",
+      "name": "Google Drive - List Folder Files",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "nZU8LW95ZL0VVPJ9",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1hyRC7SStMMYIvx-QtqYInXHYgGTEfQPHH5HLPBlYk8U",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Hoja 1",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -448,
+        1120
+      ],
+      "id": "f548f297-4be2-4d6e-a431-42f9ee653a47",
+      "name": "Google Sheets - Read Catalog",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "mergeByIndex"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -208,
+        1008
+      ],
+      "id": "2fb20eac-0d16-4149-8c22-d9ba55cf2fbc",
+      "name": "Merge (Drive + Sheet)"
+    },
+    {
+      "parameters": {
+        "jsCode": "const driveItems = $('Google Drive - List Folder Files').all();\nconst alive = new Set(driveItems.map(i => i.json.id).filter(Boolean));\n\nconst sheetItems = $('Google Sheets - Read Catalog').all();\nconst now = new Date().toISOString();\n\nconst missing = [];\nfor (const r of sheetItems) {\n  const fileId = r.json.file_id;\n  const status = String(r.json.status || '').toUpperCase();\n  const folderId = String(r.json.folder_id || '');\n\n  if (!fileId) continue;\n  if (folderId && folderId !== '1TW1dAn5k6Qfv5j618EKlf3FStaklHN8V') continue;\n  if (status !== 'ACTIVE') continue;\n\n  if (!alive.has(fileId)) {\n    missing.push({\n      json: {\n        file_id: fileId,\n        file_name: r.json.file_name || '',\n        folder_id: r.json.folder_id || '1TW1dAn5k6Qfv5j618EKlf3FStaklHN8V',\n        status: 'DELETED',\n        deleted_at: now,\n        last_indexed_at: now,\n        last_error: ''\n      }\n    });\n  }\n}\n\nreturn missing;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        32,
+        1008
+      ],
+      "id": "0e62aa2b-f2b7-4d1b-9916-5e374ece6a88",
+      "name": "Diff Missing (ACTIVE not in Drive)"
+    },
+    {
+      "parameters": {
+        "batchSize": 25,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        272,
+        1008
+      ],
+      "id": "c26c994d-78cc-46ef-bd99-3d0b94f57b2e",
+      "name": "Split In Batches"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://{{$env.PINECONE_INDEX_HOST}}/vectors/delete",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Api-Key",
+              "value": "={{ $env.PINECONE_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "namespace",
+              "value": "={{ $env.PINECONE_NAMESPACE || 'brochure' }}"
+            },
+            {
+              "name": "filter",
+              "value": "={{ { file_id: { $eq: $json.file_id } } }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        512,
+        1008
+      ],
+      "id": "ad0b573a-6ec6-4d8f-83e5-d6718bfe5809",
+      "name": "Pinecone Delete (missing file_id)"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1hyRC7SStMMYIvx-QtqYInXHYgGTEfQPHH5HLPBlYk8U",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Hoja 1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "file_id": "={{ $json.file_id }}",
+            "status": "DELETED"
+          },
+          "matchingColumns": [
+            "file_id"
+          ],
+          "schema": [
+            {
+              "id": "file_name",
+              "displayName": "file_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "file_id",
+              "displayName": "file_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "processing_start",
+              "displayName": "processing_start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "pinecone_index",
+              "displayName": "pinecone_index",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "processing_end",
+              "displayName": "processing_end",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "processing_time_seconds",
+              "displayName": "processing_time_seconds",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "basic_vectorization",
+              "displayName": "basic_vectorization",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "llama_vectorization",
+              "displayName": "llama_vectorization",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "processed_text_length",
+              "displayName": "processed_text_length",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        752,
+        1008
+      ],
+      "id": "399f71a2-24b4-48c9-9ed8-14f4edf96b4b",
+      "name": "Catalog Mark DELETED",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Sync/Cleanup\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/components/sticky-notes/)",
+        "height": 576,
+        "width": 1888
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -800,
+        784
+      ],
+      "typeVersion": 1,
+      "id": "6e787369-6432-405f-84ed-774a8ccf785a",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        1712,
+        240
+      ],
+      "id": "7f02d264-c9b4-4856-a95b-a4be8e186d90",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Recursos",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "bcf74ff4-946b-4a0e-b64b-6b6a877cde32",
+      "name": "Read Recursos",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1840,
+        2192
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ ($json.type || '').toLowerCase() }}",
+              "rightValue": "pdf",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "id": "994ca332-f706-40ea-b399-ed71e1ef3b8e"
+            },
+            {
+              "leftValue": "={{ ['PENDING','ERROR','ACTIVE'].includes(($json.processing_status || 'PENDING').toUpperCase()) }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              },
+              "id": "9521c2f9-f923-4419-954b-3aebc660fe42"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "8b3566cb-e1d1-4fed-85dd-0e3e2bee832c",
+      "name": "IF PDF Candidate",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1360,
+        2192
+      ]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "processing_status",
+              "value": "SKIPPED_NON_PDF"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "41dbe785-2313-4d6f-85c4-18e80410b4ec",
+      "name": "Mark Skipped",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        -1168,
+        2384
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Recursos",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "doc_id": "={{ $json.doc_id }}"
+          },
+          "matchingColumns": [
+            "doc_id"
+          ],
+          "schema": [
+            {
+              "id": "doc_id",
+              "displayName": "doc_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "topic_id",
+              "displayName": "topic_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "modulo_id",
+              "displayName": "modulo_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "area_id",
+              "displayName": "area_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "source_url",
+              "displayName": "source_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "path",
+              "displayName": "path",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "modified_at",
+              "displayName": "modified_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "activo",
+              "displayName": "activo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "sp_item_id",
+              "displayName": "sp_item_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "web_url",
+              "displayName": "web_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "1ee9994d-ef73-4e64-a02d-2673b9a7f010",
+      "name": "Upsert Skipped",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -944,
+        2384
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.microsoft.com/v1.0/drives/{{ $json.path.match(/\\/drives\\/([^\\/]+)\\//)?.[1] }}/items/{{ $json.doc_id }}/content",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {
+          "response": {}
+        }
+      },
+      "id": "4d15f1f2-5631-4324-8b18-27089def799e",
+      "name": "Download PDF",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1168,
+        2192
+      ],
+      "credentials": {
+        "oAuth2Api": {
+          "id": "RG10kjbUr62FvezS",
+          "name": "Conexion SharePoint"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "id": "049e5b48-483f-480b-a12f-7a5d62137ad1",
+      "name": "Extract From File",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -944,
+        2192
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const resource = $('IF PDF Candidate').item.json;\nconst text = ($json.text || $json.extractedText || '').trim();\nconst alpha = (text.match(/[A-Za-zÁÉÍÓÚáéíóúÑñ]/g) || []).length;\nconst density = text.length ? alpha / text.length : 0;\nconst use_llama = text.length < 900 || density < 0.45;\n\nreturn [{\n  json: {\n    ...resource,\n    extracted_text: text,\n    text_chars: text.length,\n    text_density: density,\n    use_llama,\n    parser_selected: use_llama ? 'llama' : 'n8n_extract'\n  },\n  binary: $binary\n}];"
+      },
+      "id": "528724d6-98c6-4070-b027-6f0816f00624",
+      "name": "Assess Text Quality",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -720,
+        2192
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.use_llama }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              },
+              "id": "e42aa851-6ffc-4bc0-bb0c-89e2ae6e9e10"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "54ca9a48-580d-4915-ad29-49023db86791",
+      "name": "IF Use Llama",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -496,
+        2192
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cloud.llamaindex.ai/api/v1/parsing/upload",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer llx-7gl0VrHRB8dzykWVlgsnafemTct2O1L0aNt1JMEJy3crv7eS"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "35d0af8b-0aca-423b-81a0-817be1d44ae7",
+      "name": "Upload to Llama",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -272,
+        2096
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 20
+      },
+      "id": "e89932f1-928c-4f03-8f76-163dcfc96c52",
+      "name": "Wait 20s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -48,
+        2096
+      ],
+      "webhookId": "c5c2265c-f562-4866-9218-7ff044aa4d0b"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.cloud.llamaindex.ai/api/v1/parsing/job/{{ $('Upload to Llama').item.json.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer llx-7gl0VrHRB8dzykWVlgsnafemTct2O1L0aNt1JMEJy3crv7eS"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bbb1f097-883d-4d14-bd8d-3877a45c108c",
+      "name": "Check Llama Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        176,
+        2096
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "SUCCESS",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4104f2db-adb8-451b-a6a9-b057d271ffa9",
+      "name": "IF Llama Success",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        400,
+        2096
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "id": "3aa386fe-ff62-49c9-8dbe-975a517f59b1",
+      "name": "Wait Retry",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        624,
+        2224
+      ],
+      "webhookId": "9c939fd5-f2e2-4fad-9df2-87101a01eaef"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.cloud.llamaindex.ai/api/v1/parsing/job/{{ $('Upload to Llama').item.json.id }}/result/markdown",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer llx-7gl0VrHRB8dzykWVlgsnafemTct2O1L0aNt1JMEJy3crv7eS"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e0de3353-f255-4428-9af7-91975310c17e",
+      "name": "Get Llama Markdown",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        624,
+        2096
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const base = $('Assess Text Quality').item.json;\nconst markdown = $json.body || $json.data || $json.markdown || '';\nreturn [{ json: { ...base, normalized_text: markdown } }];"
+      },
+      "id": "562579ab-1561-458f-ab91-104ef8652663",
+      "name": "Normalize Llama Text",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        848,
+        2096
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const text = ($json.extracted_text || '').trim();\nreturn [{ json: { ...$json, normalized_text: text } }];"
+      },
+      "id": "ba8353cb-4d05-4940-a129-473e230974f3",
+      "name": "Normalize Native Text",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -272,
+        2304
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const now = new Date().toISOString();\nreturn [{\n  json: {\n    namespace: 'kbmvlearning',\n    filter: { doc_id: { $eq: $json.doc_id } },\n    doc_id: $json.doc_id,\n    name: $json.name,\n    area_id: $json.area_id,\n    modulo_id: $json.modulo_id,\n    topic_id: $json.topic_id,\n    path: $json.path,\n    web_url: $json.web_url,\n    ext: $json.ext,\n    modified_at: $json.modified_at,\n    parser_selected: $json.parser_selected,\n    last_indexed_at: now\n  }\n}];"
+      },
+      "id": "7ae23df8-a6f1-4da7-88cb-ad8457300bec",
+      "name": "Build Delete Filter",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1424,
+        2192
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://onboardingmv-5cpuohd.svc.aped-4627-b74a.pinecone.io/vectors/delete",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Api-Key",
+              "value": "=pcsk_6Vr7bC_Dd8umZf21xvTPf6zE2SkpvGvFbm8FEuQ6qoRPdK9CZyRhihfWFna3Bz9DhVRSQg"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { namespace: $json.namespace, filter: $json.filter } }}",
+        "options": {}
+      },
+      "id": "03d31d16-a6e5-4a34-9ef1-12ac9cf780a5",
+      "name": "Pinecone Delete by doc_id",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1584,
+        2192
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const m = $('Build Delete Filter').item.json;\nconst chunks = $items('Chunk Text', 0);\n\nreturn chunks.map((c) => ({\n  json: {\n    id: `${m.doc_id}:${c.json.chunk_index}`,\n    pageContent: c.json.chunk_text,     // <-- CLAVE\n    metadata: {\n      kb: 'kbmvlearning',\n      source: 'sharepoint',\n      doc_id: m.doc_id,\n      file_name: m.name,\n      ext: m.type || m.ext,\n      area_id: m.area_id,\n      modulo_id: m.modulo_id,\n      topic_id: m.topic_id,\n      path: m.path,\n      web_url: m.web_url,\n      modified_at: m.modified_at,\n      parser_selected: m.parser_selected,\n      chunk_index: c.json.chunk_index,\n      language: 'es',\n      last_indexed_at: m.last_indexed_at\n    }\n  }\n}));"
+      },
+      "id": "9a843fd9-e78e-4c0d-abdc-2b38700f6041",
+      "name": "Build Vector Docs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        2192
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "onboardingmv",
+          "mode": "list",
+          "cachedResultName": "onboardingmv"
+        },
+        "options": {
+          "pineconeNamespace": "kbmvlearning"
+        }
+      },
+      "id": "cab04cf0-d130-4dcd-88aa-8706399874af",
+      "name": "Pinecone Upsert",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        1968,
+        2192
+      ],
+      "credentials": {
+        "pineconeApi": {
+          "id": "Ne3WU9FiJTVdKcqU",
+          "name": "PineconeApi EA"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const base = $('Build Delete Filter').item.json;\n\n// Usar el id del chunk actual para conteo correcto\nconst currentChunk = $input.item.json;\n\nreturn [{\n  json: {\n    doc_id:            base.doc_id,\n    processing_status: 'ACTIVE',\n    parser_selected:   base.parser_selected,\n    chunk_count:       (base.doc_id ? 1 : 0),   // se acumula en Sheets\n    total_chars:       (currentChunk.pageContent || '').length,\n    last_indexed_at:   base.last_indexed_at,\n    last_error:        ''\n  }\n}];\n"
+      },
+      "id": "69f89a62-c51a-465d-ba94-002f664d25e3",
+      "name": "Build Success Row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2256,
+        2208
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Recursos",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "doc_id": "={{ $json.doc_id }}",
+            "sp_item_id": "upsert"
+          },
+          "matchingColumns": [
+            "doc_id"
+          ],
+          "schema": [
+            {
+              "id": "doc_id",
+              "displayName": "doc_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "topic_id",
+              "displayName": "topic_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "modulo_id",
+              "displayName": "modulo_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "area_id",
+              "displayName": "area_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "source_url",
+              "displayName": "source_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "path",
+              "displayName": "path",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "modified_at",
+              "displayName": "modified_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "activo",
+              "displayName": "activo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "sp_item_id",
+              "displayName": "sp_item_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "web_url",
+              "displayName": "web_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "f0cc4db1-a7a8-495c-8bb1-a0f3b071b17b",
+      "name": "Upsert Success",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2416,
+        2192
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "e7792cbb-d1ef-42b6-a5f6-01dfed63c8da",
+      "name": "Split In Batches1",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1616,
+        2192
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "f9ea1084-717f-4107-a26c-44f1b619d87e",
+      "name": "Embeddings OpenAI1",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1968,
+        2464
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "E7b7vwKLzPo4JwAR",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.pageContent }}",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "doc_id",
+                "value": "={{ $json.metadata.doc_id }}"
+              },
+              {
+                "name": "file_name",
+                "value": "={{ $json.metadata.file_name }}"
+              },
+              {
+                "name": "area",
+                "value": "={{ decodeURIComponent((($json.metadata.path || '').split('root:/ONBOARDING/')[1] || '').split('/')[0] || '') }}"
+              },
+              {
+                "name": "modulo",
+                "value": "={{ decodeURIComponent((($json.metadata.path || '').split('root:/ONBOARDING/')[1] || '').split('/')[1] || '') }}\n"
+              },
+              {
+                "name": "topic",
+                "value": "={{ decodeURIComponent((($json.metadata.path || '').split('root:/ONBOARDING/')[1] || '').split('/')[2] || '') }}\n"
+              },
+              {
+                "name": "namespace",
+                "value": "={{ $json.metadata.kb }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "66e2f28b-a155-4ab7-b920-19d10343d4eb",
+      "name": "Default Data Loader1",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        2160,
+        2352
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1696,
+        3776
+      ],
+      "id": "3e6b62e2-785f-4d46-8c46-d80d436c1ffa",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = ($json.normalized_text || '').replace(/\\r/g, '');\nconst clean = input\n  .replace(/[ \\t]+/g, ' ')\n  .replace(/\\n{3,}/g, '\\n\\n')\n  .trim();\n\nif (!clean) return [];\n\nconst MAX_CHUNK = 1200;\nconst OVERLAP = 180;\nconst out = [];\nlet i = 0;\nlet start = 0;\n\nwhile (start < clean.length) {\n  const end = Math.min(start + MAX_CHUNK, clean.length);\n  const chunk = clean.slice(start, end).trim();\n  if (chunk) out.push({ json: { ...$json, chunk_text: chunk, chunk_index: i } });\n  start += (MAX_CHUNK - OVERLAP);\n  i += 1;\n}\n\nreturn out;"
+      },
+      "id": "02ded726-1c5c-49cd-b8e6-00e62c4b3866",
+      "name": "Chunk Text",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1232,
+        2192
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mvlearning/admin/update_kb",
+        "responseMode": "lastNode",
+        "options": {
+          "responseCode": {
+            "values": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2176,
+        2192
+      ],
+      "id": "2d121a3d-9a6c-4675-8f11-d792a5d4bdb9",
+      "name": "Webhook",
+      "webhookId": "d5d7b65c-f2e3-4880-887a-54c84292ac40"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nconst grouped = {};\n\nfor (const item of items) {\n  const area = item.json.area_id;\n  if (!grouped[area]) {\n    grouped[area] = [];\n  }\n  grouped[area].push({\n    employee_id: item.json.employee_id,\n    email: item.json.email,\n    completed_at: item.json.completed_at,\n    role: item.json.role\n  });\n}\n\nreturn Object.entries(grouped).map(([area_id, employees]) => ({\n  json: { area_id, employees }\n}));"
+      },
+      "id": "c318fea9-9ec2-4e54-ad68-0bdcd46178ae",
+      "name": "Group by Area",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -896,
+        3776
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1665653218,
+          "mode": "list",
+          "cachedResultName": "Empleado_Area",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=1665653218"
+        },
+        "options": {}
+      },
+      "id": "1186336e-5450-4eae-bc93-dd5a410fc2ca",
+      "name": "Read Empleado Area1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        -1424,
+        3776
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ (() => {\n  const managerMap = {\n    'OPERACIONES': 'e.andrade@mobilvendor.com',\n    'PASSAPORTE':  'e.andrade@mobilvendor.com',\n    'SEGURIDAD':   'e.andrade@mobilvendor.com'\n  };\n  return {\n    area_id: $json.area_id,\n    employees: $json.employees,\n    manager_email: managerMap[$json.area_id] ?? 'default@mobilvendor.com'\n  };\n})() }}",
+        "options": {}
+      },
+      "id": "53539ab4-db5b-4962-9774-268613c61631",
+      "name": "Set Manager Email por Area1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -656,
+        3776
+      ]
+    },
+    {
+      "parameters": {
+        "toRecipients": "={{ $json.manager_email }}",
+        "subject": "=⚠️ SEGUIMIENTO DE ONBOARDING - {{ $json.area_id }}",
+        "bodyContent": "=<h2>Reporte de Onboarding Incompleto - {{ $json.area_id }}</h2><p>Los siguientes empleados tienen su onboarding pendiente de completar:</p><table border=\"1\" cellpadding=\"6\" cellspacing=\"0\"><thead><tr><th>Email</th><th>Progreso</th></tr></thead><tbody>{{ $json.employees.map(e => `<tr><td>${e.email}</td><td>${e.completed_at}%</td></tr>`).join('') }}</tbody></table><p>Por favor, haz seguimiento con tu equipo.</p>",
+        "additionalFields": {
+          "bodyContentType": "html"
+        }
+      },
+      "type": "n8n-nodes-base.microsoftOutlook",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        3776
+      ],
+      "id": "743b9fd5-6d2d-4696-87f8-507d71901657",
+      "name": "Send a message1",
+      "webhookId": "d4945f99-850a-41b8-b016-739e0730e5ae",
+      "credentials": {
+        "microsoftOutlookOAuth2Api": {
+          "id": "JySFgjY3Gqtx7Gdo",
+          "name": "Microsoft Outlook account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "filter-completed",
+              "leftValue": "={{ $json.completed_at }}",
+              "rightValue": 100,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "3e1bc88f-09c8-4507-9065-8a3ef635c828",
+      "name": "Filter completed_at < 100",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        -1136,
+        3776
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1712,
+        3616
+      ],
+      "id": "fd4a3496-6712-4b53-81d9-c8285ad44af9",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "pinData": {
+    "When clicking ‘Execute workflow’": [
+      {
+        "json": {},
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-01T00:44:24.967Z",
+      "createdAt": "2026-03-01T00:44:24.967Z",
+      "role": "workflow:owner",
+      "workflowId": "YHYfu0jRlCBHekMQrXn4L",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "tags": [],
+  "triggerCount": 2,
+  "updatedAt": "2026-03-06T03:27:43.577Z",
+  "versionId": "ea8eba18-b59a-4bce-8be3-d14d121af8fc"
+}
