@@ -1,0 +1,80 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:44.877Z",
+  "id": "zFkzeGZHFukoUDKY",
+  "isArchived": false,
+  "meta": null,
+  "name": "My workflow 24",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "028a0646-13d0-41e8-ae17-9389293a7190",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://agents.mobilvendor-ai.com/api/v1/prediction/b8e3f98a-0248-4780-8c30-bda8af379c73",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "question",
+              "value": "Hey, how are you?"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "62717bd5-5f60-4fa9-a7f2-b8cd242a8382",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:45.737Z",
+      "createdAt": "2026-01-13T02:49:45.737Z",
+      "role": "workflow:owner",
+      "workflowId": "zFkzeGZHFukoUDKY",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T02:49:44.877Z",
+  "versionId": "a48e8742-07be-4010-9821-e6e120ebd1fa"
+}
