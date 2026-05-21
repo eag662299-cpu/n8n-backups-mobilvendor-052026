@@ -1,0 +1,570 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-05-14T19:19:39.000Z",
+    "createdAt": "2026-05-14T19:19:33.326Z",
+    "versionId": "990c50e3-8a1c-4177-9aff-1e94c94ecb93",
+    "workflowId": "7MQY9EqrEQwFy0Ld",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "intranet-sso",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "2ec777f6-edb0-4b25-ae6c-69d34589976d",
+        "name": "Webhook Login",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          -2608,
+          -128
+        ],
+        "webhookId": "intranet-login"
+      },
+      {
+        "parameters": {
+          "jsCode": "const body = $input.first().json.body;\nconst idToken = (body.id_token || '').trim();\nconst areaFrontend = (body.area || '').replace(/^Acceso a\\s*/i, '').trim();\nif (!idToken) return [{ json: { tokenValido: false, error: 'No se recibió id_token. Inicia sesión con Microsoft.', areaFrontend } }];\nconst parts = idToken.split('.');\nif (parts.length !== 3) return [{ json: { tokenValido: false, error: 'Token malformado (no es un JWT válido).', areaFrontend } }];\nlet header, payload;\ntry { header = JSON.parse(Buffer.from(parts[0], 'base64url').toString('utf8')); payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf8')); } catch(e) { return [{ json: { tokenValido: false, error: 'Error al decodificar token: ' + e.message, areaFrontend } }]; }\nconst CLIENT_ID = 'TU_CLIENT_ID_AZURE';\nconst TENANT_ID = 'TU_TENANT_ID_AZURE';\nconst ahora = Math.floor(Date.now() / 1000);\nif (payload.exp && payload.exp < ahora) return [{ json: { tokenValido: false, error: 'Token expirado. Vuelve a iniciar sesión.', areaFrontend } }];\nif (payload.nbf && payload.nbf > ahora + 300) return [{ json: { tokenValido: false, error: 'Token aún no válido (nbf).', areaFrontend } }];\nconst audiences = Array.isArray(payload.aud) ? payload.aud : [payload.aud];\nif (!audiences.includes(CLIENT_ID)) return [{ json: { tokenValido: false, error: 'Audience inválido: ' + JSON.stringify(payload.aud), areaFrontend } }];\nconst validIssuers = [`https://login.microsoftonline.com/${TENANT_ID}/v2.0`, `https://sts.windows.net/${TENANT_ID}/`];\nif (!validIssuers.includes(payload.iss)) return [{ json: { tokenValido: false, error: 'Issuer inválido: ' + payload.iss, areaFrontend } }];\nconst email = payload.email || payload.preferred_username || payload.upn || '';\nconst nombre = payload.name || payload.given_name || '';\nconst cargo = payload.jobTitle || '';\nconst departamento = payload.department || '';\nif (!departamento) return [{ json: { tokenValido: false, error: 'El token no contiene el claim department. Habilítalo en Azure → Token configuration.', areaFrontend, email, nombre } }];\nreturn [{ json: { tokenValido: true, email, nombre, cargo, departamento, accountEnabled: true, areaFrontend, tokenAlg: header.alg, tokenExp: new Date(payload.exp * 1000).toISOString() } }];"
+        },
+        "id": "27252bc7-0ee3-42b8-b60d-9ca2d2af7ac1",
+        "name": "Validar ID Token JWT",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -2368,
+          -128
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "cond-token",
+                "leftValue": "={{ $json.tokenValido }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "8bdb2149-9f8f-43a4-bfae-179d5308449e",
+        "name": "Token Válido?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -2128,
+          -128
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ JSON.stringify({ status: 'error', code: 'TOKEN_INVALID', message: 'Token inválido o expirado. Vuelve a iniciar sesión con Microsoft.', detalle: $json.error }) }}",
+          "options": {
+            "responseCode": 401
+          }
+        },
+        "id": "288058db-bb7e-440e-ab20-888bf07e348e",
+        "name": "Respond - Token Inválido",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          -1888,
+          64
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const user = $input.first().json;\nconst deptRaw = (user.departamento || '').trim().toLowerCase();\nconst areaFrontend = user.areaFrontend || '';\nconst deptMap = { 'soporte': 'Soporte', 'marketing': 'Marketing', 'contabilidad': 'Contabilidad', 'comercial': 'Comercial', 'sales operations': 'Comercial', 'sales operatins': 'Comercial', 'sales operations ': 'Comercial', 'sales operations management': 'Comercial', 'operaciones': 'Operaciones', 'calidad': 'Calidad', 'ti': 'TI', 'desarrollo': 'TI', 'gerencia': 'Gerencia', 'd. organizacional': 'Gerencia', 'analítica de datos': 'Analítica', 'analitica de datos': 'Analítica', 'co': 'Comercial' };\nconst areaMapeada = deptMap[deptRaw] || null;\nconst tieneAcceso = areaMapeada === areaFrontend;\nreturn [{ json: { email: user.email, nombre: user.nombre, cargo: user.cargo, departamento: user.departamento, areaMapeada, areaFrontend, tieneAcceso, accountEnabled: user.accountEnabled } }];"
+        },
+        "id": "9bda9e54-6451-4feb-a2b6-2386614eb460",
+        "name": "Normalizar Departamento",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1888,
+          -128
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "cond-1",
+                "leftValue": "={{ $json.tieneAcceso }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true"
+                }
+              },
+              {
+                "id": "cond-2",
+                "leftValue": "={{ $json.accountEnabled }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "2bd9273f-7a79-4bd2-91ac-04f884688733",
+        "name": "Tiene Acceso?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          -1648,
+          -128
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const redirects = { 'Soporte': 'https://soporte.mobilvendor.com', 'Marketing': 'https://marketing.mobilvendor.com', 'Contabilidad': 'https://contabilidad.mobilvendor.com', 'Comercial': 'https://comercial.mobilvendor.com', 'Operaciones': 'https://operaciones.mobilvendor.com', 'Calidad': 'https://calidad.mobilvendor.com', 'TI': 'https://ti.mobilvendor.com', 'Gerencia': 'https://gerencia.mobilvendor.com', 'Analitica': 'https://analitica.mobilvendor.com' };\nconst area = $json.areaMapeada;\nconst url = redirects[area] || 'https://intranet.mobilvendor.com';\nconst sessionPayload = { email: $json.email, nombre: $json.nombre, cargo: $json.cargo, area: area, iat: Date.now(), exp: Date.now() + (8 * 60 * 60 * 1000) };\nconst sessionToken = Buffer.from(JSON.stringify(sessionPayload)).toString('base64url');\nreturn [{ json: { status: 'ok', redirect: url, nombre: $json.nombre, cargo: $json.cargo, email: $json.email, area: area, sessionToken } }];"
+        },
+        "id": "1396e628-826b-4eb6-ac46-9ef167593046",
+        "name": "Preparar Respuesta OK",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -1408,
+          -240
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ JSON.stringify({ status: 'error', code: 'ACCESS_DENIED', message: 'Tu cuenta (' + $json.email + ') no tiene acceso al módulo ' + $json.areaFrontend + '. Contacta a TI si crees que es un error.', areaSolicitada: $json.areaFrontend, departamento: $json.departamento }) }}",
+          "options": {
+            "responseCode": 403
+          }
+        },
+        "id": "65f9cc5b-1888-4111-8253-dabaca0cf68d",
+        "name": "Respond - Sin Acceso",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          -1408,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ $json }}",
+          "options": {
+            "responseCode": 200
+          }
+        },
+        "id": "281dd66e-da1e-4f16-a7f3-6fe177587f77",
+        "name": "Respond - Acceso Autorizado",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          -1168,
+          -240
+        ]
+      }
+    ],
+    "connections": {
+      "Webhook Login": {
+        "main": [
+          [
+            {
+              "node": "Validar ID Token JWT",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validar ID Token JWT": {
+        "main": [
+          [
+            {
+              "node": "Token Válido?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Token Válido?": {
+        "main": [
+          [
+            {
+              "node": "Normalizar Departamento",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Respond - Token Inválido",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalizar Departamento": {
+        "main": [
+          [
+            {
+              "node": "Tiene Acceso?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tiene Acceso?": {
+        "main": [
+          [
+            {
+              "node": "Preparar Respuesta OK",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Respond - Sin Acceso",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Preparar Respuesta OK": {
+        "main": [
+          [
+            {
+              "node": "Respond - Acceso Autorizado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "ZEI MOBILVENDOR",
+    "name": "Version 1.4",
+    "description": "",
+    "autosaved": true
+  },
+  "activeVersionId": "990c50e3-8a1c-4177-9aff-1e94c94ecb93",
+  "connections": {
+    "Webhook Login": {
+      "main": [
+        [
+          {
+            "node": "Validar ID Token JWT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar ID Token JWT": {
+      "main": [
+        [
+          {
+            "node": "Token Válido?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Token Válido?": {
+      "main": [
+        [
+          {
+            "node": "Normalizar Departamento",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond - Token Inválido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar Departamento": {
+      "main": [
+        [
+          {
+            "node": "Tiene Acceso?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tiene Acceso?": {
+      "main": [
+        [
+          {
+            "node": "Preparar Respuesta OK",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond - Sin Acceso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Respuesta OK": {
+      "main": [
+        [
+          {
+            "node": "Respond - Acceso Autorizado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-05-14T16:07:37.794Z",
+  "id": "7MQY9EqrEQwFy0Ld",
+  "isArchived": false,
+  "meta": null,
+  "name": "MobilVendor Intranet — SSO JWT",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "intranet-sso",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "2ec777f6-edb0-4b25-ae6c-69d34589976d",
+      "name": "Webhook Login",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -2608,
+        -128
+      ],
+      "webhookId": "intranet-login"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body;\nconst idToken = (body.id_token || '').trim();\nconst areaFrontend = (body.area || '').replace(/^Acceso a\\s*/i, '').trim();\nif (!idToken) return [{ json: { tokenValido: false, error: 'No se recibió id_token. Inicia sesión con Microsoft.', areaFrontend } }];\nconst parts = idToken.split('.');\nif (parts.length !== 3) return [{ json: { tokenValido: false, error: 'Token malformado (no es un JWT válido).', areaFrontend } }];\nlet header, payload;\ntry { header = JSON.parse(Buffer.from(parts[0], 'base64url').toString('utf8')); payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf8')); } catch(e) { return [{ json: { tokenValido: false, error: 'Error al decodificar token: ' + e.message, areaFrontend } }]; }\nconst CLIENT_ID = 'TU_CLIENT_ID_AZURE';\nconst TENANT_ID = 'TU_TENANT_ID_AZURE';\nconst ahora = Math.floor(Date.now() / 1000);\nif (payload.exp && payload.exp < ahora) return [{ json: { tokenValido: false, error: 'Token expirado. Vuelve a iniciar sesión.', areaFrontend } }];\nif (payload.nbf && payload.nbf > ahora + 300) return [{ json: { tokenValido: false, error: 'Token aún no válido (nbf).', areaFrontend } }];\nconst audiences = Array.isArray(payload.aud) ? payload.aud : [payload.aud];\nif (!audiences.includes(CLIENT_ID)) return [{ json: { tokenValido: false, error: 'Audience inválido: ' + JSON.stringify(payload.aud), areaFrontend } }];\nconst validIssuers = [`https://login.microsoftonline.com/${TENANT_ID}/v2.0`, `https://sts.windows.net/${TENANT_ID}/`];\nif (!validIssuers.includes(payload.iss)) return [{ json: { tokenValido: false, error: 'Issuer inválido: ' + payload.iss, areaFrontend } }];\nconst email = payload.email || payload.preferred_username || payload.upn || '';\nconst nombre = payload.name || payload.given_name || '';\nconst cargo = payload.jobTitle || '';\nconst departamento = payload.department || '';\nif (!departamento) return [{ json: { tokenValido: false, error: 'El token no contiene el claim department. Habilítalo en Azure → Token configuration.', areaFrontend, email, nombre } }];\nreturn [{ json: { tokenValido: true, email, nombre, cargo, departamento, accountEnabled: true, areaFrontend, tokenAlg: header.alg, tokenExp: new Date(payload.exp * 1000).toISOString() } }];"
+      },
+      "id": "27252bc7-0ee3-42b8-b60d-9ca2d2af7ac1",
+      "name": "Validar ID Token JWT",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2368,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "cond-token",
+              "leftValue": "={{ $json.tokenValido }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "8bdb2149-9f8f-43a4-bfae-179d5308449e",
+      "name": "Token Válido?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -2128,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'error', code: 'TOKEN_INVALID', message: 'Token inválido o expirado. Vuelve a iniciar sesión con Microsoft.', detalle: $json.error }) }}",
+        "options": {
+          "responseCode": 401
+        }
+      },
+      "id": "288058db-bb7e-440e-ab20-888bf07e348e",
+      "name": "Respond - Token Inválido",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -1888,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const user = $input.first().json;\nconst deptRaw = (user.departamento || '').trim().toLowerCase();\nconst areaFrontend = user.areaFrontend || '';\nconst deptMap = { 'soporte': 'Soporte', 'marketing': 'Marketing', 'contabilidad': 'Contabilidad', 'comercial': 'Comercial', 'sales operations': 'Comercial', 'sales operatins': 'Comercial', 'sales operations ': 'Comercial', 'sales operations management': 'Comercial', 'operaciones': 'Operaciones', 'calidad': 'Calidad', 'ti': 'TI', 'desarrollo': 'TI', 'gerencia': 'Gerencia', 'd. organizacional': 'Gerencia', 'analítica de datos': 'Analítica', 'analitica de datos': 'Analítica', 'co': 'Comercial' };\nconst areaMapeada = deptMap[deptRaw] || null;\nconst tieneAcceso = areaMapeada === areaFrontend;\nreturn [{ json: { email: user.email, nombre: user.nombre, cargo: user.cargo, departamento: user.departamento, areaMapeada, areaFrontend, tieneAcceso, accountEnabled: user.accountEnabled } }];"
+      },
+      "id": "9bda9e54-6451-4feb-a2b6-2386614eb460",
+      "name": "Normalizar Departamento",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1888,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "cond-1",
+              "leftValue": "={{ $json.tieneAcceso }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            },
+            {
+              "id": "cond-2",
+              "leftValue": "={{ $json.accountEnabled }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "2bd9273f-7a79-4bd2-91ac-04f884688733",
+      "name": "Tiene Acceso?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1648,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const redirects = { 'Soporte': 'https://soporte.mobilvendor.com', 'Marketing': 'https://marketing.mobilvendor.com', 'Contabilidad': 'https://contabilidad.mobilvendor.com', 'Comercial': 'https://comercial.mobilvendor.com', 'Operaciones': 'https://operaciones.mobilvendor.com', 'Calidad': 'https://calidad.mobilvendor.com', 'TI': 'https://ti.mobilvendor.com', 'Gerencia': 'https://gerencia.mobilvendor.com', 'Analitica': 'https://analitica.mobilvendor.com' };\nconst area = $json.areaMapeada;\nconst url = redirects[area] || 'https://intranet.mobilvendor.com';\nconst sessionPayload = { email: $json.email, nombre: $json.nombre, cargo: $json.cargo, area: area, iat: Date.now(), exp: Date.now() + (8 * 60 * 60 * 1000) };\nconst sessionToken = Buffer.from(JSON.stringify(sessionPayload)).toString('base64url');\nreturn [{ json: { status: 'ok', redirect: url, nombre: $json.nombre, cargo: $json.cargo, email: $json.email, area: area, sessionToken } }];"
+      },
+      "id": "1396e628-826b-4eb6-ac46-9ef167593046",
+      "name": "Preparar Respuesta OK",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1408,
+        -240
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ status: 'error', code: 'ACCESS_DENIED', message: 'Tu cuenta (' + $json.email + ') no tiene acceso al módulo ' + $json.areaFrontend + '. Contacta a TI si crees que es un error.', areaSolicitada: $json.areaFrontend, departamento: $json.departamento }) }}",
+        "options": {
+          "responseCode": 403
+        }
+      },
+      "id": "65f9cc5b-1888-4111-8253-dabaca0cf68d",
+      "name": "Respond - Sin Acceso",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -1408,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "281dd66e-da1e-4f16-a7f3-6fe177587f77",
+      "name": "Respond - Acceso Autorizado",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -1168,
+        -240
+      ]
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-05-14T16:07:37.807Z",
+      "createdAt": "2026-05-14T16:07:37.807Z",
+      "role": "workflow:owner",
+      "workflowId": "7MQY9EqrEQwFy0Ld",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-05-14T19:19:33.324Z",
+  "versionId": "990c50e3-8a1c-4177-9aff-1e94c94ecb93"
+}
