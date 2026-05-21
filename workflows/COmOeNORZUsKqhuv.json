@@ -1,0 +1,209 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Microsoft Teams Trigger": {
+      "main": [
+        [
+          {
+            "node": "Analyze Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Message": {
+      "main": [
+        [
+          {
+            "node": "Excel Lookup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Excel Lookup": {
+      "main": [
+        [
+          {
+            "node": "Format Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Email": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:46.723Z",
+  "id": "COmOeNORZUsKqhuv",
+  "isArchived": false,
+  "meta": null,
+  "name": "My workflow 18",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Flujo de Teams a Excel\n\n1. Captura mensajes de Microsoft Teams\n2. Analiza el texto con OpenAI para extraer criterios de búsqueda\n3. Busca en un Excel usando los criterios\n4. Formatea el resultado\n5. Envía un email con los datos y texto adicional",
+        "height": 200,
+        "width": 400
+      },
+      "name": "Workflow Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        400,
+        -128
+      ],
+      "id": "generated-65db87d0-f618-4b3a-aa9d-f8844fc5d247"
+    },
+    {
+      "parameters": {
+        "watchAllTeams": true
+      },
+      "name": "Microsoft Teams Trigger",
+      "type": "n8n-nodes-base.microsoftTeamsTrigger",
+      "position": [
+        256,
+        64
+      ],
+      "id": "generated-d08ba1bf-cfc2-4f17-902e-b02d40efb906"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "mode": "list",
+          "value": "gpt-3.5-turbo"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "Por favor, analiza el siguiente mensaje de Teams y extrae los datos para buscar en el Excel en formato JSON con {\"lookupColumn\":..., \"lookupValue\":...}:\n\n{{$json[\"body\"][\"content\"]}}"
+            }
+          ]
+        },
+        "options": {
+          "frequency_penalty": 0,
+          "maxTokens": 300,
+          "n": 1,
+          "presence_penalty": 0,
+          "temperature": 1,
+          "topP": 1
+        }
+      },
+      "name": "Analyze Message",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        560,
+        64
+      ],
+      "id": "generated-7fef334d-7ed6-4e52-a474-ad9432771a13",
+      "credentials": {
+        "openAiApi": {
+          "id": "ESQcfuiJYPWo7F8F",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "table",
+        "operation": "lookup",
+        "workbook": {
+          "mode": "list",
+          "value": "PLACEHOLDER_WORKBOOK_ID"
+        },
+        "worksheet": {
+          "mode": "list",
+          "value": "PLACEHOLDER_SHEET_ID"
+        },
+        "table": {
+          "mode": "list",
+          "value": "PLACEHOLDER_TABLE_ID"
+        },
+        "lookupColumn": "={{$json[\"lookupColumn\"]}}",
+        "lookupValue": "={{$json[\"lookupValue\"]}}",
+        "options": {
+          "returnAllMatches": true
+        }
+      },
+      "name": "Excel Lookup",
+      "type": "n8n-nodes-base.microsoftExcel",
+      "position": [
+        864,
+        64
+      ],
+      "id": "generated-cbe752be-60e3-485f-8f3e-202dbb81ccd7"
+    },
+    {
+      "parameters": {
+        "options": {
+          "includeBinary": true,
+          "ignoreConversionErrors": false,
+          "dotNotation": true
+        }
+      },
+      "name": "Format Email",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1152,
+        64
+      ],
+      "id": "generated-d98ef9b3-bb96-4ebf-b25b-f5ff1ae468c9"
+    },
+    {
+      "parameters": {
+        "fromEmail": "YOUR_EMAIL",
+        "toEmail": "RECIPIENT_EMAIL",
+        "subject": "Datos consultados desde Excel",
+        "html": "{{$node[\"Format Email\"].json[\"body\"]}}",
+        "options": {
+          "appendAttribution": true,
+          "attachments": "",
+          "ccEmail": "",
+          "bccEmail": "",
+          "allowUnauthorizedCerts": false,
+          "replyTo": ""
+        }
+      },
+      "name": "Send Email",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [
+        1456,
+        64
+      ],
+      "id": "generated-5bab82f7-ecff-450c-a6c0-08a75e239779"
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:46.924Z",
+      "createdAt": "2026-01-13T02:49:46.924Z",
+      "role": "workflow:owner",
+      "workflowId": "COmOeNORZUsKqhuv",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T02:49:46.723Z",
+  "versionId": "3a6e55f5-3602-4d04-be37-bc9d208c6934"
+}
