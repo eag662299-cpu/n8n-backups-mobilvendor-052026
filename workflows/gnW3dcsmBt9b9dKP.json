@@ -1,0 +1,61 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {},
+  "createdAt": "2026-05-14T21:55:33.882Z",
+  "id": "gnW3dcsmBt9b9dKP",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "My workflow 33",
+  "nodes": [
+    {
+      "parameters": {
+        "appId": "1366923478828036",
+        "object": "page",
+        "fields": [
+          "*"
+        ],
+        "options": {
+          "includeValues": true
+        }
+      },
+      "type": "n8n-nodes-base.facebookTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c3913c27-fd9d-40ff-91c8-acb0f115c9f8",
+      "name": "Facebook Trigger",
+      "webhookId": "d23eb0a3-b601-4529-ae4c-502f8036af82",
+      "credentials": {
+        "facebookGraphAppApi": {
+          "id": "4R4Z7hKF0lI25qZS",
+          "name": "test2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-05-14T21:55:33.907Z",
+      "createdAt": "2026-05-14T21:55:33.907Z",
+      "role": "workflow:owner",
+      "workflowId": "gnW3dcsmBt9b9dKP",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-05-14T22:02:26.595Z",
+  "versionId": "f1c50129-43f3-4e2f-937d-27acfe9c71f1"
+}
