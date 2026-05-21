@@ -1,0 +1,258 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Listar archivos error_web",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Listar archivos error_web",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listar archivos error_web": {
+      "main": [
+        [
+          {
+            "node": "Separar archivos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Separar archivos": {
+      "main": [
+        [
+          {
+            "node": "Filtrar solo archivos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar solo archivos": {
+      "main": [
+        [
+          {
+            "node": "Descargar archivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Descargar archivo": {
+      "main": [
+        [
+          {
+            "node": "Subir a S3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:45.866Z",
+  "id": "quHlG4mDubGQ8YHo",
+  "isArchived": false,
+  "meta": null,
+  "name": "My workflow 22",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        -224
+      ],
+      "id": "3d69cd18-9501-49db-96c5-5c28d6bd5d8b",
+      "name": "Schedule Trigger",
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        224,
+        -112
+      ],
+      "id": "e9eef53b-170e-4da3-8009-3cb6e899ba0f",
+      "name": "Manual Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/sites/mobilvendorcom.sharepoint.com,f545d085-e894-4c08-b06d-fd9559e9391f,6b7b3702-269f-4e6b-8a31-04ffbffff3fd/drive/items/01SHM76UG6XUEM2JQ26NFJLDUPTRNQE4DB/children?$select=id,name,webUrl,file,folder",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        528,
+        -176
+      ],
+      "id": "ff6c468a-7047-47f5-a1a7-ee510e34c6c9",
+      "name": "Listar archivos error_web",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "rtxDh1vSk3F4bb0q",
+          "name": "Conexion SharePoint"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "value",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        736,
+        -176
+      ],
+      "id": "a20531fd-e177-45ef-83c0-225bf860cd88",
+      "name": "Separar archivos"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "filter-only-files",
+              "leftValue": "={{ $json.file }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [
+        928,
+        -176
+      ],
+      "id": "8b52dbcc-9f88-409b-a32a-2448fb41f827",
+      "name": "Filtrar solo archivos"
+    },
+    {
+      "parameters": {
+        "site": {
+          "__rl": true,
+          "value": "mobilvendorcom.sharepoint.com,f545d085-e894-4c08-b06d-fd9559e9391f,6b7b3702-269f-4e6b-8a31-04ffbffff3fd",
+          "mode": "list",
+          "cachedResultName": "zei-mobilvendor"
+        },
+        "folder": {
+          "__rl": true,
+          "value": "01SHM76UG6XUEM2JQ26NFJLDUPTRNQE4DB",
+          "mode": "list",
+          "cachedResultName": "error_web"
+        },
+        "file": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.microsoftSharePoint",
+      "typeVersion": 1,
+      "position": [
+        1136,
+        -176
+      ],
+      "id": "dedcecd1-1ca8-4e69-a569-e79ee93c24cd",
+      "name": "Descargar archivo",
+      "credentials": {
+        "microsoftSharePointOAuth2Api": {
+          "id": "Mk0zfp4BGXet86UQ",
+          "name": "Microsoft SharePoint account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "bucketName": "mobilvendorzei",
+        "fileName": "=knowledge/support/error_web/{{ $json.name }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.awsS3",
+      "typeVersion": 2,
+      "position": [
+        1328,
+        -176
+      ],
+      "id": "25c85df4-2bc7-4ca2-84c8-3e68bd6c8fa5",
+      "name": "Subir a S3",
+      "credentials": {
+        "aws": {
+          "id": "gpmkKyepTbC5nySz",
+          "name": "AWS account"
+        }
+      }
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:46.127Z",
+      "createdAt": "2026-01-13T02:49:46.127Z",
+      "role": "workflow:owner",
+      "workflowId": "quHlG4mDubGQ8YHo",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T02:49:45.866Z",
+  "versionId": "daba3470-0299-4cc4-9acd-7d21c32f49c1"
+}
