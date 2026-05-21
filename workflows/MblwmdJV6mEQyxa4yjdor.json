@@ -1,0 +1,290 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Drive - Listar XLSX",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Drive - Listar XLSX": {
+      "main": [
+        [
+          {
+            "node": "Loop Archivos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Archivos": {
+      "main": [
+        [
+          {
+            "node": "Drive - Descargar Archivo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Aggregate Resultados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Drive - Descargar Archivo": {
+      "main": [
+        [
+          {
+            "node": "Extraer Filas Excel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer Filas Excel": {
+      "main": [
+        [
+          {
+            "node": "Loop Archivos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Resultados": {
+      "main": [
+        [
+          {
+            "node": "Construir DataFrame",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Construir DataFrame": {
+      "main": [
+        [
+          {
+            "node": "Crear Archivo XLSX",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Crear Archivo XLSX": {
+      "main": [
+        [
+          {
+            "node": "Drive - Subir Consolidado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-04-05T01:28:12.398Z",
+  "id": "MblwmdJV6mEQyxa4yjdor",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "3",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "e328084c-382e-426b-a014-1c990cdda8a6",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -768,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "mimeType='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' and 'TU_FOLDER_ID' in parents and name != 'consolidated_report.xlsx' and trashed=false",
+        "returnAll": true,
+        "filter": {},
+        "options": {}
+      },
+      "id": "021cd9d7-5e7d-4b40-b83c-7a879d43a088",
+      "name": "Drive - Listar XLSX",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -528,
+        288
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "nZU8LW95ZL0VVPJ9",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "43dff531-61a6-41a5-b24d-2e45dd83eccf",
+      "name": "Loop Archivos",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -288,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "a04e1981-5ea1-40a8-b840-5c37b4f018a1",
+      "name": "Drive - Descargar Archivo",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -48,
+        160
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "nZU8LW95ZL0VVPJ9",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const XLSX = require('xlsx');\n\n// Leer el binario descargado de Drive\nconst binaryKey = Object.keys($input.first().binary)[0];\nconst buffer = Buffer.from($input.first().binary[binaryKey].data, 'base64');\n\nconst wb = XLSX.read(buffer, { type: 'buffer' });\nconst ws = wb.Sheets['SMA-QoS-9'];\n\nif (!ws) throw new Error('Hoja SMA-QoS-9 no encontrada');\n\nconst rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });\n\nconst header_row = rows[11] || []; // Fila 12 índice 11\nconst data_row   = rows[12] || []; // Fila 13 índice 12\n\nreturn [{\n  json: {\n    headerRow: header_row,\n    dataRow:   data_row,\n    fileName:  $input.first().binary[binaryKey].fileName || 'unknown'\n  }\n}];"
+      },
+      "id": "66be3049-d2fb-4beb-aca8-ed3314cf3a39",
+      "name": "Extraer Filas Excel",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "id": "bfbf43fe-59e1-4534-8538-711503994fc2",
+      "name": "Aggregate Resultados",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Equivalente exacto al DataFrame de Python\nconst items = $input.first().json.data;\n\n// Header del PRIMER archivo (índice 11)\nconst header_row = items[0].headerRow;\n\n// Fila 13 (índice 12) de TODOS los archivos\nconst df = items.map(item => {\n  const obj = {};\n  header_row.forEach((col, i) => {\n    obj[String(col)] = item.dataRow[i] !== undefined ? item.dataRow[i] : '';\n  });\n  return obj;\n});\n\nreturn df.map(row => ({ json: row }));"
+      },
+      "id": "bf482d4b-dc71-4e11-9633-5ae2bdf70462",
+      "name": "Construir DataFrame",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "toFile",
+        "fileFormat": "xlsx",
+        "options": {
+          "fileName": "consolidated_report",
+          "sheetName": "SMA-QoS-9_Consolidada"
+        }
+      },
+      "id": "88ecb9c9-58a4-4fc5-96be-8e4fa9b98f2f",
+      "name": "Crear Archivo XLSX",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "typeVersion": 2,
+      "position": [
+        432,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "name": "consolidated_report.xlsx",
+        "driveId": {
+          "__rl": true,
+          "value": "MyDrive",
+          "mode": "list"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "TU_FOLDER_ID",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "id": "69b93e89-e869-4c9c-8537-03065709f735",
+      "name": "Drive - Subir Consolidado",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        672,
+        400
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "nZU8LW95ZL0VVPJ9",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-04-05T01:28:12.408Z",
+      "createdAt": "2026-04-05T01:28:12.408Z",
+      "role": "workflow:owner",
+      "workflowId": "MblwmdJV6mEQyxa4yjdor",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-04-05T02:50:34.934Z",
+  "versionId": "5d4cecc2-b953-4087-b92a-56999e295907"
+}
