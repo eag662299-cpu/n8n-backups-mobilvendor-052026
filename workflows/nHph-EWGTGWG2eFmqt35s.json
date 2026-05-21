@@ -1,0 +1,3217 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-04-22T17:14:28.000Z",
+    "createdAt": "2026-04-22T17:14:01.502Z",
+    "versionId": "ebc1f973-acf1-4cd6-b4b3-9f9349b7c680",
+    "workflowId": "nHph-EWGTGWG2eFmqt35s",
+    "nodes": [
+      {
+        "parameters": {},
+        "name": "Start",
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -1312,
+          4544
+        ],
+        "id": "0f7f8296-325d-4863-8ac0-021cafd31607"
+      },
+      {
+        "parameters": {
+          "jsCode": "const sharedUrl = 'https://mobilvendorcom.sharepoint.com/:f:/s/Onboarding_Mobilvendor/IgCR-1BptbqUT7_ZAVehYyEoAb8xd5aSk4qDHp_C_sKA5fI?e=fTTKRM';\n\nconst b64 = Buffer.from(sharedUrl, 'utf8')\n  .toString('base64')\n  .replace(/\\+/g, '-')\n  .replace(/\\//g, '_')\n  .replace(/=+$/g, '');\n\nreturn [{ json: { shareId: `u!${b64}` } }];\n"
+        },
+        "name": "shareId2",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -960,
+          4736
+        ],
+        "id": "c21195be-cea3-441c-b43d-5adf67e38ad0"
+      },
+      {
+        "parameters": {
+          "url": "=https://graph.microsoft.com/v1.0/shares/{{$json.shareId}}/driveItem?$select=id,name,folder,webUrl,parentReference,remoteItem",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "oAuth2Api",
+          "options": {}
+        },
+        "name": "Obtener driveItem (ONBOARDING)1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -624,
+          4736
+        ],
+        "id": "d01418dc-59be-474f-918e-e60301782849",
+        "credentials": {
+          "oAuth2Api": {
+            "id": "Ss8wohQpmAIhjs5u",
+            "name": "NEW_Credential"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "driveId",
+                "name": "driveId",
+                "value": "={{ $json.parentReference.driveId }}",
+                "type": "string"
+              },
+              {
+                "id": "rootId",
+                "name": "rootId",
+                "value": "={{ $json.id }}",
+                "type": "string"
+              },
+              {
+                "id": "__ctx",
+                "name": "__ctx",
+                "value": "={{ { level: 0, driveId: $json.parentReference.driveId, area_id: '', modulo_id: '', topic_id: '', path: '/ONBOARDING' } }}",
+                "type": "json"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "name": "Set Root Context1",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.3,
+        "position": [
+          -400,
+          4736
+        ],
+        "id": "2cd1ad63-82f7-449f-ae67-a7ed2da76a42"
+      },
+      {
+        "parameters": {
+          "url": "=https://graph.microsoft.com/v1.0/drives/{{$json.driveId}}/items/{{$json.rootId}}/children?$select=id,name,webUrl,file,folder,size,lastModifiedDateTime,parentReference",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "oAuth2Api",
+          "options": {}
+        },
+        "name": "Listar Children (ONBOARDING)1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          -176,
+          4736
+        ],
+        "id": "cf9819fe-c838-4e01-a36f-5655a2bebad1",
+        "credentials": {
+          "oAuth2Api": {
+            "id": "Ss8wohQpmAIhjs5u",
+            "name": "NEW_Credential"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const parentCtx = $items('Set Root Context1')[0].json.__ctx;\nconst value = $json.value || [];\n\nconst enrichedValue = value.map(item => ({\n  ...item,\n  __parentCtx: parentCtx\n}));\n\nreturn [{ json: { value: enrichedValue, __ctx: parentCtx } }];\n"
+        },
+        "name": "Attach Root Context1",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          48,
+          4736
+        ],
+        "id": "5878a5db-5d87-46db-8485-67a30ca7289b"
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "value",
+          "options": {}
+        },
+        "name": "SplitOut Items2",
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          272,
+          4736
+        ],
+        "id": "0e95cc66-9e86-4bd0-8c3a-91137f9c2adf"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForEachItem",
+          "jsCode": "function slugify(s) {\n  return (s || '')\n    .normalize('NFD').replace(/[\\u0300-\\u036f]/g, '')\n    .replace(/ñ/g, 'n').replace(/Ñ/g, 'N')\n    .replace(/[^a-zA-Z0-9]+/g, '_')\n    .replace(/^_+|_+$/g, '')\n    .toUpperCase();\n}\n\nfunction parseOrderAndName(folderName) {\n  const m = (folderName || '').match(/^\\s*(\\d+)\\.\\s*(.+)\\s*$/);\n  if (!m) return { orden: 9999, cleanName: folderName };\n  return { orden: parseInt(m[1], 10), cleanName: m[2] };\n}\n\n// Buscar primero __parentCtx\nconst parent = $json.__parentCtx || $json.__ctx || { \n  level: 0, \n  driveId: '', \n  area_id:'', \n  modulo_id:'', \n  topic_id:'', \n  path:'/ONBOARDING' \n};\n\nconst x = $json;\nconst isFolder = !!x.folder;\nconst name = x.name;\n\n// IMPORTANTE: Asegurar que driveId se preserve\nconst driveId = parent.driveId || x.parentReference?.driveId || '';\n\nconst base = {\n  id: x.id,\n  name,\n  webUrl: x.webUrl,\n  isFolder,\n  childCount: x.folder?.childCount || 0,\n  lastModifiedDateTime: x.lastModifiedDateTime,\n  size: x.size || 0,\n  level: parent.level + 1,\n  path: `${parent.path}/${name}`.replace(/\\/+/g, '/'),\n  __ctx: { \n    ...parent, \n    driveId: driveId\n  }\n};\n\n// Level 1 = Area\nif (base.level === 1 && isFolder) {\n  const area_id = slugify(name);\n  base.__ctx = { \n    level: 1, \n    driveId: driveId,\n    area_id, \n    modulo_id: '', \n    topic_id: '', \n    path: `/${area_id}` \n  };\n}\n\n// Level 2 = Modulo\nif (base.level === 2 && isFolder) {\n  const { orden, cleanName } = parseOrderAndName(name);\n  const modulo_id = `${parent.area_id}__${slugify(cleanName)}`;\n  base.mod_orden = orden;\n  base.mod_cleanName = cleanName;\n  base.__ctx = { \n    level: 2, \n    driveId: driveId,\n    area_id: parent.area_id, \n    modulo_id, \n    topic_id: '', \n    path: `${parent.path}/${name}`.replace(/\\/+/g, '/') \n  };\n}\n\n// Level 3 = Topic\nif (base.level === 3 && isFolder) {\n  const { orden, cleanName } = parseOrderAndName(name);\n  const topic_id = `${parent.modulo_id}__${slugify(cleanName)}`;\n  base.top_orden = orden;\n  base.top_cleanName = cleanName;\n  base.__ctx = { \n    level: 3, \n    driveId: driveId,\n    area_id: parent.area_id, \n    modulo_id: parent.modulo_id, \n    topic_id, \n    path: `${parent.path}/${name}`.replace(/\\/+/g, '/') \n  };\n}\n\n$input.item.json = base;\nreturn $input.item;\n"
+        },
+        "name": "Normalize + Context2",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          496,
+          4736
+        ],
+        "id": "be659065-f359-42ff-99a5-0cd9f14523b7"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "conditions": [
+              {
+                "leftValue": "={{$json.isFolder}}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                }
+              }
+            ]
+          },
+          "options": {}
+        },
+        "name": "IF Folder?2",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          720,
+          4736
+        ],
+        "id": "ccb1b0f5-d4f9-41d2-a318-f0d68739bad3"
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "Areas",
+            "mode": "name"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "area_id": "={{ $json.id }}",
+              "name": "={{ $json.name }}",
+              "orden": "={{ $json.level }}",
+              "activo": "={{true}}",
+              "path": "={{'/' + $json.__ctx.area_id}}",
+              "sp_item_id": "={{ $json.id }}",
+              "web_url": "={{ $json.webUrl }}",
+              "source": "sharepoint"
+            },
+            "matchingColumns": [
+              "area_id"
+            ],
+            "schema": [
+              {
+                "id": "area_id",
+                "displayName": "area_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "name",
+                "displayName": "name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "orden",
+                "displayName": "orden",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "activo",
+                "displayName": "activo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "path",
+                "displayName": "path",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "sp_item_id",
+                "displayName": "sp_item_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "web_url",
+                "displayName": "web_url",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "source",
+                "displayName": "source",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": true,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "name": "Upsert Areas2",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.4,
+        "position": [
+          1024,
+          4688
+        ],
+        "id": "dc6b2246-094c-4b68-88e7-2565f06cae67",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "Modulos",
+            "mode": "name"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "modulo_id": "={{ $json.id }}",
+              "area_id": "={{ $json.parentReference.id }}",
+              "name": "={{ $json.name }}",
+              "orden": "={{ parseInt(($json.name.match(/^\\s*(\\d+)\\s*\\./) || [,'0'])[1], 10) }}",
+              "activo": "=",
+              "path": "={{ $json.parentReference.path }}",
+              "sp_item_id": "=",
+              "web_url": "={{ $json.webUrl }}",
+              "level": "={{1}}",
+              "source": "sharepoint"
+            },
+            "matchingColumns": [
+              "modulo_id"
+            ],
+            "schema": [
+              {
+                "id": "modulo_id",
+                "displayName": "modulo_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "area_id",
+                "displayName": "area_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "name",
+                "displayName": "name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "orden",
+                "displayName": "orden",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "activo",
+                "displayName": "activo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "path",
+                "displayName": "path",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "sp_item_id",
+                "displayName": "sp_item_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "web_url",
+                "displayName": "web_url",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "level",
+                "displayName": "level",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "parent_modulo_id",
+                "displayName": "parent_modulo_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "source",
+                "displayName": "source",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": true,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "name": "Upsert Modulos2",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.4,
+        "position": [
+          1616,
+          4688
+        ],
+        "id": "9a8fdf90-6438-4ca9-a2f9-2966009e343b",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "Topics",
+            "mode": "name"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "topic_id": "={{ $json.id }}",
+              "modulo_id": "={{ $json.parentReference.id }}",
+              "area_id": "=",
+              "name": "={{$json.top_cleanName || $json.name.replace(/^\\s*\\d+\\.\\s*/, '')}}",
+              "orden": "={{ parseInt(($json.name.match(/^\\s*(\\d+)\\s*\\./) || [,'0'])[1], 10) }}",
+              "activo": "={{true}}",
+              "path": "={{ $json.parentReference.path }}",
+              "sp_item_id": "=",
+              "web_url": "={{ $json.webUrl }}",
+              "level": "={{2}}",
+              "source": "sharepoint"
+            },
+            "matchingColumns": [
+              "topic_id"
+            ],
+            "schema": [
+              {
+                "id": "topic_id",
+                "displayName": "topic_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "modulo_id",
+                "displayName": "modulo_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "area_id",
+                "displayName": "area_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "name",
+                "displayName": "name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "orden",
+                "displayName": "orden",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "activo",
+                "displayName": "activo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "path",
+                "displayName": "path",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "sp_item_id",
+                "displayName": "sp_item_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "web_url",
+                "displayName": "web_url",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "level",
+                "displayName": "level",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "parent_topic_id",
+                "displayName": "parent_topic_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "source",
+                "displayName": "source",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": true,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "name": "Upsert Topics2",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.4,
+        "position": [
+          1776,
+          4928
+        ],
+        "id": "1b6d5831-0b80-4dcc-aa31-aee8772018b5",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "value",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          1360,
+          4688
+        ],
+        "id": "d2afe110-1810-433d-a82f-feaa09027a25",
+        "name": "Split Out"
+      },
+      {
+        "parameters": {
+          "url": "=https://graph.microsoft.com/v1.0/drives/{{ $('IF Folder?2').item.json.__ctx.driveId }}/items/{{ $json.sp_item_id }}/children?$select=id,name,webUrl,file,folder,size,lastModifiedDateTime,parentReference",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "oAuth2Api",
+          "options": {}
+        },
+        "name": "Listar Modulos",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1184,
+          4688
+        ],
+        "id": "e09bbd3e-6688-48f7-9127-94d2ab7e3863",
+        "credentials": {
+          "oAuth2Api": {
+            "id": "Ss8wohQpmAIhjs5u",
+            "name": "NEW_Credential"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "=https://graph.microsoft.com/v1.0/drives/{{ $('IF Folder?2').item.json.__ctx.driveId }}/items/{{ $json.modulo_id }}/children?$select=id,name,webUrl,file,folder,size,lastModifiedDateTime,parentReference",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "oAuth2Api",
+          "options": {}
+        },
+        "name": "Listar Topics",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1280,
+          4928
+        ],
+        "id": "df22f686-50f3-4862-b1c5-c08054812481",
+        "credentials": {
+          "oAuth2Api": {
+            "id": "Ss8wohQpmAIhjs5u",
+            "name": "NEW_Credential"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "value",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          1536,
+          4928
+        ],
+        "id": "3cdb9978-abdb-4351-bf15-18deb3ccf043",
+        "name": "Split Out1"
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "value",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          1552,
+          5168
+        ],
+        "id": "e4aaeb3f-f15d-48b4-85c8-3168953faa48",
+        "name": "Split Out2"
+      },
+      {
+        "parameters": {
+          "url": "=https://graph.microsoft.com/v1.0/drives/{{ $('IF Folder?2').item.json.__ctx.driveId }}/items/{{ $json.topic_id }}/children?$select=id,name,webUrl,file,folder,size,lastModifiedDateTime,parentReference",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "oAuth2Api",
+          "options": {}
+        },
+        "name": "Listar Recursos",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1296,
+          5168
+        ],
+        "id": "35dd4c6f-9c4b-425f-88d8-0d78dc0eae92",
+        "credentials": {
+          "oAuth2Api": {
+            "id": "Ss8wohQpmAIhjs5u",
+            "name": "NEW_Credential"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "appendOrUpdate",
+          "documentId": {
+            "__rl": true,
+            "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "Recursos",
+            "mode": "name"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "doc_id": "={{ $json.id }}",
+              "topic_id": "={{ $json.parentReference.id }}",
+              "name": "={{ $json.name }}",
+              "type": "={{ ($json.name || '').split('.').pop().toLowerCase() }}",
+              "web_url": "={{ $json.webUrl }}",
+              "path": "={{ $json.parentReference.path }}",
+              "modified_at": "={{ $json.lastModifiedDateTime }}"
+            },
+            "matchingColumns": [
+              "doc_id"
+            ],
+            "schema": [
+              {
+                "id": "doc_id",
+                "displayName": "doc_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "topic_id",
+                "displayName": "topic_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "modulo_id",
+                "displayName": "modulo_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "area_id",
+                "displayName": "area_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "name",
+                "displayName": "name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "type",
+                "displayName": "type",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "source_url",
+                "displayName": "source_url",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "path",
+                "displayName": "path",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "modified_at",
+                "displayName": "modified_at",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "activo",
+                "displayName": "activo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "sp_item_id",
+                "displayName": "sp_item_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "web_url",
+                "displayName": "web_url",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "source",
+                "displayName": "source",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": true,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "name": "Upsert Recursos4",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.4,
+        "position": [
+          1792,
+          5168
+        ],
+        "id": "9de8555f-26a6-4c47-8163-13141e7ec44a",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "name": "Merge Modulos + Topics",
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 2,
+        "position": [
+          2320,
+          5264
+        ],
+        "id": "1346cbd6-df58-4c83-bce9-9341636634d4"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+            "mode": "list",
+            "cachedResultName": "MVLEARNING_Onboarding",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 1692485401,
+            "mode": "list",
+            "cachedResultName": "Recursos",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=1692485401"
+          },
+          "filtersUI": {
+            "values": []
+          },
+          "options": {
+            "returnAllMatches": "returnAllMatches"
+          }
+        },
+        "name": "Read All Recursos",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.4,
+        "position": [
+          2080,
+          5504
+        ],
+        "id": "dff92e5d-0c41-4d7f-a77a-88d8e5537552",
+        "executeOnce": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "name": "Merge + Recursos",
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 2,
+        "position": [
+          2512,
+          5344
+        ],
+        "id": "b80e17da-8acf-4991-a616-5d43627f22bc"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "Modulos",
+            "mode": "name"
+          },
+          "filtersUI": {
+            "values": []
+          },
+          "options": {
+            "returnAllMatches": "returnAllMatches"
+          }
+        },
+        "name": "Read All Modulos1",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.4,
+        "position": [
+          2080,
+          5184
+        ],
+        "id": "0c8a0eca-a4c9-43c3-9ee8-c4cc7df342c3",
+        "executeOnce": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "Topics",
+            "mode": "name"
+          },
+          "filtersUI": {
+            "values": []
+          },
+          "options": {
+            "returnAllMatches": "returnAllMatches"
+          }
+        },
+        "name": "Read All Topics1",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.4,
+        "position": [
+          2080,
+          5344
+        ],
+        "id": "8925d322-507d-4a26-9517-72900b58fc98",
+        "executeOnce": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// ══════════════════════════════════════════════════════════════\n// FIX: Google Sheets devuelve '' en lugar de undefined.\n// Identificamos cada tabla por su campo ÚNICO exclusivo:\n//   Modulos  → 'parent_modulo_id'  (solo existe en Modulos)\n//   Topics   → 'parent_topic_id'   (solo existe en Topics)\n//   Recursos → 'doc_id'            (solo existe en Recursos)\n// ══════════════════════════════════════════════════════════════\n\nconst all = $input.all();\n\nconst modulos  = all.filter(i => 'parent_modulo_id' in i.json).map(i => i.json);\nconst topics   = all.filter(i => 'parent_topic_id'  in i.json).map(i => i.json);\nconst recursos = all.filter(i => 'doc_id'           in i.json).map(i => i.json);\n\n// ── Diccionario modulo_id → area_id ──────────────────────────\nconst moduloMap = {};\nfor (const m of modulos) {\n  if (m.modulo_id && m.area_id) moduloMap[m.modulo_id] = m.area_id;\n}\n\n// ── Diccionario topic_id → modulo_id ─────────────────────────\nconst topicMap = {};\nfor (const t of topics) {\n  if (t.topic_id && t.modulo_id) topicMap[t.topic_id] = t.modulo_id;\n}\n\n// ── Updates para Topics: rellenar area_id vacío ───────────────\nconst topicUpdates = topics\n  .filter(t => !t.area_id && t.modulo_id && moduloMap[t.modulo_id])\n  .map(t => ({ json: {\n    topic_id:   t.topic_id,\n    modulo_id:  t.modulo_id,\n    area_id:    moduloMap[t.modulo_id],\n    sp_item_id: t.topic_id\n  }}));\n\n// ── Updates para Recursos: rellenar modulo_id y area_id vacíos ─\nconst recursoUpdates = recursos\n  .filter(r => (!r.modulo_id || !r.area_id) && r.topic_id)\n  .map(r => {\n    const modulo_id = r.modulo_id || topicMap[r.topic_id] || '';\n    const area_id   = r.area_id   || moduloMap[modulo_id] || '';\n    return { json: {\n      doc_id:     r.doc_id,\n      topic_id:   r.topic_id,\n      modulo_id,\n      area_id,\n      sp_item_id: r.doc_id\n    }};\n  });\n\nconsole.log(`Modulos: ${modulos.length} | Topics: ${topics.length} | Recursos: ${recursos.length}`);\nconsole.log(`Topics a actualizar: ${topicUpdates.length}`);\nconsole.log(`Recursos a actualizar: ${recursoUpdates.length}`);\n\nreturn [{ json: { topicUpdates, recursoUpdates } }];"
+        },
+        "name": "Build Fix Updates1",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2720,
+          5344
+        ],
+        "id": "0c4745fe-603e-4363-a479-60bdd680e988"
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "topicUpdates",
+          "options": {}
+        },
+        "name": "Split Topic Updates1",
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          2944,
+          5216
+        ],
+        "id": "4c687dd5-1e2c-4652-9b5b-4c1f8684bf32"
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "recursoUpdates",
+          "options": {}
+        },
+        "name": "Split Recurso Updates1",
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          2944,
+          5472
+        ],
+        "id": "0f427ec2-2bb3-4948-8412-b92041ca710b"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "Topics",
+            "mode": "name"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "topic_id": "={{ $json.json.topic_id }}",
+              "area_id": "={{ $json.json.area_id }}"
+            },
+            "matchingColumns": [
+              "topic_id"
+            ],
+            "schema": [
+              {
+                "id": "topic_id",
+                "displayName": "topic_id",
+                "required": false,
+                "defaultMatch": true,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "area_id",
+                "displayName": "area_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "sp_item_id",
+                "displayName": "sp_item_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "name": "Update Topics area_id1",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.4,
+        "position": [
+          3184,
+          5216
+        ],
+        "id": "820cce35-3658-4f09-b321-be99672f16c6",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+            "mode": "id"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "Recursos",
+            "mode": "name"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "doc_id": "={{ $json.json.doc_id }}",
+              "modulo_id": "={{ $json.json.modulo_id }}",
+              "area_id": "={{ $json.json.area_id }}"
+            },
+            "matchingColumns": [
+              "doc_id"
+            ],
+            "schema": [
+              {
+                "id": "doc_id",
+                "displayName": "doc_id",
+                "required": false,
+                "defaultMatch": true,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "modulo_id",
+                "displayName": "modulo_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "area_id",
+                "displayName": "area_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false
+              },
+              {
+                "id": "sp_item_id",
+                "displayName": "sp_item_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": false,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "name": "Update Recursos modulo_id + area_id1",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.4,
+        "position": [
+          3184,
+          5472
+        ],
+        "id": "ecbc3d1f-142c-478d-8c47-bdb1383770ed",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "mvlearning/admin/update_content",
+          "responseMode": "lastNode",
+          "options": {
+            "responseCode": {
+              "values": {}
+            }
+          }
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -1312,
+          4736
+        ],
+        "id": "d5d6c298-30af-4265-8d3e-8b37c2b5f189",
+        "name": "Webhook",
+        "webhookId": "d5d7b65c-f2e3-4880-887a-54c84292ac40"
+      }
+    ],
+    "connections": {
+      "Start": {
+        "main": [
+          [
+            {
+              "node": "shareId2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "shareId2": {
+        "main": [
+          [
+            {
+              "node": "Obtener driveItem (ONBOARDING)1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Obtener driveItem (ONBOARDING)1": {
+        "main": [
+          [
+            {
+              "node": "Set Root Context1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Root Context1": {
+        "main": [
+          [
+            {
+              "node": "Listar Children (ONBOARDING)1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Listar Children (ONBOARDING)1": {
+        "main": [
+          [
+            {
+              "node": "Attach Root Context1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Attach Root Context1": {
+        "main": [
+          [
+            {
+              "node": "SplitOut Items2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "SplitOut Items2": {
+        "main": [
+          [
+            {
+              "node": "Normalize + Context2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalize + Context2": {
+        "main": [
+          [
+            {
+              "node": "IF Folder?2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "IF Folder?2": {
+        "main": [
+          [
+            {
+              "node": "Upsert Areas2",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          []
+        ]
+      },
+      "Upsert Areas2": {
+        "main": [
+          [
+            {
+              "node": "Listar Modulos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upsert Modulos2": {
+        "main": [
+          [
+            {
+              "node": "Listar Topics",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upsert Topics2": {
+        "main": [
+          [
+            {
+              "node": "Listar Recursos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out": {
+        "main": [
+          [
+            {
+              "node": "Upsert Modulos2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Listar Modulos": {
+        "main": [
+          [
+            {
+              "node": "Split Out",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Listar Topics": {
+        "main": [
+          [
+            {
+              "node": "Split Out1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out1": {
+        "main": [
+          [
+            {
+              "node": "Upsert Topics2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out2": {
+        "main": [
+          [
+            {
+              "node": "Upsert Recursos4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Listar Recursos": {
+        "main": [
+          [
+            {
+              "node": "Split Out2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upsert Recursos4": {
+        "main": [
+          [
+            {
+              "node": "Read All Modulos1",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Read All Topics1",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Read All Recursos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge Modulos + Topics": {
+        "main": [
+          [
+            {
+              "node": "Merge + Recursos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read All Recursos": {
+        "main": [
+          [
+            {
+              "node": "Merge + Recursos",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Merge + Recursos": {
+        "main": [
+          [
+            {
+              "node": "Build Fix Updates1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read All Modulos1": {
+        "main": [
+          [
+            {
+              "node": "Merge Modulos + Topics",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Read All Topics1": {
+        "main": [
+          [
+            {
+              "node": "Merge Modulos + Topics",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Build Fix Updates1": {
+        "main": [
+          [
+            {
+              "node": "Split Topic Updates1",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Split Recurso Updates1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Topic Updates1": {
+        "main": [
+          [
+            {
+              "node": "Update Topics area_id1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Recurso Updates1": {
+        "main": [
+          [
+            {
+              "node": "Update Recursos modulo_id + area_id1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "shareId2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "ZEI MOBILVENDOR",
+    "name": "Version 9.1",
+    "description": "Cambio de  credencial",
+    "autosaved": true
+  },
+  "activeVersionId": "ebc1f973-acf1-4cd6-b4b3-9f9349b7c680",
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "shareId2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "shareId2": {
+      "main": [
+        [
+          {
+            "node": "Obtener driveItem (ONBOARDING)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener driveItem (ONBOARDING)1": {
+      "main": [
+        [
+          {
+            "node": "Set Root Context1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Root Context1": {
+      "main": [
+        [
+          {
+            "node": "Listar Children (ONBOARDING)1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listar Children (ONBOARDING)1": {
+      "main": [
+        [
+          {
+            "node": "Attach Root Context1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach Root Context1": {
+      "main": [
+        [
+          {
+            "node": "SplitOut Items2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SplitOut Items2": {
+      "main": [
+        [
+          {
+            "node": "Normalize + Context2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize + Context2": {
+      "main": [
+        [
+          {
+            "node": "IF Folder?2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Folder?2": {
+      "main": [
+        [
+          {
+            "node": "Upsert Areas2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Upsert Areas2": {
+      "main": [
+        [
+          {
+            "node": "Listar Modulos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Modulos2": {
+      "main": [
+        [
+          {
+            "node": "Listar Topics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Topics2": {
+      "main": [
+        [
+          {
+            "node": "Listar Recursos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Upsert Modulos2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listar Modulos": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listar Topics": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Upsert Topics2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out2": {
+      "main": [
+        [
+          {
+            "node": "Upsert Recursos4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listar Recursos": {
+      "main": [
+        [
+          {
+            "node": "Split Out2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Recursos4": {
+      "main": [
+        [
+          {
+            "node": "Read All Modulos1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Read All Topics1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Read All Recursos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Modulos + Topics": {
+      "main": [
+        [
+          {
+            "node": "Merge + Recursos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read All Recursos": {
+      "main": [
+        [
+          {
+            "node": "Merge + Recursos",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge + Recursos": {
+      "main": [
+        [
+          {
+            "node": "Build Fix Updates1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read All Modulos1": {
+      "main": [
+        [
+          {
+            "node": "Merge Modulos + Topics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read All Topics1": {
+      "main": [
+        [
+          {
+            "node": "Merge Modulos + Topics",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Build Fix Updates1": {
+      "main": [
+        [
+          {
+            "node": "Split Topic Updates1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Split Recurso Updates1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Topic Updates1": {
+      "main": [
+        [
+          {
+            "node": "Update Topics area_id1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Recurso Updates1": {
+      "main": [
+        [
+          {
+            "node": "Update Recursos modulo_id + area_id1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "shareId2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-02-05T13:42:02.200Z",
+  "id": "nHph-EWGTGWG2eFmqt35s",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "EXTRACCION INFORMACIÓN CARPETAS",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Start",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1312,
+        4544
+      ],
+      "id": "0f7f8296-325d-4863-8ac0-021cafd31607"
+    },
+    {
+      "parameters": {
+        "jsCode": "const sharedUrl = 'https://mobilvendorcom.sharepoint.com/:f:/s/Onboarding_Mobilvendor/IgCR-1BptbqUT7_ZAVehYyEoAb8xd5aSk4qDHp_C_sKA5fI?e=fTTKRM';\n\nconst b64 = Buffer.from(sharedUrl, 'utf8')\n  .toString('base64')\n  .replace(/\\+/g, '-')\n  .replace(/\\//g, '_')\n  .replace(/=+$/g, '');\n\nreturn [{ json: { shareId: `u!${b64}` } }];\n"
+      },
+      "name": "shareId2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -960,
+        4736
+      ],
+      "id": "c21195be-cea3-441c-b43d-5adf67e38ad0"
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.microsoft.com/v1.0/shares/{{$json.shareId}}/driveItem?$select=id,name,folder,webUrl,parentReference,remoteItem",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "name": "Obtener driveItem (ONBOARDING)1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -624,
+        4736
+      ],
+      "id": "d01418dc-59be-474f-918e-e60301782849",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "Ss8wohQpmAIhjs5u",
+          "name": "NEW_Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "driveId",
+              "name": "driveId",
+              "value": "={{ $json.parentReference.driveId }}",
+              "type": "string"
+            },
+            {
+              "id": "rootId",
+              "name": "rootId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "__ctx",
+              "name": "__ctx",
+              "value": "={{ { level: 0, driveId: $json.parentReference.driveId, area_id: '', modulo_id: '', topic_id: '', path: '/ONBOARDING' } }}",
+              "type": "json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Set Root Context1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [
+        -400,
+        4736
+      ],
+      "id": "2cd1ad63-82f7-449f-ae67-a7ed2da76a42"
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.microsoft.com/v1.0/drives/{{$json.driveId}}/items/{{$json.rootId}}/children?$select=id,name,webUrl,file,folder,size,lastModifiedDateTime,parentReference",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "name": "Listar Children (ONBOARDING)1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -176,
+        4736
+      ],
+      "id": "cf9819fe-c838-4e01-a36f-5655a2bebad1",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "Ss8wohQpmAIhjs5u",
+          "name": "NEW_Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const parentCtx = $items('Set Root Context1')[0].json.__ctx;\nconst value = $json.value || [];\n\nconst enrichedValue = value.map(item => ({\n  ...item,\n  __parentCtx: parentCtx\n}));\n\nreturn [{ json: { value: enrichedValue, __ctx: parentCtx } }];\n"
+      },
+      "name": "Attach Root Context1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        48,
+        4736
+      ],
+      "id": "5878a5db-5d87-46db-8485-67a30ca7289b"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "value",
+        "options": {}
+      },
+      "name": "SplitOut Items2",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        272,
+        4736
+      ],
+      "id": "0e95cc66-9e86-4bd0-8c3a-91137f9c2adf"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "function slugify(s) {\n  return (s || '')\n    .normalize('NFD').replace(/[\\u0300-\\u036f]/g, '')\n    .replace(/ñ/g, 'n').replace(/Ñ/g, 'N')\n    .replace(/[^a-zA-Z0-9]+/g, '_')\n    .replace(/^_+|_+$/g, '')\n    .toUpperCase();\n}\n\nfunction parseOrderAndName(folderName) {\n  const m = (folderName || '').match(/^\\s*(\\d+)\\.\\s*(.+)\\s*$/);\n  if (!m) return { orden: 9999, cleanName: folderName };\n  return { orden: parseInt(m[1], 10), cleanName: m[2] };\n}\n\n// Buscar primero __parentCtx\nconst parent = $json.__parentCtx || $json.__ctx || { \n  level: 0, \n  driveId: '', \n  area_id:'', \n  modulo_id:'', \n  topic_id:'', \n  path:'/ONBOARDING' \n};\n\nconst x = $json;\nconst isFolder = !!x.folder;\nconst name = x.name;\n\n// IMPORTANTE: Asegurar que driveId se preserve\nconst driveId = parent.driveId || x.parentReference?.driveId || '';\n\nconst base = {\n  id: x.id,\n  name,\n  webUrl: x.webUrl,\n  isFolder,\n  childCount: x.folder?.childCount || 0,\n  lastModifiedDateTime: x.lastModifiedDateTime,\n  size: x.size || 0,\n  level: parent.level + 1,\n  path: `${parent.path}/${name}`.replace(/\\/+/g, '/'),\n  __ctx: { \n    ...parent, \n    driveId: driveId\n  }\n};\n\n// Level 1 = Area\nif (base.level === 1 && isFolder) {\n  const area_id = slugify(name);\n  base.__ctx = { \n    level: 1, \n    driveId: driveId,\n    area_id, \n    modulo_id: '', \n    topic_id: '', \n    path: `/${area_id}` \n  };\n}\n\n// Level 2 = Modulo\nif (base.level === 2 && isFolder) {\n  const { orden, cleanName } = parseOrderAndName(name);\n  const modulo_id = `${parent.area_id}__${slugify(cleanName)}`;\n  base.mod_orden = orden;\n  base.mod_cleanName = cleanName;\n  base.__ctx = { \n    level: 2, \n    driveId: driveId,\n    area_id: parent.area_id, \n    modulo_id, \n    topic_id: '', \n    path: `${parent.path}/${name}`.replace(/\\/+/g, '/') \n  };\n}\n\n// Level 3 = Topic\nif (base.level === 3 && isFolder) {\n  const { orden, cleanName } = parseOrderAndName(name);\n  const topic_id = `${parent.modulo_id}__${slugify(cleanName)}`;\n  base.top_orden = orden;\n  base.top_cleanName = cleanName;\n  base.__ctx = { \n    level: 3, \n    driveId: driveId,\n    area_id: parent.area_id, \n    modulo_id: parent.modulo_id, \n    topic_id, \n    path: `${parent.path}/${name}`.replace(/\\/+/g, '/') \n  };\n}\n\n$input.item.json = base;\nreturn $input.item;\n"
+      },
+      "name": "Normalize + Context2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        496,
+        4736
+      ],
+      "id": "be659065-f359-42ff-99a5-0cd9f14523b7"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{$json.isFolder}}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "IF Folder?2",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        720,
+        4736
+      ],
+      "id": "ccb1b0f5-d4f9-41d2-a318-f0d68739bad3"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Areas",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "area_id": "={{ $json.id }}",
+            "name": "={{ $json.name }}",
+            "orden": "={{ $json.level }}",
+            "activo": "={{true}}",
+            "path": "={{'/' + $json.__ctx.area_id}}",
+            "sp_item_id": "={{ $json.id }}",
+            "web_url": "={{ $json.webUrl }}",
+            "source": "sharepoint"
+          },
+          "matchingColumns": [
+            "area_id"
+          ],
+          "schema": [
+            {
+              "id": "area_id",
+              "displayName": "area_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "orden",
+              "displayName": "orden",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "activo",
+              "displayName": "activo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "path",
+              "displayName": "path",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sp_item_id",
+              "displayName": "sp_item_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "web_url",
+              "displayName": "web_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "name": "Upsert Areas2",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        1024,
+        4688
+      ],
+      "id": "dc6b2246-094c-4b68-88e7-2565f06cae67",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Modulos",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "modulo_id": "={{ $json.id }}",
+            "area_id": "={{ $json.parentReference.id }}",
+            "name": "={{ $json.name }}",
+            "orden": "={{ parseInt(($json.name.match(/^\\s*(\\d+)\\s*\\./) || [,'0'])[1], 10) }}",
+            "activo": "=",
+            "path": "={{ $json.parentReference.path }}",
+            "sp_item_id": "=",
+            "web_url": "={{ $json.webUrl }}",
+            "level": "={{1}}",
+            "source": "sharepoint"
+          },
+          "matchingColumns": [
+            "modulo_id"
+          ],
+          "schema": [
+            {
+              "id": "modulo_id",
+              "displayName": "modulo_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "area_id",
+              "displayName": "area_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "orden",
+              "displayName": "orden",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "activo",
+              "displayName": "activo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "path",
+              "displayName": "path",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sp_item_id",
+              "displayName": "sp_item_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "web_url",
+              "displayName": "web_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "level",
+              "displayName": "level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "parent_modulo_id",
+              "displayName": "parent_modulo_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "name": "Upsert Modulos2",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        1616,
+        4688
+      ],
+      "id": "9a8fdf90-6438-4ca9-a2f9-2966009e343b",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Topics",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "topic_id": "={{ $json.id }}",
+            "modulo_id": "={{ $json.parentReference.id }}",
+            "area_id": "=",
+            "name": "={{$json.top_cleanName || $json.name.replace(/^\\s*\\d+\\.\\s*/, '')}}",
+            "orden": "={{ parseInt(($json.name.match(/^\\s*(\\d+)\\s*\\./) || [,'0'])[1], 10) }}",
+            "activo": "={{true}}",
+            "path": "={{ $json.parentReference.path }}",
+            "sp_item_id": "=",
+            "web_url": "={{ $json.webUrl }}",
+            "level": "={{2}}",
+            "source": "sharepoint"
+          },
+          "matchingColumns": [
+            "topic_id"
+          ],
+          "schema": [
+            {
+              "id": "topic_id",
+              "displayName": "topic_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "modulo_id",
+              "displayName": "modulo_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "area_id",
+              "displayName": "area_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "orden",
+              "displayName": "orden",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "activo",
+              "displayName": "activo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "path",
+              "displayName": "path",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sp_item_id",
+              "displayName": "sp_item_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "web_url",
+              "displayName": "web_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "level",
+              "displayName": "level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "parent_topic_id",
+              "displayName": "parent_topic_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "name": "Upsert Topics2",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        1776,
+        4928
+      ],
+      "id": "1b6d5831-0b80-4dcc-aa31-aee8772018b5",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "value",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        4688
+      ],
+      "id": "d2afe110-1810-433d-a82f-feaa09027a25",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.microsoft.com/v1.0/drives/{{ $('IF Folder?2').item.json.__ctx.driveId }}/items/{{ $json.sp_item_id }}/children?$select=id,name,webUrl,file,folder,size,lastModifiedDateTime,parentReference",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "name": "Listar Modulos",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1184,
+        4688
+      ],
+      "id": "e09bbd3e-6688-48f7-9127-94d2ab7e3863",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "Ss8wohQpmAIhjs5u",
+          "name": "NEW_Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.microsoft.com/v1.0/drives/{{ $('IF Folder?2').item.json.__ctx.driveId }}/items/{{ $json.modulo_id }}/children?$select=id,name,webUrl,file,folder,size,lastModifiedDateTime,parentReference",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "name": "Listar Topics",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1280,
+        4928
+      ],
+      "id": "df22f686-50f3-4862-b1c5-c08054812481",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "Ss8wohQpmAIhjs5u",
+          "name": "NEW_Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "value",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1536,
+        4928
+      ],
+      "id": "3cdb9978-abdb-4351-bf15-18deb3ccf043",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "value",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1552,
+        5168
+      ],
+      "id": "e4aaeb3f-f15d-48b4-85c8-3168953faa48",
+      "name": "Split Out2"
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.microsoft.com/v1.0/drives/{{ $('IF Folder?2').item.json.__ctx.driveId }}/items/{{ $json.topic_id }}/children?$select=id,name,webUrl,file,folder,size,lastModifiedDateTime,parentReference",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "name": "Listar Recursos",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1296,
+        5168
+      ],
+      "id": "35dd4c6f-9c4b-425f-88d8-0d78dc0eae92",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "Ss8wohQpmAIhjs5u",
+          "name": "NEW_Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Recursos",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "doc_id": "={{ $json.id }}",
+            "topic_id": "={{ $json.parentReference.id }}",
+            "name": "={{ $json.name }}",
+            "type": "={{ ($json.name || '').split('.').pop().toLowerCase() }}",
+            "web_url": "={{ $json.webUrl }}",
+            "path": "={{ $json.parentReference.path }}",
+            "modified_at": "={{ $json.lastModifiedDateTime }}"
+          },
+          "matchingColumns": [
+            "doc_id"
+          ],
+          "schema": [
+            {
+              "id": "doc_id",
+              "displayName": "doc_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "topic_id",
+              "displayName": "topic_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "modulo_id",
+              "displayName": "modulo_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "area_id",
+              "displayName": "area_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "source_url",
+              "displayName": "source_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "path",
+              "displayName": "path",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "modified_at",
+              "displayName": "modified_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "activo",
+              "displayName": "activo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "sp_item_id",
+              "displayName": "sp_item_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "web_url",
+              "displayName": "web_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": true,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "name": "Upsert Recursos4",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        1792,
+        5168
+      ],
+      "id": "9de8555f-26a6-4c47-8163-13141e7ec44a",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "name": "Merge Modulos + Topics",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        2320,
+        5264
+      ],
+      "id": "1346cbd6-df58-4c83-bce9-9341636634d4"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "list",
+          "cachedResultName": "MVLEARNING_Onboarding",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1692485401,
+          "mode": "list",
+          "cachedResultName": "Recursos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8/edit#gid=1692485401"
+        },
+        "filtersUI": {
+          "values": []
+        },
+        "options": {
+          "returnAllMatches": "returnAllMatches"
+        }
+      },
+      "name": "Read All Recursos",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        2080,
+        5504
+      ],
+      "id": "dff92e5d-0c41-4d7f-a77a-88d8e5537552",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "name": "Merge + Recursos",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        2512,
+        5344
+      ],
+      "id": "b80e17da-8acf-4991-a616-5d43627f22bc"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Modulos",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": []
+        },
+        "options": {
+          "returnAllMatches": "returnAllMatches"
+        }
+      },
+      "name": "Read All Modulos1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        2080,
+        5184
+      ],
+      "id": "0c8a0eca-a4c9-43c3-9ee8-c4cc7df342c3",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Topics",
+          "mode": "name"
+        },
+        "filtersUI": {
+          "values": []
+        },
+        "options": {
+          "returnAllMatches": "returnAllMatches"
+        }
+      },
+      "name": "Read All Topics1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        2080,
+        5344
+      ],
+      "id": "8925d322-507d-4a26-9517-72900b58fc98",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ══════════════════════════════════════════════════════════════\n// FIX: Google Sheets devuelve '' en lugar de undefined.\n// Identificamos cada tabla por su campo ÚNICO exclusivo:\n//   Modulos  → 'parent_modulo_id'  (solo existe en Modulos)\n//   Topics   → 'parent_topic_id'   (solo existe en Topics)\n//   Recursos → 'doc_id'            (solo existe en Recursos)\n// ══════════════════════════════════════════════════════════════\n\nconst all = $input.all();\n\nconst modulos  = all.filter(i => 'parent_modulo_id' in i.json).map(i => i.json);\nconst topics   = all.filter(i => 'parent_topic_id'  in i.json).map(i => i.json);\nconst recursos = all.filter(i => 'doc_id'           in i.json).map(i => i.json);\n\n// ── Diccionario modulo_id → area_id ──────────────────────────\nconst moduloMap = {};\nfor (const m of modulos) {\n  if (m.modulo_id && m.area_id) moduloMap[m.modulo_id] = m.area_id;\n}\n\n// ── Diccionario topic_id → modulo_id ─────────────────────────\nconst topicMap = {};\nfor (const t of topics) {\n  if (t.topic_id && t.modulo_id) topicMap[t.topic_id] = t.modulo_id;\n}\n\n// ── Updates para Topics: rellenar area_id vacío ───────────────\nconst topicUpdates = topics\n  .filter(t => !t.area_id && t.modulo_id && moduloMap[t.modulo_id])\n  .map(t => ({ json: {\n    topic_id:   t.topic_id,\n    modulo_id:  t.modulo_id,\n    area_id:    moduloMap[t.modulo_id],\n    sp_item_id: t.topic_id\n  }}));\n\n// ── Updates para Recursos: rellenar modulo_id y area_id vacíos ─\nconst recursoUpdates = recursos\n  .filter(r => (!r.modulo_id || !r.area_id) && r.topic_id)\n  .map(r => {\n    const modulo_id = r.modulo_id || topicMap[r.topic_id] || '';\n    const area_id   = r.area_id   || moduloMap[modulo_id] || '';\n    return { json: {\n      doc_id:     r.doc_id,\n      topic_id:   r.topic_id,\n      modulo_id,\n      area_id,\n      sp_item_id: r.doc_id\n    }};\n  });\n\nconsole.log(`Modulos: ${modulos.length} | Topics: ${topics.length} | Recursos: ${recursos.length}`);\nconsole.log(`Topics a actualizar: ${topicUpdates.length}`);\nconsole.log(`Recursos a actualizar: ${recursoUpdates.length}`);\n\nreturn [{ json: { topicUpdates, recursoUpdates } }];"
+      },
+      "name": "Build Fix Updates1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2720,
+        5344
+      ],
+      "id": "0c4745fe-603e-4363-a479-60bdd680e988"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "topicUpdates",
+        "options": {}
+      },
+      "name": "Split Topic Updates1",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2944,
+        5216
+      ],
+      "id": "4c687dd5-1e2c-4652-9b5b-4c1f8684bf32"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "recursoUpdates",
+        "options": {}
+      },
+      "name": "Split Recurso Updates1",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        2944,
+        5472
+      ],
+      "id": "0f427ec2-2bb3-4948-8412-b92041ca710b"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Topics",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "topic_id": "={{ $json.json.topic_id }}",
+            "area_id": "={{ $json.json.area_id }}"
+          },
+          "matchingColumns": [
+            "topic_id"
+          ],
+          "schema": [
+            {
+              "id": "topic_id",
+              "displayName": "topic_id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "area_id",
+              "displayName": "area_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "sp_item_id",
+              "displayName": "sp_item_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "name": "Update Topics area_id1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        3184,
+        5216
+      ],
+      "id": "820cce35-3658-4f09-b321-be99672f16c6",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "15Zpa7kkkGf6PeEIADg1Y4uusS-G-mtms6p_i2WS-k-8",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Recursos",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "doc_id": "={{ $json.json.doc_id }}",
+            "modulo_id": "={{ $json.json.modulo_id }}",
+            "area_id": "={{ $json.json.area_id }}"
+          },
+          "matchingColumns": [
+            "doc_id"
+          ],
+          "schema": [
+            {
+              "id": "doc_id",
+              "displayName": "doc_id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "modulo_id",
+              "displayName": "modulo_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "area_id",
+              "displayName": "area_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "sp_item_id",
+              "displayName": "sp_item_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "name": "Update Recursos modulo_id + area_id1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        3184,
+        5472
+      ],
+      "id": "ecbc3d1f-142c-478d-8c47-bdb1383770ed",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mvlearning/admin/update_content",
+        "responseMode": "lastNode",
+        "options": {
+          "responseCode": {
+            "values": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1312,
+        4736
+      ],
+      "id": "d5d6c298-30af-4265-8d3e-8b37c2b5f189",
+      "name": "Webhook",
+      "webhookId": "d5d7b65c-f2e3-4880-887a-54c84292ac40"
+    }
+  ],
+  "pinData": {
+    "Start": [
+      {
+        "json": {},
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mobilvendor.com",
+            "user-agent": "node",
+            "content-length": "40",
+            "accept": "*/*",
+            "accept-encoding": "br, gzip, deflate",
+            "accept-language": "*",
+            "cache-control": "no-cache",
+            "content-type": "application/json",
+            "pragma": "no-cache",
+            "sec-fetch-mode": "cors",
+            "x-forwarded-for": "10.0.0.2",
+            "x-forwarded-host": "n8n.mobilvendor.com",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "dd0fd8a37b76",
+            "x-real-ip": "10.0.0.2"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "timestamp": "2026-04-22T16:57:07.361Z"
+          },
+          "webhookUrl": "https://n8n.mobilvendor.com/webhook/mvlearning/admin/update_content",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-02-05T13:42:02.215Z",
+      "createdAt": "2026-02-05T13:42:02.215Z",
+      "role": "workflow:owner",
+      "workflowId": "nHph-EWGTGWG2eFmqt35s",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-04-22T17:14:01.499Z",
+  "versionId": "ebc1f973-acf1-4cd6-b4b3-9f9349b7c680"
+}
