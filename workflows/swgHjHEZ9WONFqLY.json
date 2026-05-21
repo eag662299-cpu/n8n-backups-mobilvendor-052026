@@ -1,0 +1,126 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:47.262Z",
+  "id": "swgHjHEZ9WONFqLY",
+  "isArchived": false,
+  "meta": null,
+  "name": "My workflow 14",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -224,
+        0
+      ],
+      "id": "73ebfdb3-4ebf-4bcf-a88f-743948add33b",
+      "name": "When chat message received",
+      "webhookId": "01341582-b9f8-4397-ad59-73d53e0286e5"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://agents.mobilvendor-ai.com/api/v1/prediction/b8e3f98a-0248-4780-8c30-bda8af379c73",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "question",
+              "value": "={{ $json.chatInput }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "76611efd-c8ed-4f11-a93e-094e559704c8",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cd5001ea-a574-403b-ab17-f880f0c5c54c",
+              "name": "chatInput",
+              "value": "={{ $json.chatInput }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8a46a640-f9bd-4735-8998-282e7860947e",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:48.186Z",
+      "createdAt": "2026-01-13T02:49:48.186Z",
+      "role": "workflow:owner",
+      "workflowId": "swgHjHEZ9WONFqLY",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T02:49:47.262Z",
+  "versionId": "5e94e38d-c2c9-43fa-9f91-1e135853c5f3"
+}
