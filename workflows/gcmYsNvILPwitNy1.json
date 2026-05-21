@@ -1,0 +1,269 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "OneDrive - Obtener Archivo": {
+      "main": [
+        [
+          {
+            "node": "Leer Excel Actualizado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer Excel Actualizado": {
+      "main": [
+        [
+          {
+            "node": "Procesar Evento OneDrive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Procesar Evento OneDrive": {
+      "main": [
+        [
+          {
+            "node": "¿Hay Entregas Válidas?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Hay Entregas Válidas?": {
+      "main": [
+        [
+          {
+            "node": "Preparar Email Evento",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Sin Cambios - Respuesta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Email Evento": {
+      "main": [
+        [
+          {
+            "node": "Envío Instantáneo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Envío Instantáneo": {
+      "main": [
+        [
+          {
+            "node": "Respuesta Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:45.375Z",
+  "id": "gcmYsNvILPwitNy1",
+  "isArchived": false,
+  "meta": null,
+  "name": "activosMV",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "asset-delivery-webhook",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a2c2917a-d291-497f-8e3f-4474818b746f",
+      "name": "Webhook - Nueva Entrega",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        -1056,
+        144
+      ],
+      "webhookId": "asset-delivery-webhook"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "fileId": "01SQEQDLYKGSLEEFOSOJGJ7UYOMJARHLYP"
+      },
+      "id": "e8b239ce-e3f8-4827-b7f0-485df5c5c95a",
+      "name": "OneDrive - Obtener Archivo",
+      "type": "n8n-nodes-base.microsoftOneDrive",
+      "typeVersion": 1,
+      "position": [
+        -832,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "worksheet",
+        "workbook": {
+          "__rl": true,
+          "value": "01SQEQDLYKGSLEEFOSOJGJ7UYOMJARHLYP",
+          "mode": "list",
+          "cachedResultName": "Plantilla_Control_Activos",
+          "cachedResultUrl": "https://mobilvendorcom-my.sharepoint.com/personal/a_soria_mobilvendor_com/_layouts/15/Doc.aspx?sourcedoc=%7B4296340A-D215-4C72-9FD3-0E624113AF0F%7D&file=Plantilla_Control_Activos.xlsx&action=default&mobileredirect=true&DefaultItemOpen=1"
+        },
+        "returnAll": true,
+        "filters": {}
+      },
+      "id": "d1069383-3e55-4405-b34c-232eb77f48c3",
+      "name": "Leer Excel Actualizado",
+      "type": "n8n-nodes-base.microsoftExcel",
+      "typeVersion": 2,
+      "position": [
+        -608,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Procesar evento de cambio en OneDrive\nconst webhookData = $input.first();\n\n// Logging del evento recibido\nconsole.log('📨 Evento recibido:', JSON.stringify(webhookData, null, 2));\n\n// Obtener los datos del Excel actualizado\nconst excelData = $input.all();\n\n// Obtener la última fila (asumiendo que las nuevas entregas se agregan al final)\nconst lastRows = excelData.slice(-5); // Obtener las últimas 5 filas para revisar\n\n// Obtener timestamp del evento para filtrar entregas recientes\nconst eventTime = new Date(webhookData.eventTime || Date.now());\nconst fiveMinutesAgo = new Date(eventTime.getTime() - 5 * 60 * 1000);\n\n// Filtrar posibles nuevas entregas\nconst newDeliveries = [];\n\nlastRows.forEach(row => {\n  // Validar que tenga los datos requeridos\n  if (row.id_activo && row.empleado && row.fecha_entrega && row.email) {\n    // Verificar si la fecha de entrega es reciente (dentro de las últimas horas)\n    const deliveryDate = new Date(row.fecha_entrega);\n    const hoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000); // Últimas 24 horas\n    \n    if (deliveryDate >= hoursAgo) {\n      // Verificar si ya fue procesado (opcional: usar base de datos o storage)\n      const deliveryKey = `${row.id_activo}_${row.empleado}_${row.fecha_entrega}`;\n      \n      // Obtener entregas ya procesadas del contexto\n      const processedDeliveries = $workflow.getStaticData('global').processedDeliveries || new Set();\n      \n      if (!processedDeliveries.has(deliveryKey)) {\n        newDeliveries.push({\n          id_activo: row.id_activo,\n          nombre_activo: row.nombre_activo || 'No especificado',\n          empleado: row.empleado,\n          email: row.email,\n          fecha_entrega: row.fecha_entrega,\n          ubicacion: row.ubicacion || 'No especificada',\n          estado: row.estado || 'Entregado',\n          observaciones: row.observaciones || '',\n          responsable_entrega: row.responsable_entrega || 'Administrador',\n          deliveryKey: deliveryKey\n        });\n        \n        // Marcar como procesado\n        processedDeliveries.add(deliveryKey);\n      }\n    }\n  }\n});\n\n// Guardar entregas procesadas\n$workflow.getStaticData('global').processedDeliveries = processedDeliveries;\n\n// Log de resultados\nif (newDeliveries.length > 0) {\n  console.log(`✅ Detectadas ${newDeliveries.length} nuevas entregas desde el evento`);\n  return newDeliveries;\n} else {\n  console.log('ℹ️ No se detectaron nuevas entregas válidas en este evento');\n  return [];\n}"
+      },
+      "id": "242b2ab4-1469-41c5-b7bf-098e7ab6ec58",
+      "name": "Procesar Evento OneDrive",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "condition-1",
+              "leftValue": "={{ $json.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "99420ece-8d3c-4564-b0f0-4a03b4698250",
+      "name": "¿Hay Entregas Válidas?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -176,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Formatear fecha para mostrar de manera legible\nfunction formatDate(dateString) {\n  try {\n    const date = new Date(dateString);\n    return date.toLocaleDateString('es-ES', {\n      year: 'numeric',\n      month: 'long',\n      day: 'numeric',\n      hour: '2-digit',\n      minute: '2-digit'\n    });\n  } catch (error) {\n    return dateString;\n  }\n}\n\n// Preparar datos para el correo con diseño mejorado\nconst item = $input.first();\n\nreturn {\n  to: item.email,\n  subject: `🚀 ENTREGA CONFIRMADA - Activo ${item.id_activo} | ${item.nombre_activo}`,\n  employeeName: item.empleado,\n  assetId: item.id_activo,\n  assetName: item.nombre_activo,\n  deliveryDate: formatDate(item.fecha_entrega),\n  location: item.ubicacion,\n  status: item.estado,\n  observations: item.observaciones,\n  responsiblePerson: item.responsable_entrega,\n  deliveryKey: item.deliveryKey,\n  htmlContent: `\n    <!DOCTYPE html>\n    <html>\n    <head>\n        <meta charset=\"UTF-8\">\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n        <style>\n            * { margin: 0; padding: 0; box-sizing: border-box; }\n            body { \n                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; \n                line-height: 1.6; \n                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n                padding: 20px;\n            }\n            .email-container {\n                max-width: 650px;\n                margin: 0 auto;\n                background: white;\n                border-radius: 20px;\n                overflow: hidden;\n                box-shadow: 0 20px 40px rgba(0,0,0,0.1);\n            }\n            .header {\n                background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);\n                color: white;\n                padding: 40px 30px;\n                text-align: center;\n                position: relative;\n            }\n            .header::before {\n                content: '';\n                position: absolute;\n                top: 0;\n                left: 0;\n                right: 0;\n                bottom: 0;\n                background: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><defs><pattern id=\"grain\" width=\"100\" height=\"100\" patternUnits=\"userSpaceOnUse\"><circle cx=\"50\" cy=\"50\" r=\"1\" fill=\"%23ffffff\" opacity=\"0.1\"/></pattern></defs><rect width=\"100\" height=\"100\" fill=\"url(%23grain)\"/></svg>') repeat;\n            }\n            .header-content { position: relative; z-index: 1; }\n            .success-icon {\n                width: 80px;\n                height: 80px;\n                background: rgba(255,255,255,0.2);\n                border-radius: 50%;\n                display: flex;\n                align-items: center;\n                justify-content: center;\n                margin: 0 auto 20px;\n                font-size: 40px;\n            }\n            .header h1 { \n                font-size: 28px; \n                margin-bottom: 10px;\n                font-weight: 700;\n            }\n            .header p { \n                font-size: 16px; \n                opacity: 0.9;\n                font-weight: 300;\n            }\n            .content {\n                padding: 40px 30px;\n            }\n            .greeting {\n                font-size: 18px;\n                color: #333;\n                margin-bottom: 25px;\n            }\n            .asset-card {\n                background: linear-gradient(135deg, #f8f9ff 0%, #e8f4ff 100%);\n                border: 2px solid #e3f2fd;\n                border-radius: 15px;\n                padding: 30px;\n                margin: 25px 0;\n                position: relative;\n                overflow: hidden;\n            }\n            .asset-card::before {\n                content: '📦';\n                position: absolute;\n                top: -10px;\n                right: -10px;\n                font-size: 60px;\n                opacity: 0.1;\n                transform: rotate(15deg);\n            }\n            .asset-header {\n                display: flex;\n                align-items: center;\n                margin-bottom: 20px;\n            }\n            .asset-icon {\n                width: 50px;\n                height: 50px;\n                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n                border-radius: 12px;\n                display: flex;\n                align-items: center;\n                justify-content: center;\n                color: white;\n                font-size: 24px;\n                margin-right: 15px;\n            }\n            .asset-title {\n                flex: 1;\n            }\n            .asset-title h3 {\n                color: #667eea;\n                font-size: 20px;\n                margin-bottom: 5px;\n            }\n            .asset-id {\n                background: #667eea;\n                color: white;\n                padding: 5px 12px;\n                border-radius: 20px;\n                font-size: 12px;\n                font-weight: bold;\n                display: inline-block;\n            }\n            .detail-grid {\n                display: grid;\n                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));\n                gap: 15px;\n                margin-top: 20px;\n            }\n            .detail-item {\n                background: white;\n                padding: 15px;\n                border-radius: 10px;\n                border-left: 4px solid #4CAF50;\n            }\n            .detail-label {\n                font-size: 12px;\n                color: #666;\n                text-transform: uppercase;\n                letter-spacing: 0.5px;\n                margin-bottom: 5px;\n            }\n            .detail-value {\n                font-size: 16px;\n                color: #333;\n                font-weight: 600;\n            }\n            .instructions {\n                background: #fff8e1;\n                border: 2px solid #ffcc02;\n                border-radius: 12px;\n                padding: 25px;\n                margin: 25px 0;\n            }\n            .instructions h4 {\n                color: #f57f17;\n                margin-bottom: 15px;\n                display: flex;\n                align-items: center;\n            }\n            .instructions h4::before {\n                content: '⚠️';\n                margin-right: 10px;\n                font-size: 20px;\n            }\n            .instructions ul {\n                list-style: none;\n                padding: 0;\n            }\n            .instructions li {\n                padding: 8px 0;\n                border-bottom: 1px solid rgba(255,204,2,0.2);\n                position: relative;\n                padding-left: 25px;\n            }\n            .instructions li::before {\n                content: '✓';\n                position: absolute;\n                left: 0;\n                color: #4CAF50;\n                font-weight: bold;\n            }\n            .instructions li:last-child {\n                border-bottom: none;\n            }\n            .footer {\n                background: #f8f9fa;\n                padding: 30px;\n                text-align: center;\n                border-top: 1px solid #eee;\n            }\n            .footer-content {\n                color: #666;\n                font-size: 14px;\n            }\n            .company-info {\n                margin-top: 15px;\n                padding-top: 15px;\n                border-top: 1px solid #ddd;\n                font-size: 12px;\n                color: #999;\n            }\n            .timestamp {\n                background: #e8f5e8;\n                color: #2e7d32;\n                padding: 10px 15px;\n                border-radius: 8px;\n                font-size: 12px;\n                margin: 10px 0;\n                display: inline-block;\n            }\n            @media (max-width: 600px) {\n                .email-container { margin: 10px; border-radius: 10px; }\n                .header { padding: 30px 20px; }\n                .content { padding: 30px 20px; }\n                .detail-grid { grid-template-columns: 1fr; }\n                .asset-header { flex-direction: column; text-align: center; }\n                .asset-icon { margin-right: 0; margin-bottom: 10px; }\n            }\n        </style>\n    </head>\n    <body>\n        <div class=\"email-container\">\n            <div class=\"header\">\n                <div class=\"header-content\">\n                    <div class=\"success-icon\">🎉</div>\n                    <h1>¡Entrega Confirmada!</h1>\n                    <p>Su activo ha sido asignado exitosamente</p>\n                </div>\n            </div>\n            \n            <div class=\"content\">\n                <div class=\"greeting\">\n                    Estimado/a <strong>${item.empleado}</strong>,\n                </div>\n                \n                <p>Nos complace confirmarle que el siguiente activo ha sido registrado a su nombre:</p>\n                \n                <div class=\"asset-card\">\n                    <div class=\"asset-header\">\n                        <div class=\"asset-icon\">📱</div>\n                        <div class=\"asset-title\">\n                            <h3>${item.nombre_activo}</h3>\n                            <div class=\"asset-id\">ID: ${item.id_activo}</div>\n                        </div>\n                    </div>\n                    \n                    <div class=\"detail-grid\">\n                        <div class=\"detail-item\">\n                            <div class=\"detail-label\">Fecha de Entrega</div>\n                            <div class=\"detail-value\">${formatDate(item.fecha_entrega)}</div>\n                        </div>\n                        <div class=\"detail-item\">\n                            <div class=\"detail-label\">Ubicación</div>\n                            <div class=\"detail-value\">${item.ubicacion}</div>\n                        </div>\n                        <div class=\"detail-item\">\n                            <div class=\"detail-label\">Estado</div>\n                            <div class=\"detail-value\">${item.estado}</div>\n                        </div>\n                        <div class=\"detail-item\">\n                            <div class=\"detail-label\">Responsable</div>\n                            <div class=\"detail-value\">${item.responsable_entrega}</div>\n                        </div>\n                    </div>\n                    \n                    ${item.observaciones ? `\n                    <div style=\"margin-top: 20px; padding: 15px; background: rgba(103, 126, 234, 0.1); border-radius: 8px;\">\n                        <div class=\"detail-label\">Observaciones</div>\n                        <div class=\"detail-value\">${item.observaciones}</div>\n                    </div>` : ''}\n                </div>\n                \n                <div class=\"instructions\">\n                    <h4>Responsabilidades Importantes</h4>\n                    <ul>\n                        <li>Mantener el activo en condiciones óptimas y usar según las políticas de la empresa</li>\n                        <li>Reportar inmediatamente cualquier daño, mal funcionamiento o pérdida</li>\n                        <li>No transferir el activo a terceros sin autorización previa</li>\n                        <li>Devolver el activo cuando sea requerido o al finalizar su asignación</li>\n                        <li>Conservar este correo como comprobante oficial de la entrega</li>\n                    </ul>\n                </div>\n                \n                <div class=\"timestamp\">\n                    📅 Procesado automáticamente el ${new Date().toLocaleString('es-ES')}\n                </div>\n                \n                <p style=\"margin-top: 25px; color: #555;\">\n                    Si tiene preguntas sobre este activo o necesita asistencia técnica, \n                    contacte al departamento de TI o gestión de activos.\n                </p>\n                \n                <div style=\"margin-top: 30px; text-align: center;\">\n                    <strong style=\"color: #667eea;\">Equipo de Gestión de Activos</strong><br>\n                    <span style=\"color: #666; font-size: 14px;\">Tecnología & Innovación</span>\n                </div>\n            </div>\n            \n            <div class=\"footer\">\n                <div class=\"footer-content\">\n                    <p><strong>Notificación Automática del Sistema</strong></p>\n                    <p>Este correo fue generado automáticamente por el sistema de control de activos.</p>\n                    \n                    <div class=\"company-info\">\n                        Control ID: ${item.deliveryKey}<br>\n                        Sistema de Gestión de Activos v2.0\n                    </div>\n                </div>\n            </div>\n        </div>\n    </body>\n    </html>\n  `\n};"
+      },
+      "id": "891359bc-1077-4d84-aff0-37ab705d4b33",
+      "name": "Preparar Email Evento",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        48,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "subject": "={{ $json.subject }}",
+        "options": {
+          "allowUnauthorizedCerts": false,
+          "replyTo": "activos@tuempresa.com"
+        }
+      },
+      "id": "62ef016c-8a0d-4642-b3b9-45dffdeda68a",
+      "name": "Envío Instantáneo",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        272,
+        64
+      ],
+      "webhookId": "65d0c5bd-6830-4f20-900c-7b81aa222ea9"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  \"status\": \"success\",\n  \"message\": \"Notificación procesada\",\n  \"processed_deliveries\": $json.length || 0,\n  \"timestamp\": new Date().toISOString()\n} }}",
+        "options": {}
+      },
+      "id": "730af283-d144-4caf-b3b9-74bb9f0492a6",
+      "name": "Respuesta Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        496,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\n  \"status\": \"no_action\",\n  \"message\": \"No se detectaron nuevas entregas válidas\",\n  \"timestamp\": new Date().toISOString()\n} }}",
+        "options": {}
+      },
+      "id": "5f19f0e8-1de6-4918-a7b9-2251c255359d",
+      "name": "Sin Cambios - Respuesta",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        48,
+        224
+      ]
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:45.846Z",
+      "createdAt": "2026-01-13T02:49:45.846Z",
+      "role": "workflow:owner",
+      "workflowId": "gcmYsNvILPwitNy1",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T15:10:39.915Z",
+  "versionId": "97a1bcc1-eeb7-4bd1-9a39-c8564cb90994"
+}
