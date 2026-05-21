@@ -1,0 +1,3018 @@
+{
+  "active": true,
+  "activeVersion": {
+    "updatedAt": "2026-01-20T21:05:56.000Z",
+    "createdAt": "2026-01-19T21:03:22.676Z",
+    "versionId": "b286157d-7aba-43aa-95d7-b6de146d77cb",
+    "workflowId": "cod7XIjrwBy5vJgN",
+    "nodes": [
+      {
+        "parameters": {
+          "path": "mv_formulario",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          2160,
+          208
+        ],
+        "id": "368373b7-cf0d-4b92-85fc-a9fbe6588df8",
+        "name": "Webhook Formulario1",
+        "webhookId": "f278a15e-6cc0-441f-aa47-b3f0d655e743"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "2de00892-2baf-43c3-8015-7a671991f811",
+                "name": "email",
+                "value": "={{ $('Validación datos Formulario?1').item.json.email }}",
+                "type": "string"
+              },
+              {
+                "id": "44b680fa-4f18-4e50-a36e-5f041bcb9646",
+                "name": "nombre",
+                "value": "={{ $json.nombre }}",
+                "type": "string"
+              },
+              {
+                "id": "6141a207-bb11-4153-a2cd-2cceea755cdc",
+                "name": "empresa",
+                "value": "={{ $json.empresa }}",
+                "type": "string"
+              },
+              {
+                "id": "37d16b43-644f-40f9-ac39-6d655f9bee7f",
+                "name": "industria",
+                "value": "={{ $json.industria }}",
+                "type": "string"
+              },
+              {
+                "id": "b62d7b62-8574-422c-bc69-a89f44ebfd97",
+                "name": "empleados",
+                "value": "={{ $('Validación datos Formulario?1').item.json.personas }}",
+                "type": "string"
+              },
+              {
+                "id": "ad64e2bd-c001-41e0-902c-b946d8115f40",
+                "name": "phone",
+                "value": "={{ $json.telefonoNormalizado }}",
+                "type": "string"
+              },
+              {
+                "id": "c6f7b547-b28d-4970-8c0d-9caaecf4db3d",
+                "name": "ip",
+                "value": "={{ $json.ip }}",
+                "type": "string"
+              },
+              {
+                "id": "490bdc23-1386-4d07-a41d-641c5bd0a371",
+                "name": "MQL",
+                "value": "={{ $json.MQL }}",
+                "type": "string"
+              },
+              {
+                "id": "93707705-81ad-400b-9783-ff16cd1e9589",
+                "name": "Pais",
+                "value": "={{ $json.pais }}",
+                "type": "string"
+              },
+              {
+                "id": "95ae5d82-ee6e-4f8e-8d0e-75540ba2f8e1",
+                "name": "Facturacion",
+                "value": "={{ $json.facturacion }}",
+                "type": "string"
+              },
+              {
+                "id": "2cb903c1-50e2-4c78-a714-091a571a38b7",
+                "name": "RUC",
+                "value": "={{ $json.RUC }}",
+                "type": "string"
+              },
+              {
+                "id": "b6b0f740-04c7-43b7-b5b9-2672cc1a4056",
+                "name": "webhookUrl",
+                "value": "={{ $json.webhookUrl }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          2832,
+          208
+        ],
+        "id": "94d8f89b-10c3-4411-a017-f92b6424a07a",
+        "name": "Datos1",
+        "alwaysOutputData": true
+      },
+      {
+        "parameters": {
+          "phoneNumberId": "865315756662811",
+          "recipientPhoneNumber": "={{ $json.phone }}",
+          "template": "=platilla_marketing_n8n_nov_25|es"
+        },
+        "type": "n8n-nodes-base.whatsApp",
+        "typeVersion": 1,
+        "position": [
+          3472,
+          624
+        ],
+        "id": "306cb174-49ce-4a51-8997-7d268294c37f",
+        "name": "EnvioP1_Validación Datos1",
+        "webhookId": "165d7952-d3fe-4e07-b017-cd367ea73a9c",
+        "credentials": {
+          "whatsAppApi": {
+            "id": "iJtDoyn2qJjzpWd5",
+            "name": "WhatsApp account_TEST"
+          }
+        },
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "jsCode": "// =====================================================\n// 📥 CONTEXTO INICIAL\n// =====================================================\nconst ctx = $input.first().json || {};\nconst headers = ctx.headers || {};\n\n// Método HTTP (una sola vez)\nconst httpMethod = (ctx.method || \"\").toUpperCase();\n\n// ⛔ Bloquear GET con query (bots)\nif (httpMethod === \"GET\" && ctx.query) {\n  return [];\n}\n\n// Entrada flexible: query, body o json\nconst data =\n  ctx.query ||\n  ctx.body ||\n  ctx ||\n  {};\n\n// =====================================================\n// 🧰 HELPERS\n// =====================================================\nconst deburr = (s = \"\") =>\n  s.normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\");\nconst lower = (s = \"\") => deburr(String(s)).toLowerCase();\n\n// =====================================================\n// 🌐 IP REAL\n// =====================================================\nfunction getIp() {\n  try {\n    const raw =\n      headers[\"x-forwarded-for\"] ||\n      headers[\"X-Forwarded-For\"] ||\n      data.ip ||\n      data.IP ||\n      \"\";\n    return String(raw).split(\",\")[0].trim();\n  } catch {\n    return \"\";\n  }\n}\n\n// =====================================================\n// 🔗 WEBHOOK URL\n// =====================================================\nfunction buildWebhookUrl() {\n  try {\n    const explicit = String(ctx.webhookUrl ?? data.webhookUrl ?? \"\").trim();\n    if (explicit) return explicit;\n\n    const proto =\n      String(headers[\"x-forwarded-proto\"] || headers[\"X-Forwarded-Proto\"] || \"\")\n        .toLowerCase() || \"https\";\n    const host =\n      String(\n        headers[\"x-forwarded-host\"] ||\n          headers[\"X-Forwarded-Host\"] ||\n          headers[\"host\"] ||\n          headers[\"Host\"] ||\n          \"\"\n      );\n    if (host) return `${proto}://${host}`;\n    return \"\";\n  } catch {\n    return \"\";\n  }\n}\n\n// =====================================================\n// 📊 DATOS BASE\n// =====================================================\nconst nombre = (data.Name ?? data.nombre ?? \"\").trim();\nconst email = (data.Email ?? data.email ?? \"\").trim();\nconst telefonoRaw = String(data.Phone ?? data.telefono ?? \"\");\nconst empresa = (data.Company ?? data.empresa ?? \"\").trim();\nconst industria = String(data.Industry ?? data.industria ?? \"\").trim();\nconst personas = String(data.Employed ?? data.personas ?? \"\").trim();\nconst paisRaw = String(data.Country ?? data.pais ?? \"\").trim();\nconst facturacion = String(data.Pricing ?? data.facturacion ?? \"\").trim();\nconst RUC = String(data.RUC ?? data.DNI ?? \"\").trim();\nconst ip = getIp();\nconst webhookUrl = buildWebhookUrl();\n\n// =====================================================\n// 🔒 CAMPOS OBLIGATORIOS (TODOS)\n// =====================================================\nconst requiredFields = {\n  nombre,\n  email,\n  telefonoRaw,\n  empresa,\n  industria,\n  personas,\n  paisRaw,\n  facturacion,\n  RUC\n};\n\nconst missingFields = Object.entries(requiredFields)\n  .filter(([_, value]) => !value || String(value).trim().length === 0)\n  .map(([key]) => key);\n\nif (missingFields.length > 0) {\n  return [];\n}\n\n// =====================================================\n// 🔒 VALIDACIÓN DURA DEL NOMBRE (NO URL / NO EMOJI)\n// =====================================================\nconst urlPattern = /(https?:\\/\\/|www\\.|[a-z0-9-]+\\.(com|net|org|ru|xyz|info|io))/i;\nconst emojiPattern = /[\\u{1F300}-\\u{1FAFF}]/u;\nconst nombreHumanoPattern = /^[a-zA-ZÀ-ÿÑñ\\s'.-]{3,}$/;\n\nif (\n  urlPattern.test(nombre) ||\n  emojiPattern.test(nombre) ||\n  !nombreHumanoPattern.test(nombre)\n) {\n  return [];\n}\n\n// =====================================================\n// 📧 CORREO EMPRESARIAL (CLASIFICACIÓN)\n// =====================================================\nconst freeDomains = new Set([\n  \"gmail.com\",\n  \"yahoo.com\",\n  \"hotmail.com\",\n  \"outlook.com\",\n  \"live.com\",\n  \"icloud.com\",\n  \"aol.com\",\n  \"protonmail.com\",\n  \"msn.com\",\n  \"yandex.com\",\n  \"gmx.com\",\n  \"zoho.com\"\n]);\n\nlet esCorreoEmpresarial = false;\n{\n  const parts = email.split(\"@\");\n  if (parts.length === 2) {\n    const dom = parts[1].toLowerCase();\n    esCorreoEmpresarial = !!dom && dom.includes(\".\") && !freeDomains.has(dom);\n  }\n}\n\n// =====================================================\n// 🏭 INDUSTRIA (CLASIFICACIÓN, NO BLOQUEO)\n// =====================================================\nconst industriaNorm = lower(industria);\nconst esIndustriaValida =\n  industriaNorm !== \"otro\" &&\n  industriaNorm !== \"otros\";\n\n\n// =====================================================\n// 📞 TELÉFONO (E.164)\n// =====================================================\nconst countryCodes = {\n  ecuador: \"+593\",\n  mexico: \"+52\",\n  chile: \"+56\",\n  venezuela: \"+58\",\n  argentina: \"+54\",\n  panama: \"+507\",\n  colombia: \"+57\",\n  peru: \"+51\"\n};\n\nfunction normalizePhone(rawPhone, rawCountry) {\n  let digits = String(rawPhone).replace(/\\D/g, \"\");\n  const cc = countryCodes[lower(rawCountry)] ?? \"+593\";\n  const ccDigits = cc.slice(1);\n\n  if (digits.startsWith(ccDigits)) return \"+\" + digits;\n  if (digits.startsWith(\"0\")) digits = digits.slice(1);\n  return cc + digits;\n}\n\nconst telefonoNormalizado = normalizePhone(telefonoRaw, paisRaw);\n\nfunction validarTelefono(e164) {\n  if (!e164.startsWith(\"+\")) return false;\n  const d = e164.slice(1);\n  return d.length >= 9 && d.length <= 15;\n}\n\nconst esTelefonoValido = validarTelefono(telefonoNormalizado);\nif (!esTelefonoValido) {\n  return [];\n}\n\n// =====================================================\n// 🛑 ANTI-SPAM FORMULARIO\n// =====================================================\n\n// Solo POST\nif (httpMethod && httpMethod !== \"POST\") {\n  return [];\n}\n\n// Honeypot\nif (String(data.website || \"\").trim() !== \"\") {\n  return [];\n}\n\n// Tiempo mínimo humano\nconst now = Date.now();\nconst formStart = Number(data.form_start_ts || 0);\nif (formStart && now - formStart < 3000) {\n  return [];\n}\n\n// =====================================================\n// 🎯 MQL (SOLO PREPARADO, NO DECIDE NEGOCIO)\n// =====================================================\nconst MQL = false;\n\n// =====================================================\n// ✅ SALIDA FINAL (LEAD LIMPIO)\n// =====================================================\nreturn [\n  {\n    json: {\n      nombre,\n      email,\n      telefonoNormalizado,\n      empresa,\n      industria,\n      personas,\n      pais: paisRaw,\n      facturacion,\n      RUC,\n      ip,\n      webhookUrl,\n\n      esCorreoEmpresarial,\n      esIndustriaValida,\n      esTelefonoValido,\n      MQL\n    }\n  }\n];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2672,
+          208
+        ],
+        "id": "7b399b0b-7ad0-4dde-bbc6-366232c48957",
+        "name": "Validación datos Formulario?1"
+      },
+      {
+        "parameters": {
+          "content": "## FORMULARIO CAPTACIÓN LEADS\nEl formulario sera enbebido en la pagina web https://mobilvendor.com/ y contendra los siguientes Input:\n+ Nombres (Cliente)\n+ Correo electrónico\n+ Teléfono\n+ Nombre empresa\n+ Industria\n++ Consumo masivo\n++ Ferretero\n++ Farmacéutico\n++ Automotor\n++ Otros\n+ Numero de empleados\n++ De 1 a 5\n++ De 6 a 20\n++ Mas de 20\n\n",
+          "height": 1168,
+          "width": 512
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2048,
+          -208
+        ],
+        "typeVersion": 1,
+        "id": "f477266d-35a8-4d7c-bbd6-884926c40f2f",
+        "name": "Sticky Note2"
+      },
+      {
+        "parameters": {
+          "content": "## VALIDACIÓN DE LEAD - MQL\nCon la Información del formulario se realiza las siguientes casos:\n+ Correo Electrónico:\n++ Es correo empresarial ?\n++ Es un correo Valido ?\n+ Teléfono:\n++ Validación de numero de dígitos\n++ Pasar a formato internacional EC\n+ Industria:\n++ Es diferente de Otro ?",
+          "height": 1168,
+          "width": 576,
+          "color": 5
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          2608,
+          -208
+        ],
+        "typeVersion": 1,
+        "id": "06edb697-f743-4a5c-a62c-5d73960bf80b",
+        "name": "Sticky Note4"
+      },
+      {
+        "parameters": {
+          "content": "## COMUNICACIÓN\nSe establece los canales de comunicación:\n+ MQL= True --> Se consume API de LEAD (Bitrix) para crear el LEAD/MQL\n+ MQL= False --> Se consume servicio de Whatsapp Plantilla 1\n+ Se almacena información de LEAD y su calificación en excel.\n* Enviar whatsapp con agenda del asesor comercial asignado.\n* Almacena los UTM en Bitrix para un analisis de campañas efectivas.",
+          "height": 1168,
+          "width": 1248,
+          "color": 4
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "position": [
+          3824,
+          -16
+        ],
+        "typeVersion": 1,
+        "id": "9eba1eb4-4a4d-45eb-8a40-23a0009b0d9e",
+        "name": "Sticky Note5"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "a3087298-7044-4d9f-9c3e-6b0d33752a05",
+                "leftValue": "={{ $json.MQL }}",
+                "rightValue": "true",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          3008,
+          208
+        ],
+        "id": "dda489d0-e391-4063-8694-b811b76a7c6d",
+        "name": "Validación OK2"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://mobilvendor.bitrix24.es/rest/1/vz55jbu9kzwezk25/crm.lead.add.json",
+          "sendQuery": true,
+          "specifyQuery": "json",
+          "jsonQuery": "={\n  \"fields\": {\n    \"EMAIL\": [\n      {\n        \"VALUE\": \"{{ $('Datos1').first().json.email }}\",\n        \"VALUE_TYPE\": \"WORK\"\n      }\n    ],\n    \"NAME\": \"{{ $('Datos1').first().json.nombre }}\",\n    \"PHONE\": [\n      {\n        \"VALUE\": \"{{ $('Validación datos Formulario?1').item.json.telefonoNormalizado }}\",\n        \"VALUE_TYPE\": \"WORK\"\n      }\n    ],\n    \"TITLE\": \"{{ $('Datos1').first().json.empresa }}\",\n    \"COMPANY_TITLE\": \"{{ $('Datos1').first().json.empresa }}\",\n    \"ASSIGNED_BY_ID\": 93,\n    \"UF_CRM_1732907229570\": \"{{ $now.format('YYYY-MM-DD') }}\",\n    \"UF_CRM_1757002582\": \"{{ $('Datos1').first().json.ip }}\",\n    \"UF_CRM_1757018763\": \"{{ $('HTTP Request SRI1').item.json === true ? 1 : 0 }}\",\n    \"UF_CRM_1756915881203\": \"{{ $json.output === 'true' ? 1 : 0 }}\",\n    \"ADDRESS_COUNTRY\": \"{{ $('Datos1').item.json.Pais }}\",\n    \"SOURCE_ID\": \"WEBFORM\",\n    \"UF_CRM_1767717694\": \"{{ $('Webhook Formulario1').item.json.query.utm_source }}\",\n    \"UF_CRM_1767717721\" : \"{{ $('Webhook Formulario1').item.json.query.utm_medium }}\",\n    \"UF_CRM_1767717744\" : \"{{ $('Webhook Formulario1').item.json.query.utm_campaign }}\",\n    \"UF_CRM_1767717768\" : \"{{ $('Webhook Formulario1').item.json.query.utm_content }}\",\n    \"UF_CRM_1767717791\" : \"{{ $('Webhook Formulario1').item.json.query.utm_term }}\",\n    \"UF_CRM_1767729096\" : \"{{ $('Webhook Formulario1').item.json.query.utm_country }}\",\n    \"UF_CRM_1764184319112\": \"{{ (\n      (String($('Webhook Formulario1').item.json.query.Industry || '').trim().toLowerCase()\n        .normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s+/g,' ')\n      === 'consumo masivo') ? 509 :\n    \n      (String($('Webhook Formulario1').item.json.query.Industry || '').trim().toLowerCase()\n        .normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s+/g,' ')\n      === 'ferreteria') ? 511 :\n    \n      (String($('Webhook Formulario1').item.json.query.Industry || '').trim().toLowerCase()\n        .normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s+/g,' ')\n      === 'automotriz') ? 513 :\n    \n      (String($('Webhook Formulario1').item.json.query.Industry || '').trim().toLowerCase()\n        .normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s+/g,' ')\n      === 'farmaceutica') ? 515 :\n    \n      517\n    ) }}\",\n    \"UF_CRM_1760641598\": \"{{ $('Datos1').item.json.RUC }}\",\n    \"COMMENTS\": \"{{ \n      'Industria: ' + $('Webhook Formulario1').item.json.query.Industry +\n      '\\\\nUsuarios: ' + $('Webhook Formulario1').item.json.query.Employed +\n      '\\\\nRango de facturación: ' + $('Webhook Formulario1').item.json.query.Pricing +\n      '\\\\nRUC: ' + $('Webhook Formulario1').item.json.query.DNI\n    }}\"\n  }\n}\n",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          4512,
+          192
+        ],
+        "id": "95575c1b-016c-4d84-a761-e80bf6d48a93",
+        "name": "HTTP BITRIX1"
+      },
+      {
+        "parameters": {
+          "url": "https://srienlinea.sri.gob.ec/sri-catastro-sujeto-servicio-internet/rest/ConsolidadoContribuyente/existePorNumeroRuc",
+          "sendQuery": true,
+          "specifyQuery": "json",
+          "jsonQuery": "={\n  \"numeroRuc\":\"{{ $json.ruc_sri }}\"\n}",
+          "options": {
+            "timeout": 10000
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          3872,
+          224
+        ],
+        "id": "4e623ee0-aff6-43fd-89e2-0ac696db00f5",
+        "name": "HTTP Request SRI1",
+        "alwaysOutputData": false,
+        "notesInFlow": false,
+        "onError": "continueRegularOutput"
+      },
+      {
+        "parameters": {
+          "respondWith": "redirect",
+          "redirectURL": "https://mobilvendor.com/gracias/",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4,
+        "position": [
+          2368,
+          208
+        ],
+        "id": "7c1e4a2d-f9bb-4843-a561-1a81a20d4bd3",
+        "name": "Respond to Webhook2",
+        "alwaysOutputData": false
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg",
+            "mode": "list",
+            "cachedResultName": "MQL",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Hoja 1",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Presencia en redes": "=",
+              "MQL1": "={{ $('Datos1').item.json.MQL }}",
+              "ip": "={{ $('Datos1').item.json.ip }}",
+              "phone": "={{ $('Datos1').item.json.phone }}",
+              "empleados": "={{ $('Datos1').item.json.empleados }}",
+              "industria": "={{ $('Datos1').item.json.industria }}",
+              "empresa": "={{ $('Datos1').item.json.empresa }}",
+              "nombre": "={{ $('Datos1').item.json.nombre }}",
+              "email": "={{ $('Datos1').item.json.email }}",
+              "id_lead": "={{ $json.result }}",
+              "comments": "=Industria: {{ $('Datos1').item.json.industria }} \\nUsuarios: {{ $('Datos1').item.json.empleados }} \\nRango de facturación: {{ $('Datos1').item.json.Facturacion }} \\nRUC: {{ $('Datos1').item.json.RUC }}",
+              "OK": "={{ $('HTTP Request SRI1').item.json ? 'TRUE' : 'FALSE' }}",
+              "pais ": "={{ $('Datos1').item.json.Pais}}",
+              "ruc": "={{ $('Datos1').item.json.RUC }}",
+              "fecha ": "={{ $now.format ('dd-MM-yyyy')}}",
+              "fuente": "formulario"
+            },
+            "matchingColumns": [
+              "email"
+            ],
+            "schema": [
+              {
+                "id": "email",
+                "displayName": "email",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "nombre",
+                "displayName": "nombre",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "empresa",
+                "displayName": "empresa",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "industria",
+                "displayName": "industria",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "phone",
+                "displayName": "phone",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "empleados",
+                "displayName": "empleados",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "pais ",
+                "displayName": "pais ",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "ruc",
+                "displayName": "ruc",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "fecha ",
+                "displayName": "fecha ",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "fuente",
+                "displayName": "fuente",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "ip",
+                "displayName": "ip",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "session_id",
+                "displayName": "session_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "MQL1",
+                "displayName": "MQL1",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Presencia en redes",
+                "displayName": "Presencia en redes",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "MQL2",
+                "displayName": "MQL2",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "OK",
+                "displayName": "OK",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "id_lead",
+                "displayName": "id_lead",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "update_lead",
+                "displayName": "update_lead",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "tipo_empresa",
+                "displayName": "tipo_empresa",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "rubro_sector",
+                "displayName": "rubro_sector",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "alcance_operativo",
+                "displayName": "alcance_operativo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "interes",
+                "displayName": "interes",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "correo_corporativo",
+                "displayName": "correo_corporativo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "new_phone",
+                "displayName": "new_phone",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "attemps",
+                "displayName": "attemps",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "current_step",
+                "displayName": "current_step",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "pending_question",
+                "displayName": "pending_question",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "mode",
+                "displayName": "mode",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "is_new_contac",
+                "displayName": "is_new_contac",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "last_message",
+                "displayName": "last_message",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "skipUpdate",
+                "displayName": "skipUpdate",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "presencia_redes",
+                "displayName": "presencia_redes",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "comments",
+                "displayName": "comments",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "reason",
+                "displayName": "reason",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "debug",
+                "displayName": "debug",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "nombreempresa",
+                "displayName": "nombreempresa",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "userConfirmedContact",
+                "displayName": "userConfirmedContact",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          4880,
+          304
+        ],
+        "id": "14044a21-889c-4acf-8985-c76c2f8c98f9",
+        "name": "Append row in sheet",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "a3087298-7044-4d9f-9c3e-6b0d33752a05",
+                "leftValue": "={{ $('Datos1').item.json.MQL }}",
+                "rightValue": "true",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          4656,
+          192
+        ],
+        "id": "acc5a3f7-ce80-4634-979a-3a56603e46e7",
+        "name": "Validación OK3"
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg",
+            "mode": "list",
+            "cachedResultName": "MQL",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Hoja 1",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Presencia en redes": "=",
+              "MQL1": "={{ $('Datos1').item.json.MQL }}",
+              "ip": "={{ $('Datos1').item.json.ip }}",
+              "phone": "={{ $('Datos1').item.json.phone }}",
+              "empleados": "={{ $('Datos1').item.json.empleados }}",
+              "industria": "={{ $('Datos1').item.json.industria }}",
+              "empresa": "={{ $('Datos1').item.json.empresa }}",
+              "nombre": "={{ $('Datos1').item.json.nombre }}",
+              "email": "={{ $('Datos1').item.json.email }}",
+              "id_lead": "={{ $json.result }}",
+              "comments": "=Industria: {{ $('Datos1').item.json.industria }} \\nUsuarios: {{ $('Datos1').item.json.empleados }} \\nRango de facturación: {{ $('Datos1').item.json.Facturacion }} \\nRUC: {{ $('Datos1').item.json.RUC }}",
+              "pais ": "={{ $('Datos1').item.json.Pais}}",
+              "ruc": "={{ $('Datos1').item.json.RUC }}",
+              "fecha ": "={{ $now.format ('dd-MM-yyyy')}}",
+              "fuente": "formulario"
+            },
+            "matchingColumns": [
+              "email"
+            ],
+            "schema": [
+              {
+                "id": "email",
+                "displayName": "email",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "nombre",
+                "displayName": "nombre",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "empresa",
+                "displayName": "empresa",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "industria",
+                "displayName": "industria",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "phone",
+                "displayName": "phone",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "empleados",
+                "displayName": "empleados",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "pais ",
+                "displayName": "pais ",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "ruc",
+                "displayName": "ruc",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "fecha ",
+                "displayName": "fecha ",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "fuente",
+                "displayName": "fuente",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "ip",
+                "displayName": "ip",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "session_id",
+                "displayName": "session_id",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "MQL1",
+                "displayName": "MQL1",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Presencia en redes",
+                "displayName": "Presencia en redes",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "MQL2",
+                "displayName": "MQL2",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "OK",
+                "displayName": "OK",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": true
+              },
+              {
+                "id": "id_lead",
+                "displayName": "id_lead",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "update_lead",
+                "displayName": "update_lead",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "tipo_empresa",
+                "displayName": "tipo_empresa",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "rubro_sector",
+                "displayName": "rubro_sector",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "alcance_operativo",
+                "displayName": "alcance_operativo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "interes",
+                "displayName": "interes",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "correo_corporativo",
+                "displayName": "correo_corporativo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "new_phone",
+                "displayName": "new_phone",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "attemps",
+                "displayName": "attemps",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "current_step",
+                "displayName": "current_step",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "pending_question",
+                "displayName": "pending_question",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "mode",
+                "displayName": "mode",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "is_new_contac",
+                "displayName": "is_new_contac",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "last_message",
+                "displayName": "last_message",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "skipUpdate",
+                "displayName": "skipUpdate",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "presencia_redes",
+                "displayName": "presencia_redes",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "comments",
+                "displayName": "comments",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "reason",
+                "displayName": "reason",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "debug",
+                "displayName": "debug",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "nombreempresa",
+                "displayName": "nombreempresa",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "userConfirmedContact",
+                "displayName": "userConfirmedContact",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          4880,
+          112
+        ],
+        "id": "d30cee48-c220-47e8-ac86-49e46925c21f",
+        "name": "Append row in sheet4",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "X85etX5eT5AEUIYQ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "03efd41a-7114-4e2e-b41c-0fd610ee8776",
+                "leftValue": "={{ $('Datos1').item.json.webhookUrl }}",
+                "rightValue": "https://n8n.mobilvendor.com/webhook/mobilvendor-one",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEquals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          4368,
+          208
+        ],
+        "id": "899b05b2-d039-4f04-a19b-6ef9f70df8d6",
+        "name": "If1"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://mobilvendor.bitrix24.es/rest/1/r6ke4gy6p0pz5yvs/crm.deal.add.json",
+          "sendQuery": true,
+          "specifyQuery": "json",
+          "jsonQuery": "={\n  \"fields\": {\n    \"EMAIL\": [\n      {\n        \"VALUE\": \"{{ $('Datos1').first().json.email }}\",\n        \"VALUE_TYPE\": \"WORK\"\n      }\n    ],\n    \"NAME\": \"{{ $('Datos1').first().json.nombre }}\",\n    \"PHONE\": [\n      {\n        \"VALUE\": \"{{ $('Validación datos Formulario?1').item.json.telefonoNormalizado }}\",\n        \"VALUE_TYPE\": \"WORK\"\n      }\n    ],\n    \"TITLE\": \"{{ $('Datos1').first().json.empresa }}\", \n    \"COMPANY_TITLE\": \"{{ $('Datos1').first().json.empresa }}\",\n    \"STAGE_ID\": \"RECEPCIÓN FORMULARIO\", \n    \"CATEGORY_ID\": 9,\n    \"OPENED\": \"Y\",\n    \"ASSIGNED_BY_ID\": 93,\n    \"UF_CRM_1732907229570\": \"{{$now.format('YYYY-MM-DD')}}\",\n    \"UF_CRM_1757002582\": \"{{ $('Datos1').first().json.ip }}\",\n    \"UF_CRM_1756915881203\": \"{{ $json.output === \"true\" ? 1 : 0 }}\",\n    \"ADDRESS_COUNTRY\":\"{{ $('Datos1').item.json.Pais }}\",\n    \"SOURCE_ID\" : \"WEBFORM\",\n    \"UF_CRM_1760641316\" :\" {{ $('Datos1').item.json.RUC }}\",\n    \"COMMENTS\": \"Industria: {{ $('mobilvendor-one1').item.json.query.Industry }}\\nRUC:{{ $('mobilvendor-one1').item.json.query.DNI }} \"\n\n  }\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          4528,
+          416
+        ],
+        "id": "dba00225-d34d-475a-8f48-61cf650e8a71",
+        "name": "HTTP BITRIX_MVONE1"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          4160,
+          496
+        ],
+        "id": "f2735d8b-dc5a-442a-8d57-dd09c37389c3",
+        "name": "Wait",
+        "webhookId": "dbd3368b-b221-42df-9267-a578f436df30"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "20a67bc2-263f-48f2-8452-483dd5d86bb1",
+                "leftValue": "={{ $json.status }}",
+                "rightValue": "OK",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "or"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          4208,
+          224
+        ],
+        "id": "7e938aac-3327-4fed-b2c5-6a875398e5be",
+        "name": "If3"
+      },
+      {
+        "parameters": {
+          "jsCode": "const data = $input.first().json;\n\n// ==========================================================\n// EXCEPCIÓN ESPECIAL → SI EL RUC NO SE ENVIÓ\n// ERROR PERMITIDO (NO DEBE CORTAR EL FLUJO)\n// ==========================================================\nconst errorMsg = data?.error?.message ?? \"\";\n\nif (\n    typeof errorMsg === \"string\" &&\n    errorMsg.includes(\"El parámetro número RUC es requerido\")\n) {\n    return [\n        {\n            json: {\n                status: \"OK\",\n                info: \"RUC no enviado → se permite continuar\"\n            }\n        }\n    ];\n}\n\n// ==========================================================\n// VALIDACIÓN NORMAL DE ERRORES\n// ==========================================================\nif (\n    data.error &&\n    typeof data.error.message === \"string\" &&\n    data.error.message.trim() !== \"\"\n) {\n    return [\n        {\n            json: {\n                status: \"ERROR\",\n                errorMessage: data.error.message,\n                errorName: data.error.name,\n                errorCode: data.error.code\n            }\n        }\n    ];\n}\n\n// ==========================================================\n// SI NO HAY ERROR → OK NORMAL\n// ==========================================================\nreturn [\n    {\n        json: {\n            status: \"OK\"\n        }\n    }\n];\n\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          4048,
+          224
+        ],
+        "id": "e776ce9a-366e-4e84-8869-10bdc919c22d",
+        "name": "Code"
+      },
+      {
+        "parameters": {
+          "jsCode": "const ruc = String($json.RUC || \"\").trim();\n\nreturn [{\n  json: {\n    ruc_sri: ruc\n  }\n}];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3472,
+          224
+        ],
+        "id": "09311235-510a-4ea6-bb57-af4a77f656da",
+        "name": "Validacion_RUC1"
+      }
+    ],
+    "connections": {
+      "Webhook Formulario1": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Datos1": {
+        "main": [
+          [
+            {
+              "node": "Validación OK2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validación datos Formulario?1": {
+        "main": [
+          [
+            {
+              "node": "Datos1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validación OK2": {
+        "main": [
+          [],
+          [
+            {
+              "node": "EnvioP1_Validación Datos1",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Validacion_RUC1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP BITRIX1": {
+        "main": [
+          [
+            {
+              "node": "Validación OK3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request SRI1": {
+        "main": [
+          [
+            {
+              "node": "Code",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Respond to Webhook2": {
+        "main": [
+          [
+            {
+              "node": "Validación datos Formulario?1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validación OK3": {
+        "main": [
+          [
+            {
+              "node": "Append row in sheet4",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Append row in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If1": {
+        "main": [
+          [
+            {
+              "node": "HTTP BITRIX1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "HTTP BITRIX_MVONE1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP BITRIX_MVONE1": {
+        "main": [
+          [
+            {
+              "node": "Validación OK3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request SRI1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If3": {
+        "main": [
+          [
+            {
+              "node": "If1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code": {
+        "main": [
+          [
+            {
+              "node": "If3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validacion_RUC1": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request SRI1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "EnvioP1_Validación Datos1": {
+        "main": [
+          []
+        ]
+      }
+    },
+    "authors": "ZEI MOBILVENDOR",
+    "name": "Version 3",
+    "description": "Cambio  bitrix parametro industria",
+    "autosaved": false
+  },
+  "activeVersionId": "b286157d-7aba-43aa-95d7-b6de146d77cb",
+  "connections": {
+    "Webhook Formulario1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Datos1": {
+      "main": [
+        [
+          {
+            "node": "Validación OK2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validación datos Formulario?1": {
+      "main": [
+        [
+          {
+            "node": "Datos1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validación OK2": {
+      "main": [
+        [],
+        [
+          {
+            "node": "EnvioP1_Validación Datos1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Validacion_RUC1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP BITRIX1": {
+      "main": [
+        [
+          {
+            "node": "Validación OK3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request SRI1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook2": {
+      "main": [
+        [
+          {
+            "node": "Validación datos Formulario?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validación OK3": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "HTTP BITRIX1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP BITRIX_MVONE1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP BITRIX_MVONE1": {
+      "main": [
+        [
+          {
+            "node": "Validación OK3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request SRI1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validacion_RUC1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request SRI1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EnvioP1_Validación Datos1": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:46.153Z",
+  "id": "cod7XIjrwBy5vJgN",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Calificación_Lead",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "mv_formulario",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        2160,
+        208
+      ],
+      "id": "368373b7-cf0d-4b92-85fc-a9fbe6588df8",
+      "name": "Webhook Formulario1",
+      "webhookId": "f278a15e-6cc0-441f-aa47-b3f0d655e743"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2de00892-2baf-43c3-8015-7a671991f811",
+              "name": "email",
+              "value": "={{ $('Validación datos Formulario?1').item.json.email }}",
+              "type": "string"
+            },
+            {
+              "id": "44b680fa-4f18-4e50-a36e-5f041bcb9646",
+              "name": "nombre",
+              "value": "={{ $json.nombre }}",
+              "type": "string"
+            },
+            {
+              "id": "6141a207-bb11-4153-a2cd-2cceea755cdc",
+              "name": "empresa",
+              "value": "={{ $json.empresa }}",
+              "type": "string"
+            },
+            {
+              "id": "37d16b43-644f-40f9-ac39-6d655f9bee7f",
+              "name": "industria",
+              "value": "={{ $json.industria }}",
+              "type": "string"
+            },
+            {
+              "id": "b62d7b62-8574-422c-bc69-a89f44ebfd97",
+              "name": "empleados",
+              "value": "={{ $('Validación datos Formulario?1').item.json.personas }}",
+              "type": "string"
+            },
+            {
+              "id": "ad64e2bd-c001-41e0-902c-b946d8115f40",
+              "name": "phone",
+              "value": "={{ $json.telefonoNormalizado }}",
+              "type": "string"
+            },
+            {
+              "id": "c6f7b547-b28d-4970-8c0d-9caaecf4db3d",
+              "name": "ip",
+              "value": "={{ $json.ip }}",
+              "type": "string"
+            },
+            {
+              "id": "490bdc23-1386-4d07-a41d-641c5bd0a371",
+              "name": "MQL",
+              "value": "={{ $json.MQL }}",
+              "type": "string"
+            },
+            {
+              "id": "93707705-81ad-400b-9783-ff16cd1e9589",
+              "name": "Pais",
+              "value": "={{ $json.pais }}",
+              "type": "string"
+            },
+            {
+              "id": "95ae5d82-ee6e-4f8e-8d0e-75540ba2f8e1",
+              "name": "Facturacion",
+              "value": "={{ $json.facturacion }}",
+              "type": "string"
+            },
+            {
+              "id": "2cb903c1-50e2-4c78-a714-091a571a38b7",
+              "name": "RUC",
+              "value": "={{ $json.RUC }}",
+              "type": "string"
+            },
+            {
+              "id": "b6b0f740-04c7-43b7-b5b9-2672cc1a4056",
+              "name": "webhookUrl",
+              "value": "={{ $json.webhookUrl }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2832,
+        208
+      ],
+      "id": "94d8f89b-10c3-4411-a017-f92b6424a07a",
+      "name": "Datos1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "phoneNumberId": "865315756662811",
+        "recipientPhoneNumber": "={{ $json.phone }}",
+        "template": "=platilla_marketing_n8n_nov_25|es"
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        3472,
+        624
+      ],
+      "id": "306cb174-49ce-4a51-8997-7d268294c37f",
+      "name": "EnvioP1_Validación Datos1",
+      "webhookId": "165d7952-d3fe-4e07-b017-cd367ea73a9c",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "iJtDoyn2qJjzpWd5",
+          "name": "WhatsApp account_TEST"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// =====================================================\n// 📥 CONTEXTO INICIAL\n// =====================================================\nconst ctx = $input.first().json || {};\nconst headers = ctx.headers || {};\n\n// Método HTTP (una sola vez)\nconst httpMethod = (ctx.method || \"\").toUpperCase();\n\n// ⛔ Bloquear GET con query (bots)\nif (httpMethod === \"GET\" && ctx.query) {\n  return [];\n}\n\n// Entrada flexible: query, body o json\nconst data =\n  ctx.query ||\n  ctx.body ||\n  ctx ||\n  {};\n\n// =====================================================\n// 🧰 HELPERS\n// =====================================================\nconst deburr = (s = \"\") =>\n  s.normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\");\nconst lower = (s = \"\") => deburr(String(s)).toLowerCase();\n\n// =====================================================\n// 🌐 IP REAL\n// =====================================================\nfunction getIp() {\n  try {\n    const raw =\n      headers[\"x-forwarded-for\"] ||\n      headers[\"X-Forwarded-For\"] ||\n      data.ip ||\n      data.IP ||\n      \"\";\n    return String(raw).split(\",\")[0].trim();\n  } catch {\n    return \"\";\n  }\n}\n\n// =====================================================\n// 🔗 WEBHOOK URL\n// =====================================================\nfunction buildWebhookUrl() {\n  try {\n    const explicit = String(ctx.webhookUrl ?? data.webhookUrl ?? \"\").trim();\n    if (explicit) return explicit;\n\n    const proto =\n      String(headers[\"x-forwarded-proto\"] || headers[\"X-Forwarded-Proto\"] || \"\")\n        .toLowerCase() || \"https\";\n    const host =\n      String(\n        headers[\"x-forwarded-host\"] ||\n          headers[\"X-Forwarded-Host\"] ||\n          headers[\"host\"] ||\n          headers[\"Host\"] ||\n          \"\"\n      );\n    if (host) return `${proto}://${host}`;\n    return \"\";\n  } catch {\n    return \"\";\n  }\n}\n\n// =====================================================\n// 📊 DATOS BASE\n// =====================================================\nconst nombre = (data.Name ?? data.nombre ?? \"\").trim();\nconst email = (data.Email ?? data.email ?? \"\").trim();\nconst telefonoRaw = String(data.Phone ?? data.telefono ?? \"\");\nconst empresa = (data.Company ?? data.empresa ?? \"\").trim();\nconst industria = String(data.Industry ?? data.industria ?? \"\").trim();\nconst personas = String(data.Employed ?? data.personas ?? \"\").trim();\nconst paisRaw = String(data.Country ?? data.pais ?? \"\").trim();\nconst facturacion = String(data.Pricing ?? data.facturacion ?? \"\").trim();\nconst RUC = String(data.RUC ?? data.DNI ?? \"\").trim();\nconst ip = getIp();\nconst webhookUrl = buildWebhookUrl();\n\n// =====================================================\n// 🔒 CAMPOS OBLIGATORIOS (TODOS)\n// =====================================================\nconst requiredFields = {\n  nombre,\n  email,\n  telefonoRaw,\n  empresa,\n  industria,\n  personas,\n  paisRaw,\n  facturacion,\n  RUC\n};\n\nconst missingFields = Object.entries(requiredFields)\n  .filter(([_, value]) => !value || String(value).trim().length === 0)\n  .map(([key]) => key);\n\nif (missingFields.length > 0) {\n  return [];\n}\n\n// =====================================================\n// 🔒 VALIDACIÓN DURA DEL NOMBRE (NO URL / NO EMOJI)\n// =====================================================\nconst urlPattern = /(https?:\\/\\/|www\\.|[a-z0-9-]+\\.(com|net|org|ru|xyz|info|io))/i;\nconst emojiPattern = /[\\u{1F300}-\\u{1FAFF}]/u;\nconst nombreHumanoPattern = /^[a-zA-ZÀ-ÿÑñ\\s'.-]{3,}$/;\n\nif (\n  urlPattern.test(nombre) ||\n  emojiPattern.test(nombre) ||\n  !nombreHumanoPattern.test(nombre)\n) {\n  return [];\n}\n\n// =====================================================\n// 📧 CORREO EMPRESARIAL (CLASIFICACIÓN)\n// =====================================================\nconst freeDomains = new Set([\n  \"gmail.com\",\n  \"yahoo.com\",\n  \"hotmail.com\",\n  \"outlook.com\",\n  \"live.com\",\n  \"icloud.com\",\n  \"aol.com\",\n  \"protonmail.com\",\n  \"msn.com\",\n  \"yandex.com\",\n  \"gmx.com\",\n  \"zoho.com\"\n]);\n\nlet esCorreoEmpresarial = false;\n{\n  const parts = email.split(\"@\");\n  if (parts.length === 2) {\n    const dom = parts[1].toLowerCase();\n    esCorreoEmpresarial = !!dom && dom.includes(\".\") && !freeDomains.has(dom);\n  }\n}\n\n// =====================================================\n// 🏭 INDUSTRIA (CLASIFICACIÓN, NO BLOQUEO)\n// =====================================================\nconst industriaNorm = lower(industria);\nconst esIndustriaValida =\n  industriaNorm !== \"otro\" &&\n  industriaNorm !== \"otros\";\n\n\n// =====================================================\n// 📞 TELÉFONO (E.164)\n// =====================================================\nconst countryCodes = {\n  ecuador: \"+593\",\n  mexico: \"+52\",\n  chile: \"+56\",\n  venezuela: \"+58\",\n  argentina: \"+54\",\n  panama: \"+507\",\n  colombia: \"+57\",\n  peru: \"+51\"\n};\n\nfunction normalizePhone(rawPhone, rawCountry) {\n  let digits = String(rawPhone).replace(/\\D/g, \"\");\n  const cc = countryCodes[lower(rawCountry)] ?? \"+593\";\n  const ccDigits = cc.slice(1);\n\n  if (digits.startsWith(ccDigits)) return \"+\" + digits;\n  if (digits.startsWith(\"0\")) digits = digits.slice(1);\n  return cc + digits;\n}\n\nconst telefonoNormalizado = normalizePhone(telefonoRaw, paisRaw);\n\nfunction validarTelefono(e164) {\n  if (!e164.startsWith(\"+\")) return false;\n  const d = e164.slice(1);\n  return d.length >= 9 && d.length <= 15;\n}\n\nconst esTelefonoValido = validarTelefono(telefonoNormalizado);\nif (!esTelefonoValido) {\n  return [];\n}\n\n// =====================================================\n// 🛑 ANTI-SPAM FORMULARIO\n// =====================================================\n\n// Solo POST\nif (httpMethod && httpMethod !== \"POST\") {\n  return [];\n}\n\n// Honeypot\nif (String(data.website || \"\").trim() !== \"\") {\n  return [];\n}\n\n// Tiempo mínimo humano\nconst now = Date.now();\nconst formStart = Number(data.form_start_ts || 0);\nif (formStart && now - formStart < 3000) {\n  return [];\n}\n\n// =====================================================\n// 🎯 MQL (SOLO PREPARADO, NO DECIDE NEGOCIO)\n// =====================================================\nconst MQL = false;\n\n// =====================================================\n// ✅ SALIDA FINAL (LEAD LIMPIO)\n// =====================================================\nreturn [\n  {\n    json: {\n      nombre,\n      email,\n      telefonoNormalizado,\n      empresa,\n      industria,\n      personas,\n      pais: paisRaw,\n      facturacion,\n      RUC,\n      ip,\n      webhookUrl,\n\n      esCorreoEmpresarial,\n      esIndustriaValida,\n      esTelefonoValido,\n      MQL\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2672,
+        208
+      ],
+      "id": "7b399b0b-7ad0-4dde-bbc6-366232c48957",
+      "name": "Validación datos Formulario?1"
+    },
+    {
+      "parameters": {
+        "content": "## FORMULARIO CAPTACIÓN LEADS\nEl formulario sera enbebido en la pagina web https://mobilvendor.com/ y contendra los siguientes Input:\n+ Nombres (Cliente)\n+ Correo electrónico\n+ Teléfono\n+ Nombre empresa\n+ Industria\n++ Consumo masivo\n++ Ferretero\n++ Farmacéutico\n++ Automotor\n++ Otros\n+ Numero de empleados\n++ De 1 a 5\n++ De 6 a 20\n++ Mas de 20\n\n",
+        "height": 1168,
+        "width": 512
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2048,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "f477266d-35a8-4d7c-bbd6-884926c40f2f",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## VALIDACIÓN DE LEAD - MQL\nCon la Información del formulario se realiza las siguientes casos:\n+ Correo Electrónico:\n++ Es correo empresarial ?\n++ Es un correo Valido ?\n+ Teléfono:\n++ Validación de numero de dígitos\n++ Pasar a formato internacional EC\n+ Industria:\n++ Es diferente de Otro ?",
+        "height": 1168,
+        "width": 576,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2608,
+        -208
+      ],
+      "typeVersion": 1,
+      "id": "06edb697-f743-4a5c-a62c-5d73960bf80b",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## COMUNICACIÓN\nSe establece los canales de comunicación:\n+ MQL= True --> Se consume API de LEAD (Bitrix) para crear el LEAD/MQL\n+ MQL= False --> Se consume servicio de Whatsapp Plantilla 1\n+ Se almacena información de LEAD y su calificación en excel.\n* Enviar whatsapp con agenda del asesor comercial asignado.\n* Almacena los UTM en Bitrix para un analisis de campañas efectivas.",
+        "height": 1168,
+        "width": 1248,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3824,
+        -16
+      ],
+      "typeVersion": 1,
+      "id": "9eba1eb4-4a4d-45eb-8a40-23a0009b0d9e",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a3087298-7044-4d9f-9c3e-6b0d33752a05",
+              "leftValue": "={{ $json.MQL }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3008,
+        208
+      ],
+      "id": "dda489d0-e391-4063-8694-b811b76a7c6d",
+      "name": "Validación OK2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://mobilvendor.bitrix24.es/rest/1/vz55jbu9kzwezk25/crm.lead.add.json",
+        "sendQuery": true,
+        "specifyQuery": "json",
+        "jsonQuery": "={\n  \"fields\": {\n    \"EMAIL\": [\n      {\n        \"VALUE\": \"{{ $('Datos1').first().json.email }}\",\n        \"VALUE_TYPE\": \"WORK\"\n      }\n    ],\n    \"NAME\": \"{{ $('Datos1').first().json.nombre }}\",\n    \"PHONE\": [\n      {\n        \"VALUE\": \"{{ $('Validación datos Formulario?1').item.json.telefonoNormalizado }}\",\n        \"VALUE_TYPE\": \"WORK\"\n      }\n    ],\n    \"TITLE\": \"{{ $('Datos1').first().json.empresa }}\",\n    \"COMPANY_TITLE\": \"{{ $('Datos1').first().json.empresa }}\",\n    \"ASSIGNED_BY_ID\": 93,\n    \"UF_CRM_1732907229570\": \"{{ $now.format('YYYY-MM-DD') }}\",\n    \"UF_CRM_1757002582\": \"{{ $('Datos1').first().json.ip }}\",\n    \"UF_CRM_1757018763\": \"{{ $('HTTP Request SRI1').item.json === true ? 1 : 0 }}\",\n    \"UF_CRM_1756915881203\": \"{{ $json.output === 'true' ? 1 : 0 }}\",\n    \"ADDRESS_COUNTRY\": \"{{ $('Datos1').item.json.Pais }}\",\n    \"SOURCE_ID\": \"WEBFORM\",\n    \"UF_CRM_1767717694\": \"{{ $('Webhook Formulario1').item.json.query.utm_source }}\",\n    \"UF_CRM_1767717721\" : \"{{ $('Webhook Formulario1').item.json.query.utm_medium }}\",\n    \"UF_CRM_1767717744\" : \"{{ $('Webhook Formulario1').item.json.query.utm_campaign }}\",\n    \"UF_CRM_1767717768\" : \"{{ $('Webhook Formulario1').item.json.query.utm_content }}\",\n    \"UF_CRM_1767717791\" : \"{{ $('Webhook Formulario1').item.json.query.utm_term }}\",\n    \"UF_CRM_1767729096\" : \"{{ $('Webhook Formulario1').item.json.query.utm_country }}\",\n    \"UF_CRM_1764184319112\": \"{{ (\n      (String($('Webhook Formulario1').item.json.query.Industry || '').trim().toLowerCase()\n        .normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s+/g,' ')\n      === 'consumo masivo') ? 509 :\n    \n      (String($('Webhook Formulario1').item.json.query.Industry || '').trim().toLowerCase()\n        .normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s+/g,' ')\n      === 'ferreteria') ? 511 :\n    \n      (String($('Webhook Formulario1').item.json.query.Industry || '').trim().toLowerCase()\n        .normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s+/g,' ')\n      === 'automotriz') ? 513 :\n    \n      (String($('Webhook Formulario1').item.json.query.Industry || '').trim().toLowerCase()\n        .normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/\\s+/g,' ')\n      === 'farmaceutica') ? 515 :\n    \n      517\n    ) }}\",\n    \"UF_CRM_1760641598\": \"{{ $('Datos1').item.json.RUC }}\",\n    \"COMMENTS\": \"{{ \n      'Industria: ' + $('Webhook Formulario1').item.json.query.Industry +\n      '\\\\nUsuarios: ' + $('Webhook Formulario1').item.json.query.Employed +\n      '\\\\nRango de facturación: ' + $('Webhook Formulario1').item.json.query.Pricing +\n      '\\\\nRUC: ' + $('Webhook Formulario1').item.json.query.DNI\n    }}\"\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4512,
+        192
+      ],
+      "id": "95575c1b-016c-4d84-a761-e80bf6d48a93",
+      "name": "HTTP BITRIX1"
+    },
+    {
+      "parameters": {
+        "url": "https://srienlinea.sri.gob.ec/sri-catastro-sujeto-servicio-internet/rest/ConsolidadoContribuyente/existePorNumeroRuc",
+        "sendQuery": true,
+        "specifyQuery": "json",
+        "jsonQuery": "={\n  \"numeroRuc\":\"{{ $json.ruc_sri }}\"\n}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3872,
+        224
+      ],
+      "id": "4e623ee0-aff6-43fd-89e2-0ac696db00f5",
+      "name": "HTTP Request SRI1",
+      "alwaysOutputData": false,
+      "notesInFlow": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "redirect",
+        "redirectURL": "https://mobilvendor.com/gracias/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2368,
+        208
+      ],
+      "id": "7c1e4a2d-f9bb-4843-a561-1a81a20d4bd3",
+      "name": "Respond to Webhook2",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg",
+          "mode": "list",
+          "cachedResultName": "MQL",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Presencia en redes": "=",
+            "MQL1": "={{ $('Datos1').item.json.MQL }}",
+            "ip": "={{ $('Datos1').item.json.ip }}",
+            "phone": "={{ $('Datos1').item.json.phone }}",
+            "empleados": "={{ $('Datos1').item.json.empleados }}",
+            "industria": "={{ $('Datos1').item.json.industria }}",
+            "empresa": "={{ $('Datos1').item.json.empresa }}",
+            "nombre": "={{ $('Datos1').item.json.nombre }}",
+            "email": "={{ $('Datos1').item.json.email }}",
+            "id_lead": "={{ $json.result }}",
+            "comments": "=Industria: {{ $('Datos1').item.json.industria }} \\nUsuarios: {{ $('Datos1').item.json.empleados }} \\nRango de facturación: {{ $('Datos1').item.json.Facturacion }} \\nRUC: {{ $('Datos1').item.json.RUC }}",
+            "OK": "={{ $('HTTP Request SRI1').item.json ? 'TRUE' : 'FALSE' }}",
+            "pais ": "={{ $('Datos1').item.json.Pais}}",
+            "ruc": "={{ $('Datos1').item.json.RUC }}",
+            "fecha ": "={{ $now.format ('dd-MM-yyyy')}}",
+            "fuente": "formulario"
+          },
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": [
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "empresa",
+              "displayName": "empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "industria",
+              "displayName": "industria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "empleados",
+              "displayName": "empleados",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "pais ",
+              "displayName": "pais ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ruc",
+              "displayName": "ruc",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha ",
+              "displayName": "fecha ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fuente",
+              "displayName": "fuente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ip",
+              "displayName": "ip",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "MQL1",
+              "displayName": "MQL1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Presencia en redes",
+              "displayName": "Presencia en redes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "MQL2",
+              "displayName": "MQL2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "OK",
+              "displayName": "OK",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "id_lead",
+              "displayName": "id_lead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "update_lead",
+              "displayName": "update_lead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tipo_empresa",
+              "displayName": "tipo_empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "rubro_sector",
+              "displayName": "rubro_sector",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "alcance_operativo",
+              "displayName": "alcance_operativo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "interes",
+              "displayName": "interes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "correo_corporativo",
+              "displayName": "correo_corporativo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "new_phone",
+              "displayName": "new_phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "attemps",
+              "displayName": "attemps",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "current_step",
+              "displayName": "current_step",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "pending_question",
+              "displayName": "pending_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "mode",
+              "displayName": "mode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "is_new_contac",
+              "displayName": "is_new_contac",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "last_message",
+              "displayName": "last_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "skipUpdate",
+              "displayName": "skipUpdate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "presencia_redes",
+              "displayName": "presencia_redes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "comments",
+              "displayName": "comments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reason",
+              "displayName": "reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "debug",
+              "displayName": "debug",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nombreempresa",
+              "displayName": "nombreempresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "userConfirmedContact",
+              "displayName": "userConfirmedContact",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4880,
+        304
+      ],
+      "id": "14044a21-889c-4acf-8985-c76c2f8c98f9",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "a3087298-7044-4d9f-9c3e-6b0d33752a05",
+              "leftValue": "={{ $('Datos1').item.json.MQL }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4656,
+        192
+      ],
+      "id": "acc5a3f7-ce80-4634-979a-3a56603e46e7",
+      "name": "Validación OK3"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg",
+          "mode": "list",
+          "cachedResultName": "MQL",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jbi-HBW-Zd1ZurohDXfIf6P5y05_OsYdG6lPEhpIJGg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Presencia en redes": "=",
+            "MQL1": "={{ $('Datos1').item.json.MQL }}",
+            "ip": "={{ $('Datos1').item.json.ip }}",
+            "phone": "={{ $('Datos1').item.json.phone }}",
+            "empleados": "={{ $('Datos1').item.json.empleados }}",
+            "industria": "={{ $('Datos1').item.json.industria }}",
+            "empresa": "={{ $('Datos1').item.json.empresa }}",
+            "nombre": "={{ $('Datos1').item.json.nombre }}",
+            "email": "={{ $('Datos1').item.json.email }}",
+            "id_lead": "={{ $json.result }}",
+            "comments": "=Industria: {{ $('Datos1').item.json.industria }} \\nUsuarios: {{ $('Datos1').item.json.empleados }} \\nRango de facturación: {{ $('Datos1').item.json.Facturacion }} \\nRUC: {{ $('Datos1').item.json.RUC }}",
+            "pais ": "={{ $('Datos1').item.json.Pais}}",
+            "ruc": "={{ $('Datos1').item.json.RUC }}",
+            "fecha ": "={{ $now.format ('dd-MM-yyyy')}}",
+            "fuente": "formulario"
+          },
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": [
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nombre",
+              "displayName": "nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "empresa",
+              "displayName": "empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "industria",
+              "displayName": "industria",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "empleados",
+              "displayName": "empleados",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "pais ",
+              "displayName": "pais ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ruc",
+              "displayName": "ruc",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fecha ",
+              "displayName": "fecha ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fuente",
+              "displayName": "fuente",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ip",
+              "displayName": "ip",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "session_id",
+              "displayName": "session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "MQL1",
+              "displayName": "MQL1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Presencia en redes",
+              "displayName": "Presencia en redes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "MQL2",
+              "displayName": "MQL2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "OK",
+              "displayName": "OK",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "id_lead",
+              "displayName": "id_lead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "update_lead",
+              "displayName": "update_lead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "tipo_empresa",
+              "displayName": "tipo_empresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "rubro_sector",
+              "displayName": "rubro_sector",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "alcance_operativo",
+              "displayName": "alcance_operativo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "interes",
+              "displayName": "interes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "correo_corporativo",
+              "displayName": "correo_corporativo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "new_phone",
+              "displayName": "new_phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "attemps",
+              "displayName": "attemps",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "current_step",
+              "displayName": "current_step",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "pending_question",
+              "displayName": "pending_question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "mode",
+              "displayName": "mode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "is_new_contac",
+              "displayName": "is_new_contac",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "last_message",
+              "displayName": "last_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "skipUpdate",
+              "displayName": "skipUpdate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "presencia_redes",
+              "displayName": "presencia_redes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "comments",
+              "displayName": "comments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reason",
+              "displayName": "reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "debug",
+              "displayName": "debug",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "nombreempresa",
+              "displayName": "nombreempresa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "userConfirmedContact",
+              "displayName": "userConfirmedContact",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4880,
+        112
+      ],
+      "id": "d30cee48-c220-47e8-ac86-49e46925c21f",
+      "name": "Append row in sheet4",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "03efd41a-7114-4e2e-b41c-0fd610ee8776",
+              "leftValue": "={{ $('Datos1').item.json.webhookUrl }}",
+              "rightValue": "https://n8n.mobilvendor.com/webhook/mobilvendor-one",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4368,
+        208
+      ],
+      "id": "899b05b2-d039-4f04-a19b-6ef9f70df8d6",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://mobilvendor.bitrix24.es/rest/1/r6ke4gy6p0pz5yvs/crm.deal.add.json",
+        "sendQuery": true,
+        "specifyQuery": "json",
+        "jsonQuery": "={\n  \"fields\": {\n    \"EMAIL\": [\n      {\n        \"VALUE\": \"{{ $('Datos1').first().json.email }}\",\n        \"VALUE_TYPE\": \"WORK\"\n      }\n    ],\n    \"NAME\": \"{{ $('Datos1').first().json.nombre }}\",\n    \"PHONE\": [\n      {\n        \"VALUE\": \"{{ $('Validación datos Formulario?1').item.json.telefonoNormalizado }}\",\n        \"VALUE_TYPE\": \"WORK\"\n      }\n    ],\n    \"TITLE\": \"{{ $('Datos1').first().json.empresa }}\", \n    \"COMPANY_TITLE\": \"{{ $('Datos1').first().json.empresa }}\",\n    \"STAGE_ID\": \"RECEPCIÓN FORMULARIO\", \n    \"CATEGORY_ID\": 9,\n    \"OPENED\": \"Y\",\n    \"ASSIGNED_BY_ID\": 93,\n    \"UF_CRM_1732907229570\": \"{{$now.format('YYYY-MM-DD')}}\",\n    \"UF_CRM_1757002582\": \"{{ $('Datos1').first().json.ip }}\",\n    \"UF_CRM_1756915881203\": \"{{ $json.output === \"true\" ? 1 : 0 }}\",\n    \"ADDRESS_COUNTRY\":\"{{ $('Datos1').item.json.Pais }}\",\n    \"SOURCE_ID\" : \"WEBFORM\",\n    \"UF_CRM_1760641316\" :\" {{ $('Datos1').item.json.RUC }}\",\n    \"COMMENTS\": \"Industria: {{ $('mobilvendor-one1').item.json.query.Industry }}\\nRUC:{{ $('mobilvendor-one1').item.json.query.DNI }} \"\n\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4528,
+        416
+      ],
+      "id": "dba00225-d34d-475a-8f48-61cf650e8a71",
+      "name": "HTTP BITRIX_MVONE1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4160,
+        496
+      ],
+      "id": "f2735d8b-dc5a-442a-8d57-dd09c37389c3",
+      "name": "Wait",
+      "webhookId": "dbd3368b-b221-42df-9267-a578f436df30"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "20a67bc2-263f-48f2-8452-483dd5d86bb1",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "OK",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4208,
+        224
+      ],
+      "id": "7e938aac-3327-4fed-b2c5-6a875398e5be",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\n\n// ==========================================================\n// EXCEPCIÓN ESPECIAL → SI EL RUC NO SE ENVIÓ\n// ERROR PERMITIDO (NO DEBE CORTAR EL FLUJO)\n// ==========================================================\nconst errorMsg = data?.error?.message ?? \"\";\n\nif (\n    typeof errorMsg === \"string\" &&\n    errorMsg.includes(\"El parámetro número RUC es requerido\")\n) {\n    return [\n        {\n            json: {\n                status: \"OK\",\n                info: \"RUC no enviado → se permite continuar\"\n            }\n        }\n    ];\n}\n\n// ==========================================================\n// VALIDACIÓN NORMAL DE ERRORES\n// ==========================================================\nif (\n    data.error &&\n    typeof data.error.message === \"string\" &&\n    data.error.message.trim() !== \"\"\n) {\n    return [\n        {\n            json: {\n                status: \"ERROR\",\n                errorMessage: data.error.message,\n                errorName: data.error.name,\n                errorCode: data.error.code\n            }\n        }\n    ];\n}\n\n// ==========================================================\n// SI NO HAY ERROR → OK NORMAL\n// ==========================================================\nreturn [\n    {\n        json: {\n            status: \"OK\"\n        }\n    }\n];\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4048,
+        224
+      ],
+      "id": "e776ce9a-366e-4e84-8869-10bdc919c22d",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "jsCode": "const ruc = String($json.RUC || \"\").trim();\n\nreturn [{\n  json: {\n    ruc_sri: ruc\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3472,
+        224
+      ],
+      "id": "09311235-510a-4ea6-bb57-af4a77f656da",
+      "name": "Validacion_RUC1"
+    }
+  ],
+  "pinData": {
+    "Webhook Formulario1": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.mobilvendor.com",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+            "accept": "*/*",
+            "accept-encoding": "deflate, gzip",
+            "cookie": "_cfuvid=Lo41_F27FGyWiMJlA0lmVXWotnzRkYoiHsbn22IZokI-1774888941825-0.0.1.1-604800000",
+            "range": "bytes=0-102400",
+            "referer": "https://n8n.mobilvendor.com/webhook/mv_formulario?Name=%2A+%2A+%2A+%3Ca+href%3D%22https%3A%2F%2Fobs.regideso.cd%2F%3F8hz4t1%22%3E%243%2C222+credit+available%3C%2Fa%3E+%2A+%2A+%2A+hs%3D47f65141c67338b7f77c203644bb7a1e%2A+%D1%85%D1%85%D1%85%2A&Email=ydx%7Enwa9pwyxz%40mailbox.in.ua&Phone=580440248341&Company=1dyp1a&DNI=h7wz3b&Country=&Prefijo=&Industry=Otro&Employed=M%C3%A1s+de+20+usuarios&Pricing=M%C3%A1s+de+%242+millones+USD+",
+            "x-forwarded-for": "10.0.0.2",
+            "x-forwarded-host": "n8n.mobilvendor.com",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "eb62f0b0d11f",
+            "x-real-ip": "10.0.0.2"
+          },
+          "params": {},
+          "query": {
+            "Name": "* * * <a href=\"https://obs.regideso.cd/?8hz4t1\">$3,222 credit available</a> * * * hs=47f65141c67338b7f77c203644bb7a1e* ххх*",
+            "Email": "ydx~nwa9pwyxz@mailbox.in.ua",
+            "Phone": "580440248341",
+            "Company": "1dyp1a",
+            "DNI": "h7wz3b",
+            "Country": "",
+            "Prefijo": "",
+            "Industry": "Otro",
+            "Employed": "Más de 20 usuarios",
+            "Pricing": "Más de $2 millones USD "
+          },
+          "body": {},
+          "webhookUrl": "https://n8n.mobilvendor.com/webhook/mv_formulario",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:46.500Z",
+      "createdAt": "2026-01-13T02:49:46.500Z",
+      "role": "workflow:owner",
+      "workflowId": "cod7XIjrwBy5vJgN",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-03-31T17:33:42.267Z",
+  "versionId": "b286157d-7aba-43aa-95d7-b6de146d77cb"
+}
