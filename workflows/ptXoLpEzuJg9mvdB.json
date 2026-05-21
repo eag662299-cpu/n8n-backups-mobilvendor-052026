@@ -1,0 +1,1333 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "carpetas de zei-mobilvendor",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "carpetas de zei-mobilvendor1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "carpetas de zei-mobilvendor2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "archivos_carpeta_error_web",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Upload a file2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload a file2": {
+      "main": [
+        []
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        []
+      ]
+    },
+    "carpetas de zei-mobilvendor1": {
+      "main": [
+        []
+      ]
+    },
+    "archivos_carpeta_error_web": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer archivos": {
+      "main": [
+        [
+          {
+            "node": "Loop archivos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop archivos": {
+      "main": [
+        [
+          {
+            "node": "Resumen final",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Descargar archivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Descargar archivo": {
+      "main": [
+        [
+          {
+            "node": "Subir a S3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Subir a S3": {
+      "main": [
+        [
+          {
+            "node": "Log progreso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log progreso": {
+      "main": [
+        [
+          {
+            "node": "Loop archivos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer archivos1": {
+      "main": [
+        [
+          {
+            "node": "Loop archivos1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop archivos1": {
+      "main": [
+        [
+          {
+            "node": "Resumen final1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Descargar archivo1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Descargar archivo1": {
+      "main": [
+        [
+          {
+            "node": "Subir a S",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Subir a S": {
+      "main": [
+        [
+          {
+            "node": "Log progreso1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log progreso1": {
+      "main": [
+        [
+          {
+            "node": "Loop archivos1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "carpeta_error_web": {
+      "main": [
+        [
+          {
+            "node": "Extraer archivos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "carpeta_app": {
+      "main": [
+        [
+          {
+            "node": "Extraer archivos1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "carpeta_error_web",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ids carpetas SOPORTE ESTRUCTURADO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "02 - Crear Suscripción Graph": {
+      "main": [
+        [
+          {
+            "node": "03 - Guardar SubscriptionId",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03 - Guardar SubscriptionId": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:46.825Z",
+  "id": "ptXoLpEzuJg9mvdB",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Backup BC_ZEI sharepoint-S3_consulta de id",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            },
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -896,
+        448
+      ],
+      "id": "6e15a990-f354-491d-bee7-cb25b1665b17",
+      "name": "Schedule Trigger",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "site": {
+          "__rl": true,
+          "value": "mobilvendorcom.sharepoint.com,f545d085-e894-4c08-b06d-fd9559e9391f,6b7b3702-269f-4e6b-8a31-04ffbffff3fd",
+          "mode": "list",
+          "cachedResultName": "zei-mobilvendor"
+        },
+        "folder": {
+          "__rl": true,
+          "value": "01SHM76UG6XUEM2JQ26NFJLDUPTRNQE4DB",
+          "mode": "list",
+          "cachedResultName": "error_web"
+        },
+        "file": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.microsoftSharePoint",
+      "typeVersion": 1,
+      "position": [
+        736,
+        432
+      ],
+      "id": "e177cb0d-8db1-4684-9bda-98b281c15587",
+      "name": "Download file",
+      "credentials": {
+        "microsoftSharePointOAuth2Api": {
+          "id": "684NJE2rfRO5msO3",
+          "name": "Microsoft SharePoint account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "bucketName": "mobilvendorzei",
+        "fileName": "=knowledge/support/error_web/{{ $json.name }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.awsS3",
+      "typeVersion": 2,
+      "position": [
+        1072,
+        432
+      ],
+      "id": "a9ceba10-34ff-4d2b-9bf1-6fc42a662b76",
+      "name": "Upload a file2",
+      "credentials": {
+        "aws": {
+          "id": "bLtPvlYR5BPkSCw9",
+          "name": "S3 support"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/sites?search=zei-mobilvendor",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -384,
+        -32
+      ],
+      "id": "ed75e1d2-7422-4154-8737-9849fa0de75d",
+      "name": "HTTP Request",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "RG10kjbUr62FvezS",
+          "name": "Conexion SharePoint"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/sites/mobilvendorcom.sharepoint.com:/sites/zei-mobilvendor/?$select=id,webUrl,name",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -384,
+        160
+      ],
+      "id": "8f34f742-32bb-4b4e-a260-4bc82f243e3a",
+      "name": "HTTP Request1",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "RG10kjbUr62FvezS",
+          "name": "Conexion SharePoint"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/sites/mobilvendorcom.sharepoint.com,f545d085-e894-4c08-b06d-fd9559e9391f,6b7b3702-269f-4e6b-8a31-04ffbffff3fd/drive/root/children",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -416,
+        672
+      ],
+      "id": "f4017600-ca95-4ef9-a986-e41d585bc7fc",
+      "name": "HTTP Request2",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "RG10kjbUr62FvezS",
+          "name": "Conexion SharePoint"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/drives/b!hdBF9ZToCEywbf2VWek5HwI3e2ufJmtOijEE_7__8_2AJjaObVPEQ4HWyHOHmaCe/root/children?$filter=folder ne null&$select=name,webUrl,folder",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -416,
+        800
+      ],
+      "id": "2f6eabd2-d63e-4304-bb55-0b6a68857fc3",
+      "name": "carpetas de zei-mobilvendor",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "RG10kjbUr62FvezS",
+          "name": "Conexion SharePoint"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/sites/mobilvendorcom.sharepoint.com,f545d085-e894-4c08-b06d-fd9559e9391f,6b7b3702-269f-4e6b-8a31-04ffbffff3fd/drive/root/search(q='error_web')",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -400,
+        944
+      ],
+      "id": "579ee2b3-2c22-4b75-b90f-a62df3acf3df",
+      "name": "carpetas de zei-mobilvendor1",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "RG10kjbUr62FvezS",
+          "name": "Conexion SharePoint"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/drives/b!hdBF9ZToCEywbf2VWek5HwI3e2ufJmtOijEE_7__8_2AJjaObVPEQ4HWyHOHmaCe/root/children?$filter=folder ne null&$select=name,webUrl,folder",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -416,
+        1104
+      ],
+      "id": "2550eae8-1924-4c71-90a0-0098befa3290",
+      "name": "carpetas de zei-mobilvendor2",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "RG10kjbUr62FvezS",
+          "name": "Conexion SharePoint"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/sites/mobilvendorcom.sharepoint.com,f545d085-e894-4c08-b06d-fd9559e9391f,6b7b3702-269f-4e6b-8a31-04ffbffff3fd/drive/items/01SHM76UG6XUEM2JQ26NFJLDUPTRNQE4DB/children?$select=id,name,webUrl,file,folder",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -16,
+        448
+      ],
+      "id": "1309e54a-c0bd-420c-8d58-9fd850d60068",
+      "name": "archivos_carpeta_error_web",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "RG10kjbUr62FvezS",
+          "name": "Conexion SharePoint"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        384,
+        448
+      ],
+      "id": "c5110918-fffb-466c-97d8-aa2a0550139c",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extraer solo archivos (no carpetas) del resultado de SharePoint\nconst items = $input.all();\nconst files = [];\n\n// El API de SharePoint devuelve {value: [...]}\nif (items[0]?.json?.value && Array.isArray(items[0].json.value)) {\n  for (const item of items[0].json.value) {\n    // Solo agregar si tiene propiedad 'file' (no carpetas)\n    if (item.file && item.id && item.name) {\n      files.push({\n        json: {\n          id: item.id,\n          name: item.name,\n          webUrl: item.webUrl,\n          mimeType: item.file.mimeType || 'application/octet-stream'\n        }\n      });\n    }\n  }\n}\n\nconsole.log(`📁 Total de archivos encontrados: ${files.length}`);\n\nreturn files;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        -976
+      ],
+      "id": "86884df2-b1ef-4b7f-956c-f66c8ceba084",
+      "name": "Extraer archivos"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -176,
+        -976
+      ],
+      "id": "6a5e84da-61db-4f4f-b75d-481247fa3f4f",
+      "name": "Loop archivos"
+    },
+    {
+      "parameters": {
+        "site": {
+          "__rl": true,
+          "value": "mobilvendorcom.sharepoint.com,f545d085-e894-4c08-b06d-fd9559e9391f,6b7b3702-269f-4e6b-8a31-04ffbffff3fd",
+          "mode": "list",
+          "cachedResultName": "zei-mobilvendor"
+        },
+        "folder": {
+          "__rl": true,
+          "value": "01SHM76UG6XUEM2JQ26NFJLDUPTRNQE4DB",
+          "mode": "list",
+          "cachedResultName": "error_web"
+        },
+        "file": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.microsoftSharePoint",
+      "typeVersion": 1,
+      "position": [
+        16,
+        -1088
+      ],
+      "id": "d644e587-9793-4079-8973-c583a46a093a",
+      "name": "Descargar archivo",
+      "credentials": {
+        "microsoftSharePointOAuth2Api": {
+          "id": "684NJE2rfRO5msO3",
+          "name": "Microsoft SharePoint account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "bucketName": "mobilvendorzei",
+        "fileName": "=knowledge/support/error_web/{{ $json.name }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.awsS3",
+      "typeVersion": 2,
+      "position": [
+        224,
+        -1088
+      ],
+      "id": "473843ae-df90-4675-85d3-afb445f255ed",
+      "name": "Subir a S3",
+      "credentials": {
+        "aws": {
+          "id": "bLtPvlYR5BPkSCw9",
+          "name": "S3 support"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log de progreso\nconst currentFile = $input.first().json;\nconst currentIndex = $('Loop archivos').context.currentRunIndex || 0;\nconst totalFiles = $('Loop archivos').context.noItemsLeft ? 'último' : 'procesando';\n\nconsole.log(`✅ Archivo ${currentIndex + 1} subido: ${currentFile.name}`);\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        -1088
+      ],
+      "id": "ca72ce60-4dcd-4c6a-8e3c-a7b74df0f60a",
+      "name": "Log progreso"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Resumen final del backup\nconst items = $input.all();\nconst totalProcessed = items.length;\n\nconst summary = {\n  status: 'completed',\n  totalArchivos: totalProcessed,\n  fecha: new Date().toISOString(),\n  destino: 'S3://mobilvendorzei/knowledge/support/error_web/',\n  archivos: items.map(item => item.json.name)\n};\n\nconsole.log('🎉 BACKUP COMPLETADO');\nconsole.log(`📊 Total de archivos respaldados: ${totalProcessed}`);\nconsole.log('📁 Archivos:', summary.archivos.join(', '));\n\nreturn [{json: summary}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        -992
+      ],
+      "id": "64d41c97-d415-48ce-a658-5d0ee4dd4fd6",
+      "name": "Resumen final"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extraer solo archivos (no carpetas) del resultado de SharePoint\nconst items = $input.all();\nconst files = [];\n\n// El API de SharePoint devuelve {value: [...]}\nif (items[0]?.json?.value && Array.isArray(items[0].json.value)) {\n  for (const item of items[0].json.value) {\n    // Solo agregar si tiene propiedad 'file' (no carpetas)\n    if (item.file && item.id && item.name) {\n      files.push({\n        json: {\n          id: item.id,\n          name: item.name,\n          webUrl: item.webUrl,\n          mimeType: item.file.mimeType || 'application/octet-stream'\n        }\n      });\n    }\n  }\n}\n\nconsole.log(`📁 Total de archivos encontrados: ${files.length}`);\n\nreturn files;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        -656
+      ],
+      "id": "a7d8dc40-ca43-4c00-85d5-2eb49db5a43d",
+      "name": "Extraer archivos1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -176,
+        -656
+      ],
+      "id": "1c892d3d-4919-4059-acbf-5129e24c5632",
+      "name": "Loop archivos1"
+    },
+    {
+      "parameters": {
+        "site": {
+          "__rl": true,
+          "value": "mobilvendorcom.sharepoint.com,f545d085-e894-4c08-b06d-fd9559e9391f,6b7b3702-269f-4e6b-8a31-04ffbffff3fd",
+          "mode": "list",
+          "cachedResultName": "zei-mobilvendor"
+        },
+        "folder": {
+          "__rl": true,
+          "value": "01SHM76UGTNLC5IK25H5B22WORBMVIY2DC",
+          "mode": "list",
+          "cachedResultName": "app"
+        },
+        "file": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.microsoftSharePoint",
+      "typeVersion": 1,
+      "position": [
+        16,
+        -768
+      ],
+      "id": "9d0d5d07-c589-415f-9104-71d29ff7cd3d",
+      "name": "Descargar archivo1",
+      "credentials": {
+        "microsoftSharePointOAuth2Api": {
+          "id": "684NJE2rfRO5msO3",
+          "name": "Microsoft SharePoint account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "bucketName": "mobilvendorzei",
+        "fileName": "=knowledge/support/app/{{ $json.name }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.awsS3",
+      "typeVersion": 2,
+      "position": [
+        224,
+        -768
+      ],
+      "id": "87600de2-835a-45aa-8df9-5d9349c0eafe",
+      "name": "Subir a S",
+      "credentials": {
+        "aws": {
+          "id": "bLtPvlYR5BPkSCw9",
+          "name": "S3 support"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log de progreso\nconst currentFile = $input.first().json;\nconst currentIndex = $('Loop archivos1').context.currentRunIndex || 0;\nconst totalFiles = $('Loop archivos1').context.noItemsLeft ? 'último' : 'procesando';\n\nconsole.log(`✅ Archivo ${currentIndex + 1} subido: ${currentFile.name}`);\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        -768
+      ],
+      "id": "d537b0ba-f01d-482d-8074-e302d4ab5663",
+      "name": "Log progreso1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Resumen final del backup\nconst items = $input.all();\nconst totalProcessed = items.length;\n\nconst summary = {\n  status: 'completed',\n  totalArchivos: totalProcessed,\n  fecha: new Date().toISOString(),\n  destino: 'S3://mobilvendorzei/knowledge/support/error_web/',\n  archivos: items.map(item => item.json.name)\n};\n\nconsole.log('🎉 BACKUP COMPLETADO');\nconsole.log(`📊 Total de archivos respaldados: ${totalProcessed}`);\nconsole.log('📁 Archivos:', summary.archivos.join(', '));\n\nreturn [{json: summary}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        -672
+      ],
+      "id": "97689bec-32ab-4dd8-9f10-7d3fe0bc703c",
+      "name": "Resumen final1"
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/sites/mobilvendorcom.sharepoint.com,f545d085-e894-4c08-b06d-fd9559e9391f,6b7b3702-269f-4e6b-8a31-04ffbffff3fd/drive/items/01SHM76UG6XUEM2JQ26NFJLDUPTRNQE4DB/children?$select=id,name,webUrl,file,folder",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -592,
+        -976
+      ],
+      "id": "d83d0c0f-a73c-44eb-bf3f-8d4fe3e27cba",
+      "name": "carpeta_error_web",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "RG10kjbUr62FvezS",
+          "name": "Conexion SharePoint"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/sites/mobilvendorcom.sharepoint.com,f545d085-e894-4c08-b06d-fd9559e9391f,6b7b3702-269f-4e6b-8a31-04ffbffff3fd/drive/items/01SHM76UEO6UWXC36VUBE232FJ3BTGVQ4R/children?$select=id,name,webUrl,file,folder",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -592,
+        -1184
+      ],
+      "id": "0ac86028-195a-4eb0-b04c-7672f4568f4f",
+      "name": "ids carpetas SOPORTE ESTRUCTURADO",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "Ss8wohQpmAIhjs5u",
+          "name": "NEW_Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/sites/mobilvendorcom.sharepoint.com,f545d085-e894-4c08-b06d-fd9559e9391f,6b7b3702-269f-4e6b-8a31-04ffbffff3fd/drive/items/01SHM76UGTNLC5IK25H5B22WORBMVIY2DC/children?$select=id,name,webUrl,file,folder",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -592,
+        -656
+      ],
+      "id": "7d52cd8c-a761-4422-aff0-0ae5f4ef402a",
+      "name": "carpeta_app",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "RG10kjbUr62FvezS",
+          "name": "Conexion SharePoint"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "bucket",
+        "operation": "search",
+        "bucketName": "mobilvendorzei",
+        "returnAll": true,
+        "additionalFields": {
+          "prefix": "knowledge/support/grf"
+        }
+      },
+      "type": "n8n-nodes-base.awsS3",
+      "typeVersion": 2,
+      "position": [
+        -864,
+        -1696
+      ],
+      "id": "d8e2d215-05e0-422f-a8a9-15fb6c5c44a4",
+      "name": "Consultar bucket",
+      "credentials": {
+        "aws": {
+          "id": "bLtPvlYR5BPkSCw9",
+          "name": "S3 support"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -880,
+        -976
+      ],
+      "id": "6b2e0506-777c-41f9-8127-a8744876e96d",
+      "name": "Schedule Trigger1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "liatar  archivs  de   carpeta y realizar  backupp  temporizado\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 1120,
+        "width": 2144
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1072,
+        -1456
+      ],
+      "typeVersion": 1,
+      "id": "54d1ab6d-c1b8-434d-860e-a75cfc0cf37d",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## CREAR TRIGGER PAR CAMBIOS EN CARPETAS SHAREPOINT\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 1120,
+        "width": 1680,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -736,
+        1616
+      ],
+      "typeVersion": 1,
+      "id": "2fe4046a-b609-4269-8a2d-ed5d648ad410",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/subscriptions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -480,
+        2192
+      ],
+      "id": "5f38ebbc-e6ab-459f-8f59-b1172096523c",
+      "name": "validar suscripción",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "Ss8wohQpmAIhjs5u",
+          "name": "NEW_Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const token = $json?.query?.validationToken;\n\nif (token) {\n  // Graph exige texto plano, no JSON\n  return [\n    {\n      json: {\n        statusCode: 200,\n        headers: { \"Content-Type\": \"text/plain\" },\n        body: token\n      }\n    }\n  ];\n}\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        128,
+        2448
+      ],
+      "id": "e22fe4fb-f28f-4fe7-b522-e3312a51dd2e",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        336,
+        2448
+      ],
+      "id": "1a89e6fd-de30-4654-a8d2-814a732edf8b",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.microsoft.com/v1.0/subscriptions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"changeType\": \"updated\",\n  \"notificationUrl\": \"https://n8n.mobilvendor.com/webhook/app\",\n  \"resource\": \"/drives/b!hdBF9ZToCEywbf2VWek5HwI3e2ufJmtOijEE_7__8_2AJjaObVPEQ4HWyHOHmaCe/root\",\n  \"expirationDateTime\": \"2025-11-27T23:59:59Z\",\n  \"clientState\": \"secretMobilvendor\"\n}\n\n\n\n\n",
+        "options": {}
+      },
+      "name": "Suscripción carpeta root",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -480,
+        1808
+      ],
+      "id": "a643be43-a935-40bf-aecf-5134a75b422c",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "RG10kjbUr62FvezS",
+          "name": "Conexion SharePoint"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.microsoft.com/v1.0/subscriptions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"changeType\": \"updated\",\n  \"notificationUrl\": \"https://n8n.mobilvendor.com/webhook/app\",\n  \"resource\": \"/drives/b!hdBF9ZToCEywbf2VWek5HwI3e2ufJmtOijEE_7__8_2AJjaObVPEQ4HWyHOHmaCe/root\",\n  \"expirationDateTime\": \"2025-11-27T23:59:59Z\",\n  \"clientState\": \"secretMobilvendor\"\n}\n\n\n\n\n",
+        "options": {}
+      },
+      "name": "Suscripción carpeta SOPORTE ESTRUCTURADO",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -480,
+        2000
+      ],
+      "id": "276412c2-9746-456c-9813-7eab8bbed9ea",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "RG10kjbUr62FvezS",
+          "name": "Conexion SharePoint"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "DELETE",
+        "url": "https://graph.microsoft.com/v1.0/subscriptions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -480,
+        2400
+      ],
+      "id": "1e3643d9-f0a0-4725-9f89-d553404a5d68",
+      "name": "borrar suscripción1",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "RG10kjbUr62FvezS",
+          "name": "Conexion SharePoint"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.microsoft.com/v1.0/subscriptions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"changeType\": \"updated\",\n  \"notificationUrl\": \"https://n8n.mobilvendor.com/webhook/sharepoint-bc-zei-soporte-fw\",\n  \"resource\": \"/drives/b!hdBF9ZToCEywbf2VWek5HwI3e2ufJmtOijEE_7__8_2AJjaObVPEQ4HWyHOHmaCe/root\",\n  \"expirationDateTime\": \"2026-01-18T23:59:59Z\",\n  \"clientState\": \"secretMobilvendor\"\n}",
+        "options": {}
+      },
+      "id": "d1b77133-6ae7-4f4f-b525-e4101e39f00f",
+      "name": "02 - Crear Suscripción Graph",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        144,
+        2176
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "oAuth2Api": {
+          "id": "RG10kjbUr62FvezS",
+          "name": "Conexion SharePoint"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extraer id de la respuesta Graph\nconst subscriptionId = $json.id;\nconst expiration = $json.expirationDateTime;\n\nif (!subscriptionId) {\n  throw new Error(\"No se recibió subscriptionId desde Graph API\");\n}\n\nreturn [\n  {\n    json: {\n      key: \"sharepoint_zei_subscription\",\n      value: {\n        subscriptionId,\n        expiration\n      }\n    }\n  }\n];"
+      },
+      "id": "917d821c-e55a-44a8-a277-9a8f391dd0f3",
+      "name": "03 - Guardar SubscriptionId",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        384,
+        2176
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1jYiH3fzg3wtr-xxvDBNBY_JL4qJNka716p-qU144J0c",
+          "mode": "list",
+          "cachedResultName": "Suscripcion Graph",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jYiH3fzg3wtr-xxvDBNBY_JL4qJNka716p-qU144J0c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jYiH3fzg3wtr-xxvDBNBY_JL4qJNka716p-qU144J0c/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "subscriptionId",
+              "displayName": "subscriptionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "expiration",
+              "displayName": "expiration",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        656,
+        2176
+      ],
+      "id": "eded372d-65e4-4a8d-8a4d-dcfc67ec5c03",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X85etX5eT5AEUIYQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Consulta S3 \nInformación completa de los archivos dentro del bucketname **mobilvendorzei**  ",
+        "height": 304,
+        "width": 944,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1072,
+        -1808
+      ],
+      "typeVersion": 1,
+      "id": "c6b4cd0c-76c9-40c3-a34d-699425bb298c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "bucketName": "mobilvendorzei",
+        "fileKey": "knowledge/support/info_serv/K06_Prueba-S00.txt",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.awsS3",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        -1696
+      ],
+      "id": "c9b8710a-8e9d-486a-b425-47f086fdee5d",
+      "name": "Eliminar archivo",
+      "credentials": {
+        "aws": {
+          "id": "bLtPvlYR5BPkSCw9",
+          "name": "S3 support"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/sites/mobilvendorcom.sharepoint.com:/sites/zei-mobilvendor",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -832,
+        -2784
+      ],
+      "id": "ac104061-d5cb-45fd-96d3-800d850d43d9",
+      "name": "Obtener Site ID",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "Ss8wohQpmAIhjs5u",
+          "name": "NEW_Credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/sites/mobilvendorcom.sharepoint.com,f545d085-e894-4c08-b06d-fd9559e9391f,6b7b3702-269f-4e6b-8a31-04ffbffff3fd/drives",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -832,
+        -2496
+      ],
+      "id": "1eb97709-9a15-44d3-8433-de2a3c863b62",
+      "name": "Obtener driveID",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "RG10kjbUr62FvezS",
+          "name": "Conexion SharePoint"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://graph.microsoft.com/v1.0/drives/b!hdBF9ZToCEywbf2VWek5HwI3e2ufJmtOijEE_7__8_2AJjaObVPEQ4HWyHOHmaCe/root/children",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -832,
+        -2176
+      ],
+      "id": "4953809c-90ea-42c7-8835-abd683619fa5",
+      "name": "Obtener item carpeta id",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "RG10kjbUr62FvezS",
+          "name": "Conexion SharePoint"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 1.\n",
+        "height": 224,
+        "width": 336
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -944,
+        -2832
+      ],
+      "typeVersion": 1,
+      "id": "45d3f29a-f076-4d70-9142-da07afce7d84",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## 2. \nhttps://graph.microsoft.com/v1.0/sites/{site-id}/drives",
+        "height": 224,
+        "width": 336
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -944,
+        -2576
+      ],
+      "typeVersion": 1,
+      "id": "484e62dd-f34a-4eb7-b1e8-ace1496c2e8d",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## 3. \nhttps://graph.microsoft.com/v1.0/drives/{driveId}/root:/Documents/MANUALES-CAPACITACIONES",
+        "height": 272,
+        "width": 336
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -944,
+        -2304
+      ],
+      "typeVersion": 1,
+      "id": "495b36d0-be8c-4e01-817c-ef69d416a7c3",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "resource": "bucket",
+        "operation": "search",
+        "bucketName": "mobilvendor",
+        "returnAll": true,
+        "additionalFields": {
+          "prefix": "support/knowledge/3"
+        }
+      },
+      "type": "n8n-nodes-base.awsS3",
+      "typeVersion": 2,
+      "position": [
+        32,
+        -1696
+      ],
+      "id": "cc0f39a2-020f-4b54-916d-f558a6a52cf6",
+      "name": "Consultar bucket guidde",
+      "credentials": {
+        "aws": {
+          "id": "bLtPvlYR5BPkSCw9",
+          "name": "S3 support"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:47.075Z",
+      "createdAt": "2026-01-13T02:49:47.075Z",
+      "role": "workflow:owner",
+      "workflowId": "ptXoLpEzuJg9mvdB",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-03-27T21:33:24.970Z",
+  "versionId": "5dfe1cde-07d1-4f1c-8406-8e9fd1eeb643"
+}
