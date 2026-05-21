@@ -1,0 +1,33 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {},
+  "createdAt": "2026-03-17T13:46:09.540Z",
+  "id": "s-AZqmRfqNNm5kQJOdsMy",
+  "isArchived": true,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "My workflow 30",
+  "nodes": [],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-03-17T13:46:09.549Z",
+      "createdAt": "2026-03-17T13:46:09.549Z",
+      "role": "workflow:owner",
+      "workflowId": "s-AZqmRfqNNm5kQJOdsMy",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-03-17T13:50:09.000Z",
+  "versionId": "39056a35-e5f4-4152-87c0-dee13a513413"
+}
