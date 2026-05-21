@@ -1,0 +1,288 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Create Product Catalogue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Create Product Catalogue",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Create Product Catalogue",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get Product Brochure": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "get Product Brochure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-01-13T02:49:40.564Z",
+  "id": "7ED2iVZQsUB8Ly1q",
+  "isArchived": false,
+  "meta": null,
+  "name": "Knowledge Base_Brochure",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "dc60e233-1887-4e30-b1e5-bf26ee50e0ce",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        -592,
+        240
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {}
+      },
+      "id": "a84668d7-96b4-4d6c-b210-1ca7e3b675cb",
+      "name": "Embeddings OpenAI1",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [
+        304,
+        560
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $('Extract from File').item.json.text }}",
+        "options": {}
+      },
+      "id": "3e3d0a08-b0c1-4e82-993b-d236a2dbbd40",
+      "name": "Default Data Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "position": [
+        496,
+        512
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "chunkSize": 2000,
+        "chunkOverlap": null,
+        "options": {}
+      },
+      "id": "15141c6e-1968-4594-88a4-5f1dad455da6",
+      "name": "Recursive Character Text Splitter",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "position": [
+        496,
+        656
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "id": "121fac7d-a490-48c1-a0ba-8f6f33cc46ed",
+      "name": "Extract from File",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        -16,
+        240
+      ],
+      "typeVersion": 1,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "https://drive.google.com/uc?export=download&id=1aMONCP1jRTqnTR6m4KG4CqvAPwbQ98MC",
+        "options": {}
+      },
+      "id": "826292f3-9542-4777-99a0-cb1b3ae3b46a",
+      "name": "get Product Brochure",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -192,
+        240
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "content": "1. Descargar el folleto del producto en PDF\n\nImporte su documento PDF de marketing para construir su almacén de vectores. Esto se utilizará como la base de conocimientos del Agente de IA de Ventas.\n\n\n",
+        "height": 434.6875,
+        "width": 640.4375,
+        "color": 7
+      },
+      "id": "2dcd5a7a-d91f-4343-b145-647b6767ea34",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -640,
+        112
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "2. Crear un almacén vectorial de folletos de productos\nMás información sobre el almacén vectorial en memoria\n\nLos almacenes vectoriales son bases de datos potentes que sirven para relacionar las preguntas de un usuario con las partes relevantes de un documento. Al crear un almacén vectorial de nuestro catálogo de productos, permitiremos a los usuarios realizar consultas utilizando el lenguaje natural.\n\nPara simplificar las cosas, utilizaremos el almacén vectorial en memoria que viene integrado en n8n y no requiere un servicio independiente. Para implementaciones de producción, recomendaría reemplazar el almacén vectorial en memoria con Qdrant o Pinecone.",
+        "height": 731.1875,
+        "width": 614.6875,
+        "color": 7
+      },
+      "id": "529571ca-94cb-4930-a7d7-8fabf881843c",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        48,
+        64
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "memoryKey": "whatsapp-75",
+        "clearStore": true
+      },
+      "id": "57b27251-7fff-4065-8d70-d7bf00a13328",
+      "name": "Create Product Catalogue",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "position": [
+        336,
+        320
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "Esta plantilla consta de 2 partes: crear el almacén de vectores del catálogo de productos (Brochure MKT)y construir el chatbot de IA de WhatsApp.\nSe importa un folleto de productos (Brochure MKT) a través de un nodo de solicitud HTTP y se extrae su contenido de texto.\nEl contenido del texto se carga luego en el almacén de vectores en memoria para construir una base de conocimiento para el chatbot.\nSe utiliza un disparador de WhatsApp para capturar mensajes de los clientes, donde se filtran los mensajes que no son de texto.\nEl mensaje del cliente se envía al agente de IA, que consulta el catálogo de productos (Brochure MKT) utilizando la herramienta de almacén de vectores.\nLa respuesta del agente se envía de vuelta al usuario a través del nodo de WhatsApp.",
+        "height": 343,
+        "width": 401
+      },
+      "id": "363a3113-9707-427b-9917-000ac76f198e",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1056,
+        112
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "¡Solo tienes que ejecutar esta parte una vez!\nEjecuta este paso para completar nuestro vector de catálogo de productos. Vuelve a ejecutar si quieres actualizar el almacén de vectores con una nueva versión.",
+        "height": 114.53583720930231,
+        "width": 345.10906976744184,
+        "color": 5
+      },
+      "id": "dd600a46-188d-43cd-8b8b-34f2ea93cc8a",
+      "name": "Sticky Note8",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -624,
+        560
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "filter": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -384,
+        240
+      ],
+      "id": "a02c4462-3c04-477c-b140-288e4984c270",
+      "name": "Search files and folders"
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "shared": [
+    {
+      "updatedAt": "2026-01-13T02:49:40.773Z",
+      "createdAt": "2026-01-13T02:49:40.773Z",
+      "role": "workflow:owner",
+      "workflowId": "7ED2iVZQsUB8Ly1q",
+      "projectId": "H6pH87ThusHykLjg"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-13T02:49:40.564Z",
+  "versionId": "0dcd8c37-7513-4919-bfa0-7b0a0e2c5e00"
+}
